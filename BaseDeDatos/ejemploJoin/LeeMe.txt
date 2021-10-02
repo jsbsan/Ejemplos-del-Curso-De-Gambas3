@@ -1,0 +1,3 @@
+Url de la explicacion y el ejemplo:
+
+http://ariel.esdebian.org/27200/sql-join-basico

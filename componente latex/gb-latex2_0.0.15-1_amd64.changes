@@ -1,0 +1,28 @@
+Format: 1.8
+Date: Wed, 04 Sep 2013 12:00:00 +0000
+Source: gb-latex2
+Binary: gb-latex2
+Architecture: source all
+Version: 0.0.15-1
+Distribution: unstable
+Urgency: low
+Maintainer: Julio Sanchez Berro <jusabejusabe@gmail.com>
+Changed-By: Julio Sanchez Berro <jusabejusabe@gmail.com>
+Description: 
+ gb-latex2  - report Latex
+Changes: 
+ gb-latex2 (0.0.15-1) unstable; urgency=low
+ .
+   * nueva funcion para cambiar algunos caracters que dan problemas
+Checksums-Sha1: 
+ 44e3871f7a762b5a76c0185c69b554d91cdf47c2 1004 gb-latex2_0.0.15-1.dsc
+ b940fe3fc3451920edafb3eff62cd915c84fc337 1508 gb-latex2_0.0.15-1.diff.gz
+ 94f6d58f9bb96f8204b1175669efae35be0047bf 18376 gb-latex2_0.0.15-1_all.deb
+Checksums-Sha256: 
+ e8d07aeb34f5d09e098fce00d9aa7c36c3c14e14c185e7773cf1e8289f037bef 1004 gb-latex2_0.0.15-1.dsc
+ 91290c61f27bf2e27728bcfbc9e85fdda3e5a9e81b2f37bcc54f2f41775b6738 1508 gb-latex2_0.0.15-1.diff.gz
+ 991b9817352bd1abd833689208ba3a40eb10c4bb656d255b055560b0c18923bc 18376 gb-latex2_0.0.15-1_all.deb
+Files: 
+ 3f2bf3955ac4c4b74f1ea2da6ac97be5 1004 contrib/admin optional gb-latex2_0.0.15-1.dsc
+ 8346a90ef414e57030e71792862011dd 1508 contrib/admin optional gb-latex2_0.0.15-1.diff.gz
+ 99fe262dcdb1db53209286d5803c155c 18376 contrib/admin optional gb-latex2_0.0.15-1_all.deb

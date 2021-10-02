@@ -1,0 +1,28 @@
+Format: 1.8
+Date: Wed, 28 Aug 2013 12:00:00 +0000
+Source: cursoalumnos
+Binary: cursoalumnos
+Architecture: source all
+Version: 0.1.1-1
+Distribution: unstable
+Urgency: low
+Maintainer: Julio Sánchez Berro y Jorge Agustín Pereyra <jusabejusabe@gmail.com>
+Changed-By: Julio Sánchez Berro y Jorge Agustín Pereyra <jusabejusabe@gmail.com>
+Description: 
+ cursoalumnos - Control de Alumnos en Cursos
+Changes: 
+ cursoalumnos (0.1.1-1) unstable; urgency=low
+ .
+   * relanzamiento0.1.1 añadido busquedas
+Checksums-Sha1: 
+ 2c60d0c62765d7263577cfcf7d7029311a56d465 1596 cursoalumnos_0.1.1-1.dsc
+ 4985a50cd72ec6dd7903c6a9eb662d678c558b05 1328 cursoalumnos_0.1.1-1.diff.gz
+ 7a6c3ec2c5699cbbc178917baed0f7fd60ad016a 186514 cursoalumnos_0.1.1-1_all.deb
+Checksums-Sha256: 
+ 2745af8f67ed0880c18ceba5632f17876da6de53860b5639e39b9d6020e7d13a 1596 cursoalumnos_0.1.1-1.dsc
+ 473219bd83d90d311360e71c629a3a3b27d62a354eb5058ac25305bf585fd034 1328 cursoalumnos_0.1.1-1.diff.gz
+ 3193720b93f73a5cc867935f2fab043c1f31035f0907de5edb6e2972524bcccd 186514 cursoalumnos_0.1.1-1_all.deb
+Files: 
+ ea72a7fd7c84cb5bbfe526344ffcec01 1596 contrib/admin optional cursoalumnos_0.1.1-1.dsc
+ b5555d8fb3a769fd1420abeac14e474e 1328 contrib/admin optional cursoalumnos_0.1.1-1.diff.gz
+ 52ae06ea361fdbf463fd7fb74990c91a 186514 contrib/admin optional cursoalumnos_0.1.1-1_all.deb

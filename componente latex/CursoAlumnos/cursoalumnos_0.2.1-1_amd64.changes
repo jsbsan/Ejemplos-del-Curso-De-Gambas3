@@ -1,0 +1,28 @@
+Format: 1.8
+Date: Sat, 07 Sep 2013 12:00:00 +0000
+Source: cursoalumnos
+Binary: cursoalumnos
+Architecture: source all
+Version: 0.2.1-1
+Distribution: unstable
+Urgency: low
+Maintainer: Julio Sánchez Berro y Jorge Agustín Pereyra <jusabejusabe@gmail.com>
+Changed-By: Julio Sánchez Berro y Jorge Agustín Pereyra <jusabejusabe@gmail.com>
+Description: 
+ cursoalumnos - Control de Alumnos en Cursos
+Changes: 
+ cursoalumnos (0.2.1-1) unstable; urgency=low
+ .
+   * Corregido bug de presentar el documento como domicilio
+Checksums-Sha1: 
+ 8634c5b4eb832f0d7901d9b3637b617625b79797 1617 cursoalumnos_0.2.1-1.dsc
+ 6fad5e3130dd73c76fd799b50a7ae6638f550035 1871 cursoalumnos_0.2.1-1.diff.gz
+ 7460f9714d46f2e98e6a3a083be5ee8c5fafcbbc 195764 cursoalumnos_0.2.1-1_all.deb
+Checksums-Sha256: 
+ f3323fdff3b38f963c59192940b06fdb57e6cb09386a5575eeeb837b5c8a2bbf 1617 cursoalumnos_0.2.1-1.dsc
+ 852018782ce00fd1477655ffc500296914b651b2fdb41487c76a9bb68818fc32 1871 cursoalumnos_0.2.1-1.diff.gz
+ 46426509b485ab903e7189c0cbc4ea16b4b0e78f4ecba9dc7a5dabebb9411ea7 195764 cursoalumnos_0.2.1-1_all.deb
+Files: 
+ 9f3250c54f08b6182751b03eb2131469 1617 contrib/admin optional cursoalumnos_0.2.1-1.dsc
+ b205b3e0ad60aa7bcc085c0fafc32b7d 1871 contrib/admin optional cursoalumnos_0.2.1-1.diff.gz
+ 8b5b0a6598fe966bd8cb44688b6cb9a7 195764 contrib/admin optional cursoalumnos_0.2.1-1_all.deb
