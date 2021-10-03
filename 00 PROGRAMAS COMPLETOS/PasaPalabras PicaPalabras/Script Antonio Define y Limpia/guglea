@@ -1,0 +1,9 @@
+#!/bin/bash
+
+palabra="$1"
+
+googler -s 1 -n 2 "define ${palabra}" |head -n 4|tail -n -2 >/tmp/a
+
+cat /tmp/a
+
+

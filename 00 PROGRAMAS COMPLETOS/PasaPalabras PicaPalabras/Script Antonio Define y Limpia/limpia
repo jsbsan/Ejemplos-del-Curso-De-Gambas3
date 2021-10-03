@@ -1,0 +1,28 @@
+#!/bin/bash
+
+#while IFS='' read -r line || [[ -n "$line" ]]; do
+while read line
+do
+
+    A=`echo "$line"|awk -F ".>" '{print $1}'`
+    B=`echo "$line"|awk -F ".>" '{$1=""; print}'`
+    lineanumerada=`echo "$A"|grep [abcdefghijklmnñopqrstuvwxyzáéíóú]1`
+    if [ "$lineanumerada" != "" ];then
+# split two strings separar en dos una cadena
+	APRIMA=`echo "$A"|awk -F "1" '{print $1}'`
+	APRIMA=`echo "$APRIMA"|sed 's/^ *//'`
+	APRIMB=`echo "$A"|awk -F "1" '{$1=""; print}'`
+	APRIMB=`echo "$APRIMB"|sed 's/^ *//'`
+
+#	APRIMA=`echo "$A"|awk -F " ." '{print $1}'`
+#	echo "$APRIMA"
+#	APRIMB=`echo "$A"|awk -F "1" '{$1=""; print}'`
+#	echo "$APRIMB"
+
+	A=$APRIMA$APRIMB
+	echo "${A}.>${B}"
+
+    else
+	echo "$line"
+    fi
+done < dict-es.txt

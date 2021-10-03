@@ -1,0 +1,6 @@
+Ultima version disponible:
+https://github.com/jsbsan/pintascreen
+
+
+Para gambas3.5.4:
+https://github.com/jsbsan/pintascreeenG354

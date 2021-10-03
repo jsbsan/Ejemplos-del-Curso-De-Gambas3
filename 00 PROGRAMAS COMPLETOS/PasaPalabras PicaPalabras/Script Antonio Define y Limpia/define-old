@@ -1,0 +1,210 @@
+#!/bin/bash
+
+PALABRA="$1"  # Palabra a buscar
+ACEPCION="$2" # Un número que indicará qué acepción se quiere
+
+# Convertimos a minúsculas por si acaso
+PALABRA=`echo "$PALABRA" | tr '[:upper:]' '[:lower:]'`  
+
+# Ponemos en singular por si el usuario puso una palabra en plural
+ULTIMA_LETRA=`echo -n "$PALABRA"| tail -c 1`
+DOS_ULTIMAS_LETRAS=`echo -n "$PALABRA"| tail -c 2`
+TRES_ULTIMAS_LETRAS=`echo -n "$PALABRA"| tail -c 3`
+
+if [ "$ULTIMA_LETRA" = "s" ];then 
+  PALABRA_SIN_S=`echo -n "$PALABRA"|head -c -1`
+fi
+
+if [ "$DOS_ULTIMAS_LETRAS" = "es" ];then 
+  PALABRA_SIN_ES=`echo -n "$PALABRA"|head -c -2`
+  DOS_ULTIMAS_LETRAS=`echo -n "$PALABRA_SIN_ES"| tail -c 2`
+  # Si las dos últimas letras son an,en,in,on,un,as,es,is,os,us pueden llevar tilde con convertirlas en singular
+		  cortada=`echo -n "$PALABRA_SIN_ES"|head -c -2`
+  case $DOS_ULTIMAS_LETRAS in
+	an) PALABRA_SIN_ES_TILDADA=`echo "${cortada}án"`;;
+	en) PALABRA_SIN_ES_TILDADA=`echo "${cortada}én"`;;
+	in) PALABRA_SIN_ES_TILDADA=`echo "${cortada}ín"`;;
+	on) PALABRA_SIN_ES_TILDADA=`echo "${cortada}ón"`;;
+	un) PALABRA_SIN_ES_TILDADA=`echo "${cortada}ún"`;;
+	as) PALABRA_SIN_ES_TILDADA=`echo "${cortada}ás"`;;
+	es) PALABRA_SIN_ES_TILDADA=`echo "${cortada}és"`;;
+	is) PALABRA_SIN_ES_TILDADA=`echo "${cortada}ís"`;;
+	os) PALABRA_SIN_ES_TILDADA=`echo "${cortada}ós"`;;
+	us) PALABRA_SIN_ES_TILDADA=`echo "${cortada}ús"`;;
+  esac
+fi
+
+
+if [ "$TRES_ULTIMAS_LETRAS" = "ces" ];then 
+  PALABRA_SIN_CES=`echo -n "$PALABRA"|head -c -3`
+  PALABRA_SIN_CES=`echo "${PALABRA_SIN_CES}z"`
+fi
+
+
+# Ponemos en masculino por si se puso una palabra en femenino
+ULTIMA_LETRA=`echo -n "$PALABRA"| tail -c 1`
+if [ "$ULTIMA_LETRA" = "a" ];then  
+	cortada=`echo -n "$PALABRA"|head -c -1`
+	PALABRA_MASCULINO=`echo "${cortada}o"`
+fi
+# Ponemos singulas y masculino
+ULTIMA_LETRA=`echo -n "$PALABRA_SIN_S"| tail -c 1`
+if [ "$ULTIMA_LETRA" = "a" ];then  
+	cortada=`echo -n "$PALABRA_SIN_S"|head -c -1`
+	PALABRA_MASCULINO_SIN_S=`echo "${cortada}o"`
+fi
+
+
+# Una letra menos
+UNA_LETRA_MENOS=`echo -n "$PALABRA"|head -c -1`
+  # Si las dos últimas letras son an,en,in,on,un,as,es,is,os,us pueden llevar tilde con convertirlas en singular
+	  cortada=`echo -n "$UNA_LETRA_MENOS"|head -c -2`
+  case $DOS_ULTIMAS_LETRAS in
+	an) UNA_LETRA_MENOS_TILDADA=`echo "${cortada}án"`;;
+	en) UNA_LETRA_MENOS_TILDADA=`echo "${cortada}én"`;;
+	in) UNA_LETRA_MENOS_TILDADA=`echo "${cortada}ín"`;;
+	on) UNA_LETRA_MENOS_TILDADA=`echo "${cortada}ón"`;;
+	un) UNA_LETRA_MENOS_TILDADA=`echo "${cortada}ún"`;;
+	as) UNA_LETRA_MENOS_TILDADA=`echo "${cortada}ás"`;;
+	es) UNA_LETRA_MENOS_TILDADA=`echo "${cortada}és"`;;
+	is) UNA_LETRA_MENOS_TILDADA=`echo "${cortada}ís"`;;
+	os) UNA_LETRA_MENOS_TILDADA=`echo "${cortada}ós"`;;
+	us) UNA_LETRA_MENOS_TILDADA=`echo "${cortada}ús"`;;
+  esac
+
+
+
+if [ "$1" = "" ];then
+	echo "USE: define word [number]
+
+«word» is the word to be defined and
+«number» is the number of the meaning
+"
+
+fi
+# A probar:
+#echo "palabra: $PALABRA"
+#echo "palabra_sin_s: $PALABRA_SIN_S"
+#echo "palabra_sin_es: $PALABRA_SIN_ES"
+#echo "palabra_sin_es_tildada: $PALABRA_SIN_ES_TILDADA"
+#echo "palabra_sin_ces: $PALABRA_SIN_CES"
+#echo "palabra_masculino: $PALABRA_MASCULINO"
+#echo "palabra_masculino_sin_s: $PALABRA_MASCULINO_SIN_S"
+#echo "una_letra_menos: $UNA_LETRA_MENOS"
+#echo "una_letra_menos_tildada: $UNA_LETRA_MENOS_TILDADA"
+
+# Si no se pone ningún número se muestran todas las acepciones
+# Problemas con matrón,na y camionero,ra y revés/reveses, pantalón/nes, casado/a
+if [ "$ACEPCION" = "" ];then
+	DEF=`fgrep "<$PALABRA." /usr/local/share/dict/dict-es.txt`
+	if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+		DEF=`fgrep "<$PALABRA," /usr/local/share/dict/dict-es.txt`
+		if [ "$DEF" = "" ];then 
+			DEF=`fgrep "<${PALABRA_SIN_S}." /usr/local/share/dict/dict-es.txt`
+			if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+				DEF=`fgrep "<$PALABRA_SIN_S," /usr/local/share/dict/dict-es.txt`
+				if [ "$DEF" = "" ];then 
+					DEF=`fgrep "<$PALABRA_SIN_ES." /usr/local/share/dict/dict-es.txt`
+					if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+						DEF=`fgrep "<$PALABRA_SIN_ES," /usr/local/share/dict/dict-es.txt`
+						if [ "$DEF" = "" ];then 
+							DEF=`fgrep "<$PALABRA_SIN_ES_TILDADA." /usr/local/share/dict/dict-es.txt`
+							if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+								DEF=`fgrep "<$PALABRA_SIN_ES_TILDADA," /usr/local/share/dict/dict-es.txt`
+								if [ "$DEF" = "" ];then 
+									DEF=`fgrep "<$PALABRA_SIN_CES." /usr/local/share/dict/dict-es.txt`
+									if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+										DEF=`fgrep "<$PALABRA_SIN_CES," /usr/local/share/dict/dict-es.txt`
+										if [ "$DEF" = "" ];then 
+											DEF=`fgrep "<$PALABRA_MASCULINO." /usr/local/share/dict/dict-es.txt`
+											if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+												DEF=`fgrep "<$PALABRA_MASCULINO," /usr/local/share/dict/dict-es.txt`
+												if [ "$DEF" = "" ];then 
+													DEF=`fgrep "<$PALABRA_MASCULINO_SIN_S." /usr/local/share/dict/dict-es.txt`
+													if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+														DEF=`fgrep "<$PALABRA_MASCULINO_SIN_S," /usr/local/share/dict/dict-es.txt`
+														if [ "$DEF" = "" ];then 
+															DEF=`fgrep "<$UNA_LETRA_MENOS." /usr/local/share/dict/dict-es.txt`
+															if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+																DEF=`fgrep "<$UNA_LETRA_MENOS," /usr/local/share/dict/dict-es.txt`
+																if [ "$DEF" = "" ];then 
+																	DEF=`fgrep "<$UNA_LETRA_MENOS_TILDADA." /usr/local/share/dict/dict-es.txt`
+																	if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+																		DEF=`fgrep "<$UNA_LETRA_MENOS_TILDADA," /usr/local/share/dict/dict-es.txt`
+																	fi
+																fi
+															fi
+														fi
+													fi
+												fi
+											fi
+										fi
+									fi
+								fi
+							fi
+						fi
+					fi
+				fi
+			fi
+		fi
+	fi	
+	echo "$DEF"
+else # Si se pone un número como parámetro, se mostrará una definición concreta
+	
+	#fgrep "<$PALABRA." /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))
+	DEF=`fgrep "<$PALABRA." /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+	if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+		DEF=`fgrep "<$PALABRA," /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+		if [ "$DEF" = "" ];then 
+			DEF=`fgrep "<${PALABRA_SIN_S}." /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+			if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+				DEF=`fgrep "<$PALABRA_SIN_S," /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+				if [ "$DEF" = "" ];then 
+					DEF=`fgrep "<$PALABRA_SIN_ES." /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+					if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+						DEF=`fgrep "<$PALABRA_SIN_ES," /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+						if [ "$DEF" = "" ];then 
+							DEF=`fgrep "<$PALABRA_SIN_ES_TILDADA." /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+							if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+								DEF=`fgrep "<$PALABRA_SIN_ES_TILDADA," /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+								if [ "$DEF" = "" ];then 
+									DEF=`fgrep "<$PALABRA_SIN_CES." /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+									if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+										DEF=`fgrep "<$PALABRA_SIN_CES," /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+										if [ "$DEF" = "" ];then 
+											DEF=`fgrep "<$PALABRA_MASCULINO." /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+											if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+												DEF=`fgrep "<$PALABRA_MASCULINO," /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+												if [ "$DEF" = "" ];then 
+													DEF=`fgrep "<$PALABRA_MASCULINO_SIN_S." /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+													if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+														DEF=`fgrep "<$PALABRA_MASCULINO_SIN_S," /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+														if [ "$DEF" = "" ];then 
+															DEF=`fgrep "<$UNA_LETRA_MENOS." /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+															if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+																DEF=`fgrep "<$UNA_LETRA_MENOS," /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+																if [ "$DEF" = "" ];then 
+																	DEF=`fgrep "<$UNA_LETRA_MENOS_TILDADA." /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+																	if [ "$DEF" = "" ];then #si no encuentra la palabra con . es que quizás sea un adjetivo y tiene una coma en su lugar honrado,da
+																		DEF=`fgrep "<$UNA_LETRA_MENOS_TILDADA," /usr/local/share/dict/dict-es.txt|cut -d">" -f$((ACEPCION+1))`
+																	fi
+																fi
+															fi
+														fi
+													fi
+												fi
+											fi
+										fi
+									fi
+								fi
+							fi
+						fi
+					fi
+				fi
+			fi
+		fi
+	fi	
+	echo "$DEF"
+
+fi
+
