@@ -1,0 +1,45 @@
+' Gambas class file
+
+'Ayuda en ingles sobre propiedades y metodos:
+'https://gambaswiki.org/wiki/lang/propdecl
+'https://gambaswiki.org/wiki/lang/methoddecl
+
+Property base As Float '' ver otra forma de declararla en ayuda en ingles a partir de gambas 3.14: Property Name As String Use $sName
+Private hbase As Float
+Property altura As Float
+Private haltura As Float
+
+Public Procedure _new(b As Float, h As Float)
+
+  Me.base = b
+  Me.altura = h
+
+End
+
+Private Function base_Read() As Float
+
+  Return hbase
+
+End
+
+Private Sub base_Write(Value As Float)
+
+  hbase = value
+
+End
+
+Private Function altura_Read() As Float
+
+  Return haltura
+
+End
+
+Private Sub altura_Write(Value As Float)
+
+  haltura = value
+
+End
+
+Public Function calculo() As String
+
+End

@@ -1,0 +1,9 @@
+' Gambas class file
+
+Inherits Figura
+
+Public Function calculo() As String
+
+  Print "El area del triangulo es:", Me.base * Me.altura / 2
+
+End

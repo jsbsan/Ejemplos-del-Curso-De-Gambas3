@@ -1,0 +1,9 @@
+' Gambas class file
+
+Inherits Figura
+
+Public Function calculo() As String
+
+  Print "El area del rectangulo es:", Me.base * Me.altura
+
+End

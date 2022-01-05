@@ -1,0 +1,52 @@
+' Gambas module file
+
+'https://es.wikipedia.org/wiki/Programaci%C3%B3n_por_procedimientos
+
+Public Sub Main()
+
+  Dim opcion, espera As String
+  Dim base, altura As Float
+
+  Print "Calcular areas de figuras"
+
+  Print "1- Rectangulo"
+  Print "2- Triangulo"
+
+  Print "indice numero (1 o 2), otro valor para salir:"
+  Input opcion
+
+  If opcion = "1" Then
+    Print "base del rectangulo en metros:"
+    Input base
+    Print "altura del rectangulo en metros:"
+    Input altura
+    Print "El area es:", calcularAreaRectangulo(base, altura)
+  Else
+    If opcion = "2" Then
+      Print "base del triangulo en metros:"
+      Input base
+      Print "altura del triangulo en metros:"
+      Input altura
+      Print "El area es:", calcularAreaTriangulo(base, altura)
+    Else
+    Endif
+  Endif
+
+  Print "Pulse una tecla para terminar el programa"
+  Input espera
+  Quit
+
+End
+'PROCEDIMIENTOS PARA EL CALCULO DEL AREA
+
+Public Procedure calcularAreaRectangulo(b As Float, h As Float) As Float
+
+  Return (b * h)
+
+End
+
+Public Procedure calcularAreaTriangulo(b As Float, h As Float) As Float
+
+  Return (b * h / 2)
+
+End

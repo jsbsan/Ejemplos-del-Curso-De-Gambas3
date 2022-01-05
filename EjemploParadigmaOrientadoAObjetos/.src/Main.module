@@ -1,0 +1,42 @@
+' Gambas module file
+
+Public Sub Main()
+
+  Dim opcion, espera As String
+  Dim base, altura As Float
+  Dim Objeto As Figura
+
+  Print "Calcular areas de figuras"
+
+  Print "1- Rectangulo"
+  Print "2- Triangulo"
+
+  Print "indice numero (1 o 2), otro valor para salir:"
+  Input opcion
+
+  If opcion = "1" Then
+    Print "base del rectangulo en metros:"
+    Input base
+    Print "altura del rectangulo en metros:"
+    Input altura
+    Objeto = New Rectangulo(base, altura)
+    Objeto.calculo()
+
+  Else
+    If opcion = "2" Then
+      Print "base del triangulo en metros:"
+      Input base
+      Print "altura del triangulo en metros:"
+      Input altura
+      Objeto = New Triangulo(base, altura)
+      Objeto.calculo()
+
+    Else
+    Endif
+  Endif
+
+  Print "Pulse una tecla para terminar el programa"
+  Input espera
+  Quit
+
+End
