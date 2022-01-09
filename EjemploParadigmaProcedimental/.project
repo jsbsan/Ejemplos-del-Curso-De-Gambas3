@@ -4,4 +4,5 @@ Startup=Main
 Version=0.0.3
 TabSize=2
 Language=en_US
+SourcePath=/home/minino/Documentos/Gambas2/Curso de gambas3/CursoGambas3/EjemploParadigmaProcedimental
 Packager=1
