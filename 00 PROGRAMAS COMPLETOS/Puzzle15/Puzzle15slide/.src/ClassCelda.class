@@ -1,0 +1,71 @@
+' Gambas class file
+
+Property pieza As Integer '' Pieza que contenga (del 1 al 16)
+Private hpieza As Integer
+Property x As Integer ''Coordenada eje X
+Private hx As Integer
+
+Property y As Integer '' Coordenada eje Y
+Private hy As Integer
+
+Private Function x_Read() As Integer
+
+  Return hx
+
+End
+
+Private Sub x_Write(Value As Integer)
+
+  hx = Value
+
+End
+
+Private Function y_Read() As Integer
+
+  Return hy
+
+End
+
+Private Sub y_Write(Value As Integer)
+
+  hy = Value
+
+End
+
+Private Function pieza_Read() As Integer
+
+  Return hpieza
+
+End
+
+Private Sub pieza_Write(Value As Integer)
+
+  hpieza = value
+
+End
+
+Public Sub escribe()
+
+  Print "Pieza: "; hpieza; " X:"; hx; " Y:"; hy
+
+End
+
+Public Sub asigna(celda As Variant, Optional valory As Integer)
+
+  '  Print TypeOf(celda); celda
+  If TypeOf(celda) = 16 Then
+    hpieza = celda.pieza
+    hy = celda.y
+    hx = celda.x
+  Else
+    hx = celda
+    hy = valory
+  Endif
+
+End
+
+Public Sub copia() As ClassCelda
+
+  Return Me
+
+End

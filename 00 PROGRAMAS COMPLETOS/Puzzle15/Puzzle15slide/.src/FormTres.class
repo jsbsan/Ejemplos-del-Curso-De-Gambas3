@@ -1,0 +1,465 @@
+' Gambas class file
+
+Public ruta As ClassRuta
+
+Public Sub _new()
+
+  Me.caption = "8 Puzzle 3x3"
+
+End
+
+Public Sub Form_Open()
+
+  Dim x1, x2, x3, x4, x5, x6, x7, x8, x9 As Integer
+  Dim i As Integer
+  Dim tfin As New ClassTablero
+  Dim tinicio As New ClassTablero
+  Dim listaSucesores As ClassTablero[]
+  Dim ttemp As New ClassTablero
+  Dim a As New Integer[16]
+  'ruta de la solucion de un juego
+
+  Me.center
+  For i = 0 To 15
+    a[i] = i + 1
+
+  Next
+
+  tfin.nuevo(a)
+  tinicio.nuevo(a)
+
+  Goto verformulario
+
+  'Print tfin.EscribeTablero()
+
+  'Print "Resultado de comparacion: "; tinicio.compara(tfin)
+
+  'Print tinicio.EscribeTablero()
+  'Print "Cambio tablero..."
+
+  'tinicio.celda[15].pieza = 6
+  'tinicio.celda[5].pieza = 16
+
+  'Print "Tablero cambiado:\n"
+  'Print tinicio.EscribeTablero()
+
+  'listaSucesores = tinicio.Sucesores()
+
+  'For i = 0 To listaSucesores.max
+  ' ttemp = New ClassTablero
+  '    ttemp = listaSucesores[i]
+  'Print "Movimiento..\n"
+  'Print ttemp.movimiento.escribe()
+  'Print ttemp.EscribeTablero()
+  'ttemp.calculoH(tfin)
+
+  'ttemp.calculoG(0)
+  'ttemp.calculoF()
+
+  'Print "Valor de ordenacion: ", ttemp.f
+  'Next
+
+  'juegoInicial:
+  'Goto verformulario
+  '-------------------------------------------------
+  'Analizo tablero y muestro soluciones....
+  '-------------------------------------------------
+  'Print "**************************************************************"
+  'Print "Resolviendo este tablero..."
+  'Print "**************************************************************"
+  'Print tfin.EscribeTablero()
+
+  'Para puzzle de 3x3.......
+  'x1 = ochoConvierte(3)
+  'x2 = ochoConvierte(7)
+  'x3 = ochoConvierte(6)
+  'x4 = ochoConvierte(4)
+  'x5 = ochoConvierte(8)
+  'x6 = ochoConvierte(5)
+  'x7 = ochoConvierte(1)
+  'x8 = ochoConvierte(9)
+  'x9 = ochoConvierte(2)
+
+  'tinicio.celda[0].pieza = 1
+  'tinicio.celda[1].pieza = 2
+  'tinicio.celda[2].pieza = 3
+  'tinicio.celda[3].pieza = 4
+
+  'tinicio.celda[4].pieza = 5
+  'tinicio.celda[5].pieza = x1
+  'tinicio.celda[6].pieza = x2
+  'tinicio.celda[7].pieza = x3
+
+  'tinicio.celda[8].pieza = 9
+  'tinicio.celda[9].pieza = x4
+  'tinicio.celda[10].pieza = x5
+  'tinicio.celda[11].pieza = x6
+
+  'tinicio.celda[12].pieza = 13
+  '  tinicio.celda[13].pieza = x7
+  ' tinicio.celda[14].pieza = x8
+  'tinicio.celda[15].pieza = x9
+  'Goto dibujatablero
+  '--------------------------------------
+  '--------------------------------------
+  'para puzzle de 4x4
+
+  '--------------------------------------
+  '--------------------------------------
+
+  'tinicio.celda[0].pieza = 2
+  'tinicio.celda[1].pieza = 12
+  'tinicio.celda[2].pieza = 6
+  'tinicio.celda[3].pieza = 5
+  'tinicio.celda[4].pieza = 10
+  'tinicio.celda[5].pieza = 1
+  'tinicio.celda[6].pieza = 13
+  'tinicio.celda[7].pieza = 7
+  'tinicio.celda[8].pieza = 4
+  'tinicio.celda[9].pieza = 9
+  'tinicio.celda[10].pieza = 15
+  'tinicio.celda[11].pieza = 11
+  'tinicio.celda[12].pieza = 3
+  'tinicio.celda[13].pieza = 14
+  'tinicio.celda[14].pieza = 8
+  'tinicio.celda[15].pieza = 16
+
+  'dibujatablero:
+
+  ' Print "**************** Tablero Inicial: *******************"
+  ' Print tinicio.EscribeTablero()
+
+  '  ruta = ModuloAestrella.Astar(tinicio)
+  '  Print "Solucion..........................."
+  'For i = 1 To ruta.valor.max
+
+  ' Print ruta.valor[i].EscribeTablero()
+  '    Print ruta.valor[i].movimiento.escribe()
+
+  'Next
+verformulario:
+
+End
+
+Public Function ochoConvierte(valor As Integer) As Integer
+
+  Dim numero As Integer
+
+  numero = Choose(valor, 6, 7, 8, 10, 11, 12, 14, 15, 16)
+
+  Return numero
+
+End
+
+Public Sub ToolButton1_Click()
+
+  ToolButton1.text = Lee(ToolButton1.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton2_Click()
+
+  ToolButton2.text = lee(ToolButton2.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton3_Click()
+
+  ToolButton3.text = lee(ToolButton3.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton4_Click()
+
+  ToolButton4.text = lee(ToolButton4.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton5_Click()
+
+  ToolButton5.text = lee(ToolButton5.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton6_Click()
+
+  ToolButton6.text = lee(ToolButton6.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton7_Click()
+
+  ToolButton7.text = lee(ToolButton7.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton8_Click()
+
+  ToolButton8.text = lee(ToolButton8.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton9_Click()
+
+  ToolButton9.Text = lee(ToolButton9.text)
+  coloreatablero()
+
+End
+
+Public Function lee(para As String) As Integer
+
+  Dim pregunta As New FormInput
+  Dim devolucion As New Classdato
+
+  If IsDigit(para) Then devolucion.indice = Val(para)
+
+  pregunta.valor = devolucion
+  pregunta.ShowDialog()
+
+  Return devolucion.indice
+
+End
+
+Public Sub ButtonResolver_Click()
+
+  Dim x1, x2, x3, x4, x5, x6, x7, x8, x9 As Integer
+  Dim i As Integer
+
+  Dim tfin As New ClassTablero
+  Dim tinicio As New ClassTablero
+  Dim a As New Integer[16]
+  Dim tiempoInicio As Date
+  Dim TiempoFin As Date
+
+  tiempoInicio = Now()
+  'borro resultados anteriores..
+  ListBoxResultado.Clear
+  'Comprobar la validez del tablero...
+  ListBoxResultado.Add("pensando...")
+  'El contenido de los toolbutton1 debe de estar entre el 1 y el 9, ambos inclusibe...
+  'No pude haber numeros repetidos...
+  If contenido() = False Then
+    Message.Info("Tablero mal definido...\n Contendido debe de estar entre el 1 y el 9")
+    Return
+  Endif
+
+  If repetidos() = False Then
+    Message.Info("Tablero mal definido...\n Numeros repetidos")
+    Return
+  Endif
+  '
+  '
+  'Si se cumple estas dos condiciones, puedo seguir
+  '
+
+  'defino tablero fin....
+  For i = 0 To 15
+    a[i] = i + 1
+
+  Next
+  'asigno valores al tablero Fin:
+  tfin.nuevo(a)
+
+  'asigno valores a puzzle 8:
+  'Para puzzle de 3x3.......
+  tinicio.nuevo(a)
+
+  x1 = ochoConvierte(Val(ToolButton1.text))
+  x2 = ochoConvierte(Val(ToolButton2.text))
+  x3 = ochoConvierte(Val(ToolButton3.text))
+  x4 = ochoConvierte(Val(ToolButton4.text))
+  x5 = ochoConvierte(Val(ToolButton5.text))
+  x6 = ochoConvierte(Val(ToolButton6.text))
+  x7 = ochoConvierte(Val(ToolButton7.text))
+  x8 = ochoConvierte(Val(ToolButton8.text))
+  x9 = ochoConvierte(Val(ToolButton9.text))
+
+  tinicio.celda[0].pieza = 1
+  tinicio.celda[1].pieza = 2
+  tinicio.celda[2].pieza = 3
+  tinicio.celda[3].pieza = 4
+
+  tinicio.celda[4].pieza = 5
+  tinicio.celda[5].pieza = x1
+  tinicio.celda[6].pieza = x2
+  tinicio.celda[7].pieza = x3
+
+  tinicio.celda[8].pieza = 9
+  tinicio.celda[9].pieza = x4
+  tinicio.celda[10].pieza = x5
+  tinicio.celda[11].pieza = x6
+
+  tinicio.celda[12].pieza = 13
+  tinicio.celda[13].pieza = x7
+  tinicio.celda[14].pieza = x8
+  tinicio.celda[15].pieza = x9
+  ruta = ModuloAestrella.Astar(tinicio)
+
+  If IsNull(ruta) Then
+
+    Message.Info("No hay Solucion")
+  Else
+    'cargar datos al lisbox...
+
+    cargaListbox(ruta)
+
+  Endif
+  tiempofin = Now()
+  Print "He tardado...."; DateDiff(tiempoinicio, tiempofin, gb.Second); " segundos"
+  Print "En minutos...."; DateDiff(tiempoinicio, tiempofin, gb.Minute); " minutos"
+  Labeltiempo.text = Str$(DateDiff(tiempoinicio, tiempofin, gb.Second)) & " seg."
+
+End
+
+Public Sub cargaListbox(ruta As ClassRuta)
+
+  Dim i As Integer
+
+  ListBoxResultado.Clear
+  For i = 0 To ruta.valor.max
+
+    ListBoxResultado.Add(Str$(i) & " -> " & ruta.valor[i].movimiento.escribe(8))
+    Print ruta.valor[i].movimiento.escribe(8)
+
+  Next
+
+End
+
+Public Function contenido() As Boolean
+  ' El contenido de los toolbutton1 debe de estar entre el 1 y el 9, ambos inclusibe...
+
+  Dim ctrl As Object
+
+  For Each ctrl In Me.Controls
+    If ctrl Is ToolButton Then
+      If ctrl.text = "?" Then Return False
+      If Val(ctrl.text) < 1 Or Val(ctrl.text) > 9 Then Return False
+
+    Endif
+  Next
+
+  Return True
+
+End
+
+Public Function repetidos() As Boolean
+  'No pude haber numeros repetidos...
+
+  Dim ctrl As Object
+  Dim ctrl2 As Object
+
+  For Each ctrl In Me.Controls
+    If ctrl Is ToolButton Then
+      For Each ctrl2 In Me.Controls
+        If ctrl2 Is ToolButton And If ctrl <> ctrl2 Then
+          If ctrl.text = ctrl2.text Then Return False
+        Endif
+      Next
+    Endif
+
+  Next
+
+  Return True
+
+End
+
+Public Sub LabelPaginaWebProblemas_MouseDown()
+
+  Desktop.Open("http://e2968e3e.miniurls.co")
+
+End
+
+Public Sub ListBoxResultado_Click()
+
+  dibujatablero(ListBoxResultado.text)
+
+End
+
+Public Sub dibujatablero(cadena As String)
+
+  Dim fin As Integer
+
+  fin = InStr(cadena, "-") - 1
+
+  cadena = Mid$(cadena, 1, fin)
+
+  escribepantallatablero(Val(cadena))
+
+End
+
+Public Sub escribepantallatablero(jugada As Integer)
+
+  Dim cadena As String
+  Dim b As Integer
+  Dim celda As New String[]
+
+  cadena = ruta.valor[jugada].EscribeTablero()
+  cadena = Replace$(cadena, "-", "")
+  cadena = Replace$(cadena, "Tablero", "")
+  cadena = Replace$(cadena, " ", "|")
+  cadena = Replace$(cadena, "\n", "")
+
+  celda = Split(cadena, "|")
+
+  ToolButton1.Text = ModuleComun.ConvierteAocho(celda[5])
+  ToolButton2.Text = ModuleComun.ConvierteAocho(celda[6])
+  ToolButton3.Text = ModuleComun.ConvierteAocho(celda[7])
+
+  ToolButton4.Text = ModuleComun.ConvierteAocho(celda[9])
+  ToolButton5.Text = ModuleComun.ConvierteAocho(celda[10])
+  ToolButton6.text = ModuleComun.ConvierteAocho(celda[11])
+
+  ToolButton7.Text = ModuleComun.ConvierteAocho(celda[13])
+  ToolButton8.Text = ModuleComun.ConvierteAocho(celda[14])
+  ToolButton9.text = ModuleComun.ConvierteAocho(celda[15])
+
+  coloreatablero()
+
+End
+
+Public Sub ListBoxResultado_Enter()
+
+End
+
+Public Sub ListBoxResultado_KeyPress()
+
+  dibujatablero(ListBoxResultado.text)
+
+End
+
+Public Sub ListBoxResultado_Select()
+
+  dibujatablero(ListBoxResultado.text)
+
+End
+
+Public Sub ListBoxResultado_Activate()
+
+  dibujatablero(ListBoxResultado.text)
+
+End
+
+Private Sub coloreatablero()
+
+  Dim ctrl As Object
+
+  For Each ctrl In Me.Controls
+    If ctrl Is ToolButton Then
+      If ctrl.caption = "9" Then
+        ctrl.background = Color.red
+      Else
+        ctrl.background = -1
+      Endif
+    Endif
+
+  Next
+
+End

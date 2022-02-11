@@ -1,0 +1,13 @@
+' Gambas module file
+
+Public Function ConvierteAocho(valor As Integer) As Integer
+
+  Dim numero As Integer
+
+  '¡  numero = Choose(valor, 6, 7, 8, 10, 11, 12, 14, 15, 16)
+  'numero = Choose(valor, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+  numero = Choose(valor, 0, 0, 0, 0, 0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9)
+
+  Return numero
+
+End

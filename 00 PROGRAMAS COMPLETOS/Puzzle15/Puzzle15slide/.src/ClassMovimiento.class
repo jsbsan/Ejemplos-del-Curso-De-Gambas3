@@ -1,0 +1,72 @@
+' Gambas class file
+
+Property inicio As ClassCelda '' posicion de inicio
+Private hinicio As New ClassCelda
+
+Property fin As ClassCelda '' posicion de fin
+Private hfin As New ClassCelda
+
+Private Function inicio_Read() As ClassCelda
+
+  Return hinicio
+
+End
+
+Private Sub inicio_Write(Value As ClassCelda)
+
+  hinicio = Value
+
+End
+
+Private Function fin_Read() As ClassCelda
+
+  Return hfin
+
+End
+
+Private Sub fin_Write(Value As ClassCelda)
+
+  hfin = Value
+
+End
+
+Public Function escribe(Optional list As Integer) As String
+
+  Dim cadena As String
+
+  If list = 0 Then
+
+    cadena = " X  Y  Pieza __A__ X  Y  Pieza fin\n"
+    cadena &= Str$(hinicio.x) & " " & Str$(hinicio.y) & " " & Str$(hfin.pieza) & " __  " & Str$(hfin.x) & " " & Str$(hfin.y) & " " & Str$(hfin.pieza)
+
+    cadena &= "\n" & Str$(hfin.x) & " " & Str$(hfin.y) & " " & Str$(hinicio.pieza) & " __ " & Str$(hinicio.x) & " " & Str$(hinicio.y) & " " & Str$(hinicio.pieza)
+
+    Return cadena
+  Else
+    If list = 8 Then
+      'dato de un  tablero de 3x3...
+      cadena = "(" & Str$(hinicio.x) & "," & Str$(hinicio.y) & ") a (" & Str$(hfin.x) & "," & Str$(hfin.y) & ")"
+      Return cadena
+
+    Else
+      If list = 15 Then
+        cadena = "(" & Str$(hinicio.x) & "," & Str$(hinicio.y) & ") a (" & Str$(hfin.x) & "," & Str$(hfin.y) & ")"
+        Return cadena
+
+      Endif
+    Endif
+  Endif
+
+End
+
+Public Function ConvierteAocho(valor As Integer) As Integer
+
+  Dim numero As Integer
+
+  '¡  numero = Choose(valor, 6, 7, 8, 10, 11, 12, 14, 15, 16)
+  'numero = Choose(valor, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+  numero = Choose(valor, 0, 0, 0, 0, 0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9)
+
+  Return numero
+
+End

@@ -1,0 +1,432 @@
+' Gambas class file
+
+Private PiezaVacia As Integer = 16 '' para tableros 4x4,la pieza vacia es 16; para tableros de 3x3 es 9
+
+Property indice As Integer '' Indice del Padre
+Private hindice As Integer
+
+Property celda As ClassCelda[]
+Private hcelda As New ClassCelda[]
+
+Property g As Integer ''Valoracion del gasto
+Private hg As Integer
+
+Property h As Integer '' valoracion funcion heuristica
+Private hh As Integer
+
+Property f As Integer '' valoracion F=h+g
+Private hf As Integer
+
+Property movimiento As ClassMovimiento '' movimiento que se realizo para llegar a este tablero.
+Private hmovimiento As New ClassMovimiento
+
+Private Function celda_Read() As ClassCelda[]
+
+  Return hcelda
+
+End
+
+Private Sub celda_Write(Value As ClassCelda[])
+
+  hcelda = Value
+
+End
+
+Private Function g_Read() As Integer
+
+  Return hg
+
+End
+
+Private Sub g_Write(Value As Integer)
+
+  hg = Value
+
+End
+
+Private Function h_Read() As Integer
+
+  Return hh
+
+End
+
+Private Sub h_Write(Value As Integer)
+
+  hh = Value
+
+End
+
+Private Function f_Read() As Integer
+
+  Return hf
+
+End
+
+Private Sub f_Write(Value As Integer)
+
+  hf = Value
+
+End
+
+Private Function movimiento_Read() As ClassMovimiento
+
+  Return hmovimiento
+
+End
+
+Private Sub movimiento_Write(Value As ClassMovimiento)
+
+  hmovimiento = Value
+
+End
+
+Private Function indice_Read() As Integer
+
+  Return hindice
+
+End
+
+Private Sub indice_Write(Value As Integer)
+
+  hindice = Value
+
+End
+
+Fast Public Function compara(t As Classtablero, Optional preanalisis As Boolean) As Boolean ''Compara un tablero con Otro, devolviendo si es Igual (true) o no (False)
+
+  Dim listavalores As New Integer[]
+  Dim i As Integer
+
+  If preanalisis = True Then
+    listavalores.Add(1)
+    listavalores.Add(2)
+    listavalores.Add(3)
+    listavalores.Add(4)
+    listavalores.Add(5)
+    listavalores.Add(9)
+    listavalores.Add(13)
+    '  Print "Comparar Solucion-Simplificada..."
+    '  Print Me.EscribeTablero()
+    '  Print t.EscribeTablero()
+    For i = 0 To listavalores.Max
+      If Me.celda[listavalores[i] - 1].pieza <> t.celda[listavalores[i] - 1].pieza Then
+        'ha encontrado una celda con contendio distinto.
+        'Ya puedo devolver  falso
+        '     Print "no son iguales..."
+        Return False
+      Endif
+
+    Next
+    '   Print "son iguales...!!!"
+    Return True
+  Else
+
+    For i = 0 To Me.celda.Max
+      If Me.celda[i].pieza <> t.celda[i].pieza Then
+        'ha encontrado una celda con contendio distinto.
+        'Ya puedo devolver  falso
+        Return False
+      Endif
+    Next
+  Endif
+
+  Return True
+
+End
+
+Fast Public Function Sucesores() As ClassTablero[] '' Devuelve los tableros sucesores al padre
+
+  Dim a As Integer
+  Dim array_tablero As New ClassTablero[]
+  Dim array_movimiento As New ClassMovimiento[]
+  Dim array_movimientovalido As New ClassMovimiento[]
+  Dim tableroTemp As ClassTablero
+  '1 genero movimientos posibles "teoricos"
+  array_movimiento = generar()
+  '2 filtro solo los movimientos validos
+  array_movimientovalido = filtroMovimiento(array_movimiento)
+
+  '3 Por cada movimiento valido, genero un tablero susesor (hijo)
+  For a = 0 To array_movimientovalido.Max
+    ' Print "Movimiento Valido:\n"
+    '  Print array_movimientovalido[a].Escribe()
+    tablerotemp = New ClassTablero
+
+    tableroTemp = MoverPieza(array_movimientovalido[a])
+
+    array_tablero.Add(tableroTemp)
+  Next
+
+  '4 devuelvo el array de tableros sucesores
+  '
+  Return array_tablero
+
+End
+
+Fast Private Function generar() As ClassMovimiento[]
+
+  Dim i As Integer
+  Dim celdatemp As ClassCelda
+  Dim PosicionVacia As Integer 'indice de la celda que esta vacia
+  Dim mov As ClassMovimiento 'movimiento calculado
+  Dim array_mov As New ClassMovimiento[] ' array donde guardo los movimientos
+  'busco pieza 16 (la vacia) (para tableros de 4x4)
+  For i = 0 To hcelda.Max
+    If hcelda[i].pieza = PiezaVacia Then
+      PosicionVacia = i
+      Break ' salgo del for...next
+    Endif
+  Next
+
+  'posible movimientos: +
+  'izquieda
+  mov = New ClassMovimiento
+  mov.inicio.asigna(Me.celda[PosicionVacia])
+
+  mov.fin.asigna(Me.celda[PosicionVacia].x - 1, Me.celda[PosicionVacia].y)
+  array_mov.Add(mov)
+
+  'derecha
+  mov = New ClassMovimiento
+  mov.inicio.asigna(Me.celda[PosicionVacia])
+  mov.fin.x = Me.celda[PosicionVacia].x + 1
+  mov.fin.y = Me.celda[PosicionVacia].y
+  array_mov.Add(mov)
+
+  'arriba
+  mov = New ClassMovimiento
+  mov.inicio.asigna(Me.celda[PosicionVacia])
+  mov.fin.x = Me.celda[PosicionVacia].x
+  mov.fin.y = Me.celda[PosicionVacia].y - 1
+  array_mov.Add(mov)
+
+  'abajo
+  mov = New ClassMovimiento
+  mov.inicio.asigna(Me.celda[PosicionVacia])
+  mov.fin.x = Me.celda[PosicionVacia].x
+  mov.fin.y = Me.celda[PosicionVacia].y + 1
+  array_mov.Add(mov)
+
+  Return array_mov
+
+End
+
+Fast Private Function filtroMovimiento(array_mov As ClassMovimiento[]) As ClassMovimiento[]  '' Comprobar todos los movimientos y devolor solo los válidos (segun el tablero)
+
+  Dim valido As Integer = 0
+  Dim a As Integer
+  Dim movtemp As New ClassMovimiento
+  Dim array_movimientovalido As New ClassMovimiento[]
+
+  For a = 0 To 3 'Movimientos posibles 4: 0,1,2,3 movimientos posibles
+    If array_mov[a].fin.x < 4 Then
+      If array_mov[a].fin.x > -1 Then
+        If array_mov[a].fin.y < 4 Then
+          If array_mov[a].fin.y > -1 Then
+            valido += 1
+            movtemp = New ClassMovimiento
+            movtemp.fin = array_mov[a].fin
+            movtemp.inicio = array_mov[a].inicio
+            'la pieza la intercambio de sitio
+            movtemp.fin.pieza = PiezaVacia
+
+            'Me.celda[array_mov[a].fin.x + 4 * array_mov[a].fin].pieza
+
+            movtemp.inicio.pieza = Me.celda[array_mov[a].fin.x + 4 * array_mov[a].fin.y].pieza
+            array_movimientovalido.Add(movtemp)
+
+          Endif
+        Endif
+      Endif
+    Endif
+
+  Next
+
+  Return array_movimientovalido
+
+End
+
+Fast Private Function MoverPieza(mov As ClassMovimiento) As Classtablero
+  'Esta funcion recibe un movimiento y  devuelve un tablero hijo del padre (Me)
+
+  Dim tableroTemp As New ClassTablero
+  Dim XYcelda As Integer 'variable que pasa de coordenadas XY a array celda
+
+  'Print "Original:*************\n"
+  'Print Me.EscribeTablero()
+  '  ModuleVarios.copia(Me, tablerotemp)
+
+  tablerotemp = copia()
+
+  'Print "Copia:***************\n"
+  'Print tablerotemp.EscribeTablero()
+  'Print mov.escribe()
+
+  xycelda = mov.inicio.x + mov.inicio.y * 4
+  tablerotemp.celda[xycelda].pieza = mov.inicio.pieza
+
+  xycelda = mov.fin.x + mov.fin.y * 4
+  tablerotemp.celda[xycelda].pieza = mov.fin.pieza
+
+  tablerotemp.movimiento.fin = mov.fin
+  tablerotemp.movimiento.inicio = mov.inicio
+
+  Return tablerotemp
+
+End
+
+Public Function EscribeTablero(Optional t As ClassTablero) As String
+
+  Dim a As Integer
+  Dim texto As String
+
+  texto = "-------------Tablero--------------------\n"
+  If t = Null Then
+    For a = 0 To 15 'hcelda.Max
+      texto &= Format(hcelda[a].pieza, "0#") & " "
+      If a = 3 Then texto &= "\n"
+      If a = 7 Then texto &= "\n"
+      If a = 11 Then texto &= "\n"
+
+    Next
+  Else
+    For a = 0 To 15 't.celda.Max
+      texto &= Format(t.celda[a].pieza, "0#") & " "
+      If a = 3 Then texto &= "\n"
+      If a = 7 Then texto &= "\n"
+      If a = 11 Then texto &= "\n"
+
+    Next
+
+  Endif
+  texto &= "\n---------------------------------------\n"
+  Return texto
+
+End
+
+Public Sub nuevo(a As Integer[])
+
+  Dim contador As Integer
+  Dim celdatemp As New ClassCelda
+
+  hcelda.Clear 'limpio el contenido de las celdas
+  For contador = 0 To a.Max
+    celdatemp = New ClassCelda
+    celdatemp.pieza = a[contador]
+    celdatemp.x = contador - Int(contador / 4) * 4
+    celdatemp.y = Int(contador / 4)
+
+    '  celdatemp.Escribe
+    hcelda.Add(celdatemp)
+
+  Next
+  '  Print "*************** Escribo datos del tablero ************"
+  '  Print Me.EscribeTablero()
+
+End
+
+Public Function copia() As ClassTablero
+
+  Dim a As Integer
+  Dim celda As New ClassCelda
+  Dim destino As New ClassTablero
+
+  For a = 0 To Me.celda.Max
+    celda = New ClassCelda
+    celda.y = Me.celda[a].y
+    celda.x = Me.celda[a].x
+
+    celda.pieza = Me.celda[a].pieza
+    destino.celda.Add(celda)
+  Next
+
+  Return destino
+
+End
+
+Fast Public Sub calculoH(final As Classtablero, Optional preanalisis As Boolean)
+
+  Dim a As Integer
+  Dim h As Integer
+
+  Dim indiceActual As Integer
+  Dim indiceFinal As Integer
+
+  If preanalisis = True Then
+
+    For a = 1 To 4
+      indiceActual = Me.BuscaPieza(a)
+      'pieza en tablero final
+      indiceFinal = final.BuscaPieza(a)
+
+      h += Abs(hcelda[indiceActual].x - final.celda[indiceFinal].x)
+      h += Abs(hcelda[indiceActual].y - final.celda[indiceFinal].y)
+    Next
+    'calculo 5, 9 y 13
+
+    indiceActual = Me.BuscaPieza(5)
+    'pieza en tablero final
+    indiceFinal = final.BuscaPieza(5)
+
+    h += Abs(hcelda[indiceActual].x - final.celda[indiceFinal].x)
+    h += Abs(hcelda[indiceActual].y - final.celda[indiceFinal].y)
+    indiceActual = Me.BuscaPieza(9)
+    'pieza en tablero final
+    indiceFinal = final.BuscaPieza(9)
+
+    h += Abs(hcelda[indiceActual].x - final.celda[indiceFinal].x)
+    h += Abs(hcelda[indiceActual].y - final.celda[indiceFinal].y)
+    indiceActual = Me.BuscaPieza(13)
+    'pieza en tablero final
+    indiceFinal = final.BuscaPieza(13)
+
+    h += Abs(hcelda[indiceActual].x - final.celda[indiceFinal].x)
+    h += Abs(hcelda[indiceActual].y - final.celda[indiceFinal].y)
+
+  Else
+
+    For a = 1 To 16
+
+      'pieza en tablero actual....
+      indiceActual = Me.BuscaPieza(a)
+      'pieza en tablero final
+      indiceFinal = final.BuscaPieza(a)
+
+      h += Abs(hcelda[indiceActual].x - final.celda[indiceFinal].x)
+      h += Abs(hcelda[indiceActual].y - final.celda[indiceFinal].y)
+
+      ' Print "Pieza Tactual:"; hcelda[indiceActual].pieza; " Pieza Tfin:"; final.celda[indiceFinal].pieza; "H= "; h
+
+    Next
+  Endif
+
+  hh = h
+
+End
+
+Public Sub calculoG(gpadre As Integer) '' obtengo el gpadre que es el numero de jugadas realizadas
+
+  hg = gpadre + 1
+
+End
+
+Public Sub calculoF() '' funcion
+
+  hf = hg + hh
+
+End
+
+Fast Public Function BuscaPieza(valorpieza As Integer) As Integer
+
+  Dim a As Integer
+
+  For a = 0 To 15
+    If valorpieza = hcelda[a].pieza Then
+      Return a
+
+    Endif
+  Next
+  Message.Info("Error en el tablero.. ficha no encuentro...")
+  Return
+
+End

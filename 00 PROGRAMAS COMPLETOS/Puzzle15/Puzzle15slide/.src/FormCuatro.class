@@ -1,0 +1,368 @@
+' Gambas class file
+
+Public ruta As ClassRuta
+Public rutacompleta As ClassRuta
+
+Public Sub Form_Open()
+
+  Me.center
+
+End
+
+Public Sub ButtonResolver_Click()
+
+  Dim indiceDePartida As Integer
+  Dim i As Integer
+
+  Dim tfin As New ClassTablero
+  Dim tinicio As New ClassTablero
+  Dim a As New Integer[16]
+  Dim tiempoInicio As Date
+  Dim TiempoFin As Date
+
+  tiempoInicio = Now()
+  'borro resultados anteriores..
+  ListBoxResultado.Clear
+  'Comprobar la validez del tablero...
+  ListBoxResultado.Add("pensando...")
+  'El contenido de los toolbutton1 debe de estar entre el 1 y el 16, ambos inclusibe...
+  'No pude haber numeros repetidos...
+  If contenido() = False Then
+    Message.Info("Tablero mal definido...\n Contendido debe de estar entre el 1 y el 16")
+    Return
+  Endif
+
+  If repetidos() = False Then
+    Message.Info("Tablero mal definido...\n Numeros repetidos")
+    Return
+  Endif
+  '
+  '
+  'Si se cumple estas dos condiciones, puedo seguir
+  '
+
+  'defino tablero fin....
+  For i = 0 To 15
+    a[i] = i + 1
+
+  Next
+  'asigno valores al tablero Fin:
+  tfin.nuevo(a)
+
+  tinicio.nuevo(a)
+
+  tinicio.celda[0].pieza = Val(ToolButton1.text)
+  tinicio.celda[1].pieza = Val(ToolButton2.text)
+  tinicio.celda[2].pieza = Val(ToolButton3.text)
+  tinicio.celda[3].pieza = Val(ToolButton4.text)
+
+  tinicio.celda[4].pieza = Val(ToolButton5.text)
+  tinicio.celda[5].pieza = Val(ToolButton6.text)
+  tinicio.celda[6].pieza = Val(ToolButton7.text)
+  tinicio.celda[7].pieza = Val(ToolButton8.text)
+
+  tinicio.celda[8].pieza = Val(ToolButton9.text)
+  tinicio.celda[9].pieza = Val(ToolButton10.text)
+  tinicio.celda[10].pieza = Val(ToolButton11.text)
+  tinicio.celda[11].pieza = Val(ToolButton12.text)
+
+  tinicio.celda[12].pieza = Val(ToolButton13.text)
+  tinicio.celda[13].pieza = Val(ToolButton14.text)
+  tinicio.celda[14].pieza = Val(ToolButton15.text)
+  tinicio.celda[15].pieza = Val(ToolButton16.text)
+
+  'Busca la solucion...
+  '1º paso la semi solucion:
+  '
+  ruta = ModuloAestrella.Astar(tinicio, True)
+  rutacompleta = ruta
+  'Solucion al 3x3
+  ruta = ModuloAestrella.Astar(ruta.valor[ruta.valor.Max])
+  'esta ruta el indice del tablero hay que adaptarlo al indice de la ruta anterior...
+  'partimos del ultimo indice
+  indiceDePartida = rutacompleta.valor.max
+  For i = 1 To ruta.valor.Max
+    ruta.valor[i].indice = indiceDePartida + ruta.valor[i].indice
+  Next
+
+  rutacompleta.valor.Insert(ruta.valor.Copy(1, ruta.valor.max))
+
+  If IsNull(rutacompleta) Then
+
+    Message.Info("No hay Solucion")
+  Else
+    'cargar datos al lisbox...
+
+    cargaListbox(rutacompleta)
+
+  Endif
+  tiempofin = Now()
+  Print "He tardado...."; DateDiff(tiempoinicio, tiempofin, gb.Second); " segundos"
+  Print "En minutos...."; DateDiff(tiempoinicio, tiempofin, gb.Minute); " minutos"
+  Labeltiempo.text = Str$(DateDiff(tiempoinicio, tiempofin, gb.Second)) & " seg."
+
+End
+
+Public Sub ToolButton1_Click()
+
+  ToolButton1.text = Lee(ToolButton1.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton2_Click()
+
+  ToolButton2.text = Lee(ToolButton2.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton3_Click()
+
+  ToolButton3.text = Lee(ToolButton3.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton4_Click()
+
+  ToolButton4.text = Lee(ToolButton4.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton5_Click()
+
+  ToolButton5.text = Lee(ToolButton5.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton6_Click()
+
+  ToolButton6.text = Lee(ToolButton6.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton7_Click()
+
+  ToolButton7.text = Lee(ToolButton7.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton8_Click()
+
+  ToolButton8.text = Lee(ToolButton8.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton9_Click()
+
+  ToolButton9.text = Lee(ToolButton9.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton10_Click()
+
+  ToolButton10.text = Lee(ToolButton10.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton11_Click()
+
+  ToolButton11.text = Lee(ToolButton11.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton12_Click()
+
+  ToolButton12.text = Lee(ToolButton12.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton13_Click()
+
+  ToolButton13.text = Lee(ToolButton13.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton14_Click()
+
+  ToolButton14.text = Lee(ToolButton14.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton15_Click()
+
+  ToolButton15.text = Lee(ToolButton15.text)
+  coloreatablero()
+
+End
+
+Public Sub ToolButton16_Click()
+
+  ToolButton16.text = Lee(ToolButton16.text)
+  coloreatablero()
+
+End
+
+Private Function lee(para As String) As Integer
+
+  Dim pregunta As New FormInput
+  Dim devolucion As New Classdato
+
+  If IsDigit(para) Then devolucion.indice = Val(para)
+  devolucion.modo = 15
+  pregunta.valor = devolucion
+  pregunta.ShowDialog()
+
+  Return devolucion.indice
+
+End
+
+Private Sub coloreatablero()
+
+  Dim ctrl As Object
+
+  For Each ctrl In Me.Controls
+    If ctrl Is ToolButton Then
+      If ctrl.caption = "16" Then
+        ctrl.background = Color.red
+      Else
+        ctrl.background = -1
+      Endif
+    Endif
+
+  Next
+
+End
+
+Public Sub cargaListbox(r As ClassRuta)
+
+  Dim i As Integer
+
+  ListBoxResultado.Clear
+  For i = 0 To r.valor.max
+
+    ListBoxResultado.Add(Str$(i) & " -> " & r.valor[i].movimiento.escribe(15))
+
+  Next
+
+End
+
+Public Function contenido() As Boolean
+  ' El contenido de los toolbutton1 debe de estar entre el 1 y el 16, ambos inclusibe...
+
+  Dim ctrl As Object
+
+  For Each ctrl In Me.Controls
+    If ctrl Is ToolButton Then
+      If ctrl.text = "?" Then Return False
+      If Val(ctrl.text) < 1 Or Val(ctrl.text) > 16 Then Return False
+
+    Endif
+  Next
+
+  Return True
+
+End
+
+Public Function repetidos() As Boolean
+  'No pude haber numeros repetidos...
+
+  Dim ctrl As Object
+  Dim ctrl2 As Object
+
+  For Each ctrl In Me.Controls
+    If ctrl Is ToolButton Then
+      For Each ctrl2 In Me.Controls
+        If ctrl2 Is ToolButton And If ctrl <> ctrl2 Then
+          If ctrl.text = ctrl2.text Then Return False
+        Endif
+      Next
+    Endif
+
+  Next
+
+  Return True
+
+End
+
+Public Sub LabelPaginaWebProblemas_MouseDown()
+
+  Desktop.Open("http://e2968e3e.miniurls.co")
+
+End
+
+Public Sub ListBoxResultado_Click()
+
+  dibujatablero(ListBoxResultado.text)
+
+End
+
+Public Sub dibujatablero(cadena As String)
+
+  Dim fin As Integer
+
+  fin = InStr(cadena, "-") - 1
+
+  cadena = Mid$(cadena, 1, fin)
+
+  escribepantallatablero(Val(cadena))
+
+End
+
+Public Sub escribepantallatablero(jugada As Integer)
+
+  Dim cadena As String
+  Dim b As Integer
+  Dim celda As New String[]
+
+  cadena = rutacompleta.valor[jugada].EscribeTablero()
+  cadena = Replace$(cadena, "-", "")
+  cadena = Replace$(cadena, "Tablero", "")
+  cadena = Replace$(cadena, " ", "|")
+  cadena = Replace$(cadena, "\n", "")
+
+  celda = Split(cadena, "|")
+
+  ToolButton1.Text = celda[0]
+  ToolButton2.Text = celda[1]
+  ToolButton3.Text = celda[2]
+  ToolButton4.Text = celda[3]
+  ToolButton5.Text = celda[4]
+  ToolButton6.Text = celda[5]
+  ToolButton7.Text = celda[6]
+  ToolButton8.Text = celda[7]
+  ToolButton9.Text = celda[8]
+  ToolButton10.Text = celda[9]
+  ToolButton11.Text = celda[10]
+  ToolButton12.Text = celda[11]
+  ToolButton13.Text = celda[12]
+  ToolButton14.Text = celda[13]
+  ToolButton15.Text = celda[14]
+  ToolButton16.Text = celda[15]
+  coloreatablero()
+
+End
+
+Public Sub ListBoxResultado2_Click()
+
+  dibujatablero(ListBoxResultado.text)
+
+End
+
+Public Sub ListBoxResultado_Select()
+
+  dibujatablero(ListBoxResultado.text)
+
+End

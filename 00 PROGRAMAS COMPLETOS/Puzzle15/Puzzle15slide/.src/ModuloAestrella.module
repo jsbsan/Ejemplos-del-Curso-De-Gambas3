@@ -1,0 +1,170 @@
+' Gambas module file
+
+'http://juegosweb.com/j/15_puzzle_8776
+'http://mypuzzle.org/sliding/
+' Algoritmo A estrella A *
+' Para tableros 2D
+'
+' Nota:
+' Los nodos son tableros...
+' Clase ruta es un array de tableros...
+Fast Public Function Astar(inicio As ClassTablero, Optional preanalisis As Boolean) As Classruta
+
+  Dim contador As Integer 'cuenta el numero de jugadas para resolver
+  Dim ij As Integer 'contadores de For---Next
+  Dim i As Integer 'contadores de For---Next
+  Dim bestcost As Integer
+  Dim bestnodo As Integer
+  Dim nodoactual As ClassTablero
+  Dim rutasolucion As Classruta 'para guardar datos de la ruta ademas del x,y
+  Dim listatemp As ClassTablero[]
+
+  Dim found_in_closed As Classdato '' Usa Classdato, para que me devuelva Verdadero O falso y el numero del indice
+  Dim found_in_open As Classdato '' Usa Classdato, para que me devuelva Verdadero O falso y el numero del indice
+
+  'lista de nodos abierots (nodos ya inspeccionado)
+  Dim listaOpen As New ClassTablero[]
+
+  'lista de nodos cerrado ya inspeccionados
+  Dim listaClose As New Classtablero[]
+
+  'Sucesores: lista de tableros que se producen a partir de un padre
+  Dim listaAanalizar As ClassTablero[]
+
+  Dim new_pos As New ClassTablero
+  Dim nuevoNodo As ClassTablero
+
+  Dim start As New ClassTablero 'ClassNodo(inicio, -1, 0, 0, 0) '-1,-1, -1, -1)
+  Dim TableroFin As New ClassTablero ' ¡ClassNodo(TableroFin, -1, 0, 0, 0) '-1,-1, -1, -1, -1)
+  Dim a As New Integer[16]
+
+  'Creo datos del tablero TableroFin...
+  TableroFin.indice = -1
+  For i = 0 To 15
+    a[i] = i + 1
+  Next
+  TableroFin.nuevo(a)
+
+  ' creando inicio
+  inicio.indice = -1
+
+  listaOpen.push(inicio) 'introduzco el tablero de inicio...
+
+  While (listaOpen.count > 0)
+    '{ del while
+    '   Print "pensando...."
+    bestcost = listaOpen[0].f
+    bestnodo = 0
+    '    Ordeno nodos segunn el valor de F , y cojo el menor....
+    For i = 1 To listaOpen.Count - 1
+      If listaOpen[i].f < bestcost Then
+        bestcost = listaOpen[i].f
+        bestnodo = i
+      Endif
+    Next
+
+    'nodo actual es el de menor F
+    nodoactual = listaOpen[bestnodo]
+
+    'Compruebo si el nodo actual es a solucion
+    '{
+    If nodoactual.compara(TableroFin, preanalisis) Then
+      'encontrada ruta solucion
+      rutasolucion = New Classruta
+      rutasolucion.valor.Add(nodoactual)
+      'creo la ruta de la solucion
+      Print "Solucion encontrada en ...."
+      While (nodoactual.indice <> -1)
+        contador = contador + 1
+        listatemp = New ClassTablero[]
+        nodoactual = listaClose[nodoactual.indice]
+        'creo una lista para añadir al inicio de la ruta el nudo (unshift de javascript)
+        listaTemp.Add(nodoactual)
+        rutasolucion.valor.insert(listatemp, 0)
+      Wend
+      Print contador; " jugadas"
+      Print "Numero de nodos cerrados: "; listaClose.count
+      'devuelvo la solucion....
+      Return rutasolucion
+
+    Endif
+    '} solucion encontrada
+
+    '
+    '  Elimine el nodo actual de nuestra lista abierta (splite de javascript)
+    '
+    listaOpen.delete(bestnodo, 1)
+    'pongo dentro de la lista cerrada.
+    listaClose.Push(nodoactual)
+    'expando sucesores
+    listaAanalizar = nodoactual.Sucesores()
+
+    '--------------------------------------------
+    'repito por cada sucesor que haya......
+    '--------------------------------------------
+    For ij = 0 To listaAanalizar.Max
+      '{{1.... miro si esta en la lista cerrada el nodo sucesor..
+      '  found_in_closed.comprobacion = False
+      found_in_closed = MirarLista(listaAanalizar[ij], listaClose)
+      If found_in_closed.comprobacion = True Then Continue
+      '
+      '{2. Miro si esta en la lista de nodos abiertos....
+      '  found_in_open.comprobacion = False
+
+      found_in_open = MirarLista(listaAanalizar[ij], listaOpen)
+      If found_in_open.comprobacion = True Then
+        If listaAanalizar[ij].g < listaOpen[found_in_open.indice].g Then
+          'Si sucesor esta en la listaAbierta Y gcalculada < sucesorHallado.g
+          listaOpen[found_in_open.indice].g = listaAanalizar[ij].g
+          listaOpen[found_in_open.indice].h = listaAanalizar[ij].h
+          listaOpen[found_in_open.indice].f = listaOpen[ij].g + listaOpen[ij].h
+          listaOpen[found_in_open.indice].movimiento = listaAanalizar[ij].movimiento
+
+        Endif
+      Endif
+      '}
+      'añado sucesor a la listaAbierta...
+      If found_in_open.comprobacion = False Then
+        listaAanalizar[ij].indice = listaClose.count - 1
+        listaAanalizar[ij].calculoH(TableroFin, preanalisis)
+        listaAanalizar[ij].calculoG(nodoactual.g)
+        listaAanalizar[ij].calculoF()
+
+        ' Print listaAanalizar[ij].f
+        listaOpen.Push(listaAanalizar[ij])
+        '    Print "Tablero añadido a lista Abierta"
+        ' Print listaAanalizar[ij].EscribeTablero()
+      Endif
+
+    Next
+
+  Wend
+
+  'no hay solucion....
+  Return Null
+
+End
+
+'+++++++++++++++++++++++++++
+'comprobacion de listas...
+'+++++++++++++++++++++++++++
+Public Function MirarLista(tablero As ClassTablero, listatablero As ClassTablero[]) As Classdato
+
+  Dim i As Integer
+  Dim devuelve As New Classdato
+
+  For i = 0 To listatablero.Max
+    '{
+    If tablero.compara(listatablero[i]) Then
+      'esta en la lista....
+      devuelve.comprobacion = True
+      devuelve.indice = i
+      Return devuelve 'entontrado en lista cerrada=Verdadero
+    Endif
+    '}
+  Next
+  'no esta en la lista.
+  devuelve.comprobacion = False
+  Return devuelve
+
+End

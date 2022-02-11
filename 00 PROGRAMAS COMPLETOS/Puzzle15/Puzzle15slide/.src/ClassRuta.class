@@ -1,0 +1,16 @@
+' Gambas class file
+
+Property valor As ClassTablero[] ''tablero que almacena
+Private hvalor As New ClassTablero[]
+
+Private Function valor_Read() As ClassTablero[]
+
+  Return hvalor
+
+End
+
+Private Sub valor_Write(Value As ClassTablero[])
+
+  hvalor = value
+
+End

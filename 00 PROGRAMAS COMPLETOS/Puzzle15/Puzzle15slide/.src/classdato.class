@@ -1,0 +1,47 @@
+' Gambas class file
+
+Property modo As Integer '' modo1 es para tablero de 4x4, se usa en forminput
+Private hmodo As Integer
+
+Property indice As Integer '' Devuelve un numero
+
+Private hindice As Integer
+
+Property comprobacion As Boolean '' Devuelve True o False
+Private hcomprobacion As Boolean
+
+Private Function indice_Read() As Integer
+
+  Return hindice
+
+End
+
+Private Sub indice_Write(Value As Integer)
+
+  hindice = Value
+
+End
+
+Private Function comprobacion_Read() As Boolean
+
+  Return hcomprobacion
+
+End
+
+Private Sub comprobacion_Write(Value As Boolean)
+
+  hcomprobacion = value
+
+End
+
+Private Function modo_Read() As Integer
+
+  Return hmodo
+
+End
+
+Private Sub modo_Write(Value As Integer)
+
+  hmodo = value
+
+End

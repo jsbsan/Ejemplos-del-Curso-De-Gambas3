@@ -1,0 +1,49 @@
+' Gambas class file
+
+Public valor As Classdato
+
+Public Sub Form_Open()
+
+  Me.Center
+
+  If IsDigit(Str$(valor.indice)) Then
+    spinBox1.value = valor.indice
+  Endif
+
+  If valor.modo = 15 Then
+    spinBox1.MaxValue = 16
+
+  Endif
+
+End
+
+Public Sub Button1_Click()
+
+  If valor.modo = 15 Then
+
+    If spinBox1.value = 0 Or SpinBox1.value > 16 Then
+      Message.Info("Tiene que se un numero entre el 1 y el 16")
+    Else
+      valor.indice = SpinBox1.Value
+      Me.Close
+    Endif
+  Else
+
+    If spinBox1.value = 0 Or SpinBox1.value > 9 Then
+      Message.Info("Tiene que se un numero entre el 1 y el 9")
+    Else
+      valor.indice = SpinBox1.Value
+      Me.Close
+    Endif
+  Endif
+
+End
+
+Public Sub SpinBox1_KeyRelease()
+
+  If Key.code = Key.enter Or Key.code = Key.return Then
+
+    Button1_Click()
+  Endif
+
+End

@@ -1,0 +1,155 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,78,54)
+  Icon = Picture["aPuzzle15.png"]
+  { Label1 Label
+    MoveScaled(43,4,20,3)
+    Text = ("Solucion:")
+  }
+  { ButtonResolver Button
+    MoveScaled(41,0,18,4)
+    Text = ("Resolver...")
+  }
+  { ListBoxResultado ListBox
+    MoveScaled(42,7,35,42)
+  }
+  { LabelPaginaWebProblemas Label
+    MoveScaled(41,50,33,2)
+    Font = Font["Andale Mono,Underline,-1"]
+    Foreground = &H0000FF&
+    Mouse = Mouse.Pointing
+    Text = ("Ver ejemplos, para resolverlos...")
+  }
+  { Label2 Label
+    MoveScaled(6,0,25,4)
+    Font = Font["Arial,+1"]
+    Text = ("Realizado en Gambas 3.2")
+    Alignment = Align.Center
+  }
+  { Label3 Label
+    MoveScaled(6,4,24,4)
+    Font = Font["Arial,-1"]
+    Text = ("Autor: Julio Sanchez Berro")
+    Alignment = Align.Center
+  }
+  { ToolButton1 ToolButton
+    MoveScaled(1,9,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "1"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton2 ToolButton
+    MoveScaled(11,9,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "2"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton3 ToolButton
+    MoveScaled(21,9,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "3"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton4 ToolButton
+    MoveScaled(31,9,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "4"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton5 ToolButton
+    MoveScaled(1,20,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "5"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton6 ToolButton
+    MoveScaled(11,20,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "6"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton7 ToolButton
+    MoveScaled(21,20,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "7"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton8 ToolButton
+    MoveScaled(31,20,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "8"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton9 ToolButton
+    MoveScaled(1,31,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "9"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton10 ToolButton
+    MoveScaled(11,31,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "10"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton11 ToolButton
+    MoveScaled(21,31,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "11"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton12 ToolButton
+    MoveScaled(31,31,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "12"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton13 ToolButton
+    MoveScaled(1,42,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "13"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton14 ToolButton
+    MoveScaled(11,42,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "14"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton15 ToolButton
+    MoveScaled(21,42,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "15"
+    Text = ("?")
+    Border = True
+  }
+  { ToolButton16 ToolButton
+    MoveScaled(31,42,10,11)
+    Font = Font["Arial Black,+5"]
+    Tag = "16"
+    Text = ("?")
+    Border = True
+  }
+  { PictureBox1 PictureBox
+    MoveScaled(60,1,4,5)
+    Picture = Picture["clock.png"]
+  }
+  { Labeltiempo Label
+    MoveScaled(65,1,12,4)
+  }
+}

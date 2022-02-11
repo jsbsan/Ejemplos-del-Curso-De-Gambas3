@@ -1,0 +1,19 @@
+' Gambas class file
+
+Public Sub ToolButton3x3_Click()
+
+  FormTres.Show()
+
+End
+
+Public Sub ToolButton3x1_Click()
+
+  FormCuatro.show()
+
+End
+
+Public Sub Form_Open()
+
+  Me.Center
+
+End

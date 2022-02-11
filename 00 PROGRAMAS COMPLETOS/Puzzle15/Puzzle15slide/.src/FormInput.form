@@ -1,0 +1,20 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,23,11)
+  Resizable = False
+  { SpinBox1 SpinBox
+    MoveScaled(10,1,7,4)
+    MinValue = 1
+    MaxValue = 9
+    Value = 1
+  }
+  { Button1 Button
+    MoveScaled(6,6,12,4)
+    Text = ("Aceptar")
+  }
+  { Label1 Label
+    MoveScaled(2,1,9,4)
+    Text = ("Valor:")
+  }
+}

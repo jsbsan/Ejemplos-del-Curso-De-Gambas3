@@ -1,0 +1,39 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,50,33)
+  Icon = Picture["aPuzzle15.png"]
+  { ToolButton3x3 ToolButton
+    MoveScaled(28,1,19,6)
+    Text = ("Puzzle 3x3")
+    Picture = Picture["3x3 puzzle 8.png"]
+    Border = True
+  }
+  { ToolButton3x1 ToolButton
+    MoveScaled(28,8,19,6)
+    Text = ("Puzzle 4x4")
+    Picture = Picture["15 puzzle 4x4.png"]
+    Border = True
+  }
+  { PictureBox1 PictureBox
+    MoveScaled(2,0,21,14)
+    Picture = Picture["gambas3.png"]
+    Stretch = True
+  }
+  { Label2 Label
+    MoveScaled(12,15,25,4)
+    Font = Font["Arial,+1"]
+    Text = ("Realizado en Gambas 3.2")
+    Alignment = Align.Center
+  }
+  { Label3 Label
+    MoveScaled(14,19,25,4)
+    Font = Font["Arial,-1"]
+    Text = ("Autor: Julio Sanchez Berro")
+    Alignment = Align.Center
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(1,23,46,10)
+    Text = ("Nota:<br>\nPara ejecutar más rapidamente, ejecute el programa como root añadiendole este comando:\n$nice -n -19 ./Puzzle15slide.gambas")
+  }
+}

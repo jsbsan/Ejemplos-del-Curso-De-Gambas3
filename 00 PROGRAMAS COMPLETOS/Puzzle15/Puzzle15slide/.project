@@ -1,0 +1,16 @@
+# Gambas Project File 3.0
+# Compiled with Gambas 3.2.1
+Title=Puzzle15slide
+Startup=Forminicial
+Icon=aPuzzle15.png
+Version=0.0.12
+Component=gb.image
+Component=gb.gui
+Component=gb.form
+Component=gb.desktop
+Description="3x3 Terminado\n4x4 terminado\nFast\nCorrepcion de falta de datos en el tablero por parte del usuario\nIncluido Reloj para ver cuanto ha tardado en calcular la solucion"
+TabSize=2
+Translate=1
+Language=es
+ExecPath=/home/uno/Puzzle15slide.gambas
+Packager=1
