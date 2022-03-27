@@ -1,0 +1,273 @@
+' Gambas class file
+
+''' A SwitchButton with diferent look. By the way is the same with colors!
+
+' Author:      Harpo Mix. harpomix@gmail.com
+' Date:        20220305
+' Description: ButtonSwitch con estética modificada. Visualmente más pequeño
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Action,Value,ValueColor{Color},Animated"
+Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "49,28"
+Public Const _IsContainer As Boolean = False
+Public Const _Similar As String = "Button"
+Public Const _DrawWith As String = "SwitchButton"
+
+Event Click
+
+Property Value As Boolean                                         ''Value (ON = True, OFF = False)
+Property Animated As Boolean
+Property ValueColor As Integer Use $iColorValue = Color.Default   ''Color if value is ON
+
+Private $hDrawingArea As DrawingArea      'Area de pintado
+Private $fValue As Float                  'Value (True = 1, False = 0)
+Private $fTargetValue As Float
+Private $hTimer As Timer
+Private $bPressed As Boolean
+Private $bAnimated As Boolean
+
+Public Sub _new()
+
+   $hDrawingArea = New DrawingArea(Me) As "ButtonSwitch"
+   $hDrawingArea.Focus = True
+   If $iColorValue = Color.Default Then $iColorValue = Color.TextForeground
+
+End
+
+'' PROPIEDADES
+Private Function Animated_Read() As Boolean
+
+   Return $bAnimated
+
+End
+
+Private Sub Animated_Write(Value As Boolean)
+
+   $bAnimated = Value
+
+End
+
+Private Function Value_Read() As Boolean
+
+   Return $fValue >= 0.5
+
+End
+
+Private Sub Value_Write(Value As Boolean)
+
+   Dim fValue As Float
+
+   If $hTimer Then $hTimer.Stop
+   fValue = IIf(Value, 1, 0)
+   If fValue <> $fValue Then
+      $fValue = fValue
+      $hDrawingArea.Refresh
+      Raise Click
+   Endif
+
+End
+
+Public Sub ButtonSwitch_Draw()
+   'Pintar boton
+
+   Dim iColBorder As Integer     'Border color
+   Dim iColInner As Integer      'Inner color
+   Dim iColValue As Integer      'Value color
+   Dim iFlag As Integer = Style.StateOf($hDrawingArea)
+   Dim fX, fY, fW, fH, fB, fR As Float    'fB -> Border. fR -> Radius
+   Dim DS As Integer             'Desktop Scale
+
+   DS = Desktop.Scale
+
+   'Border & Fill Color
+   iColBorder = Color.Merge(Color.Merge(Color.TextForeground, $iColorValue, $fValue), Color.Background)
+   iColBorder = Color.SetHSV(iColBorder, Color[$iColorValue].Hue)
+   If iFlag And Style.Disabled Then
+      'Disabled
+      iColBorder = Color.Merge(iColBorder, Color.Background, 0.75)
+      iColInner = iColBorder
+      iColValue = Color.Merge(iColBorder, Color.Background, 0.75)
+   Else
+      'Enabled
+      iColInner = Color.Background
+      If Me.Value Then
+         iColValue = Color.TextForeground
+         'Luminance < 128 -> DARK THEME
+         iColValue = IIf(Application.DarkTheme, Color.TextForeground, Color.TextBackground)
+      Else
+         iColValue = iColBorder
+      Endif
+   Endif
+
+   '$hDrawingArea.Border = Border.Plain
+   'Border: X - Y - W - H
+   fX = Ceil(DS / 1.5)
+   fY = (Paint.H - DS * 2) / 2
+   fW = Paint.W - (DS * (DS / 4))
+   fH = Ceil(DS * 2)    ' H FIXED
+   fR = fH / 2    'Radius
+   fB = 2         'Border
+
+   'Size
+   If $hDrawingArea.HasFocus Then
+      'Focus border. Layer 0
+      Paint.Rectangle(fX - 1, fY - 1, fW + 2, fH + 2, fR)
+      'Luminance < 128 DARK THEME
+      Paint.Background = IIf(Application.DarkTheme, Color.LightBackground, Color.SelectedBackground)
+      Paint.Fill()
+   Endif
+
+   'Control border. Layer 1
+   Paint.Rectangle(fX, fY, fW, fH, fR)
+   Paint.Background = iColBorder
+   Paint.Fill()
+
+   'Fill inner. Layer 2. Border if value = 0
+   If Not Me.Value Then
+      Paint.Rectangle(fX + fB, fY + fB, fW - (fB * 2), fH - (fB * 2), fR)
+      Paint.Background = iColInner
+      Paint.Fill()
+   Endif
+
+   'Circulo estado: X - Y - W - H (W = H)
+   fX = (Paint.W - DS * 4) * $fValue + Ceil(DS / 1.2)
+   fY += (fB * 1.5)
+   fH = fH - (fB * 3)
+
+   If $fValue = 0 Then
+      fX = fx + (fB * 2) - 1
+   Else
+      fX = (fW + fB) - fH * $fValue
+   Endif
+   Paint.Ellipse(fX, fY, fH, fH)
+   Paint.Background = iColValue
+   Paint.Fill()
+
+End
+
+Public Sub ButtonSwitch_MouseDown()
+
+   Dim hRect As Rect
+
+   If Not Me.Enabled Then Return
+   If Me.Design Then Return
+   If $hTimer And If $hTimer.Enabled Then Return
+
+   If $fValue = 0 Then
+      hRect = New Rect(0, 0, $hDrawingArea.W / 2, $hDrawingArea.H)
+   Else If $fValue = 1 Then
+      hRect = New Rect($hDrawingArea.W / 2, 0, $hDrawingArea.W / 2, $hDrawingArea.H)
+   Endif
+
+   If Not hRect Then Return
+
+   hRect.Adjust(Style.FrameWidth)
+
+   If Not hRect.Contains(Mouse.X, Mouse.Y) Then Return
+
+   $bPressed = True
+   $hDrawingArea.Refresh
+
+End
+
+Public Sub ButtonSwitch_GotFocus()
+
+   $hDrawingArea.Refresh
+
+End
+
+Public Sub ButtonSwitch_LostFocus()
+
+   $hDrawingArea.Refresh
+
+End
+
+Private Sub ToggleAnimate()
+   'Cambio estado. Por TIMER o por Me.Value
+
+   If $bAnimated And If Application.Animations Then
+      If $fValue < 0.5 Then
+         $fTargetValue = 1
+      Else
+         $fTargetValue = 0
+      Endif
+      If Not $hTimer Then
+         $hTimer = New Timer As "Timer"
+         $hTimer.Delay = 20
+      Endif
+      $hTimer.Start
+   Else
+      $hTimer = Null
+      Me.Value = Not Me.Value
+   Endif
+
+End
+
+Public Sub Timer_Timer()
+   'Cambia en el tiempo el valor $fValue, usado en Draw del control.
+
+   Dim fInc As Float
+
+   fInc = ($fTargetValue - $fValue) / 2
+   If Abs(fInc) < 0.01 Then fInc = 0.01 * Sgn(fInc)
+   $fValue += fInc
+
+   If $fValue < 0 Then
+      $fValue = 0
+      $hTimer.Stop
+      Raise Click
+   Else If $fValue > 1 Then
+      $fValue = 1
+      $hTimer.Stop
+      Raise Click
+   Endif
+
+   $hDrawingArea.Refresh
+
+End
+
+Public Sub ButtonSwitch_MouseUp()
+
+   If Not Me.Enabled Then Return
+   If Me.Design Then Return
+
+   If $bPressed Then
+      $bPressed = False
+      $hDrawingArea.Refresh
+   Endif
+
+   ToggleAnimate
+
+End
+
+Public Sub ButtonSwitch_MouseWheel()
+
+   'If Not Me.Enabled Then Return
+   If Not Mouse.Forward Xor Me.Value Then
+      ToggleAnimate
+   Endif
+
+End
+
+Public Sub ButtonSwitch_KeyPress()
+
+   Select Key.Code
+
+      Case Key.Left
+         If Me.Value Then ToggleAnimate
+
+      Case Key.Right
+         If Not Me.Value Then ToggleAnimate
+
+      Case Key.Space
+         ToggleAnimate
+
+   End Select
+
+End
+
+'' FIN --

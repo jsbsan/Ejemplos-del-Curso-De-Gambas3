@@ -1,0 +1,6 @@
+[Component]
+Key=ButtonSwitch
+Version=1.0.1
+Authors=Harpo
+Needs=Form,EventLoop
+Requires=gb,gb.gui

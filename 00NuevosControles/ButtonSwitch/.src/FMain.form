@@ -1,0 +1,25 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,42,14)
+  { lblLen Label
+    MoveScaled(19,3,8,4)
+    Alignment = Align.Right
+    Text = ("W / H:")
+  }
+  { sbW SpinBox
+    MoveScaled(29,3,11,4)
+  }
+  { sbH SpinBox
+    MoveScaled(29,8,11,4)
+  }
+  { bSwitch ButtonSwitch
+    MoveScaled(3,3,6,4)
+  }
+  { ColorButton1 ColorButton
+    MoveScaled(13,3,7,4)
+  }
+  { swButton SwitchButton
+    MoveScaled(3,8,6,4)
+  }
+}

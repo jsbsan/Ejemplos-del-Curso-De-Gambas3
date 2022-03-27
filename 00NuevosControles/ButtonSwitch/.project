@@ -1,0 +1,15 @@
+# Gambas Project File 3.0
+Title=A diferent SwitchButton
+Startup=FMain
+Icon=buttonswitch.png
+Version=1.0.1
+Component=gb.image
+Component=gb.gui
+Component=gb.form
+Description="A SwitchButton with diferent look. By the way is the same with colors!"
+Authors="Harpo"
+TabSize=3
+Translate=1
+Language=es_ES
+Type=Component
+Packager=1

@@ -1,0 +1,30 @@
+' Gambas class file
+
+Public Sub Form_Show()
+
+   sbW.Value = bSwitch.W
+   sbH.Value = bSwitch.H
+   ColorButton1.Value = bSwitch.ValueColor
+
+End
+
+Public Sub sbW_Change()
+
+   bSwitch.W = sbW.Value
+   swButton.W = sbW.Value
+
+End
+
+Public Sub sbH_Change()
+
+   bSwitch.H = sbH.Value
+   swButton.H = sbH.Value
+
+End
+
+Public Sub ColorButton1_Change()
+
+   bSwitch.ValueColor = ColorButton1.Value
+   swButton.Foreground = ColorButton1.Value
+
+End
