@@ -1,0 +1,92 @@
+' Gambas class file
+
+'fuente:
+'https://www.gambas-it.org/wiki/index.php/Inserire_un_oggetto_in_una_cella_di_una_GridView
+
+Private sa As ScrollArea
+
+Public Sub Form_Open()
+
+  Dim obs As Observer
+  Dim kb As CheckBox
+  Dim cb As ComboBox
+  Dim sl As Slider
+
+  With GridView1
+    .W = 300
+    .H = 100
+    .Columns.Count = 3
+    .Rows.Count = 30
+  End With
+
+  GridView1.Columns[0].W = 70
+  GridView1.Columns[1].W = 110
+  GridView1.Columns[2].W = 120
+
+  sa = GridView1.Children[0]
+  obs = New Observer(sa) As "Scroll"
+
+  ' Creiamo e aggiungiamo tre oggetti:
+  With kb = New CheckBox(sa) As "CheckBox"
+    .X = 0
+    .Y = 0
+    .W = GridView1[0, 0].W
+    .H = GridView1[0, 0].H
+    .Text = "On/Off"
+    .Name = "CheckBox"
+  End With
+
+  With cb = New ComboBox(sa) As "ComboBox"
+    .X = GridView1.Columns[1].X
+    .Y = GridView1.Rows[1].Y
+    .W = GridView1[1, 1].W
+    .H = GridView1[1, 1].H
+    .Text = "Numeri"
+    .List = ["Uno", "Due", "Tre", "Quattro", "Cinque", "Sei"]
+    .Name = "ComboBox"
+  End With
+
+  With sl = New Slider(sa) As "Slider"
+    .X = GridView1.Columns[2].X
+    .Y = GridView1.Rows[2].Y
+    .W = GridView1[2, 2].W
+    .H = GridView1[2, 2].H
+    .Name = "Slider"
+  End With
+
+End
+
+Public Sub CheckBox_Click()
+
+  Print "Utilizzato: "; Last.Name
+
+End
+
+Public Sub ComboBox_Click()
+
+  Print "Utilizzato: "; Last.Name
+
+End
+
+Public Sub Slider_Change()
+
+  Print "Utilizzato: "; Last.Name
+
+End
+
+Public Sub Scroll_Scroll()
+
+  Dim ob As Object
+  Dim b As Byte
+
+  For Each ob In sa.Children
+    ' Per evitare che in caso di scorrimento in alto e in basso dell'oggetto "Figlio", la "ScrollArea",
+    ' mediante l'apposito cursore laterale, si farà uso della proprietà ".ScrollY" della "ScrollArea" medesima:
+    ob.Y = GridView1.Rows[b].Y - sa.ScrollY
+    ' Per evitare che in caso di scorrimento a destra e a sinistra dell'oggetto "Figlio", la "ScrollArea",
+    ' mediante l'apposito cursore inferiore, si farà uso della proprietà ".ScrollX" della "ScrollArea" medesima:
+    ob.X = GridView1.Columns[b].X - sa.ScrollX
+    Inc b
+  Next
+
+End
