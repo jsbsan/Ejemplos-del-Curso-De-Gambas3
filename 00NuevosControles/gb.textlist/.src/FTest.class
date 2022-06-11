@@ -1,0 +1,27 @@
+' Gambas class file
+
+Private DonneesText As String[] = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"]
+Private DonneesKey As String[] = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+
+Public Sub _new()
+
+End
+
+Public Sub Form_Open()
+  ' Dim i As Integer
+  ' For i = 0 To DonneesKey.Count - 1
+  '   ComboBox1.Add(DonneesText[i])
+  ' Next
+
+  TextList1.Values = DonneesKey
+  TextList1.List = DonneesText
+  ' TextList1.Cle = 6
+  Me.Center
+
+End
+
+' Public Sub TextList1_KeyPress()
+' If Key.Code = Key.Return
+'  TextBox1.Text = TextList1.Cle & " " & TextList1.Text
+' Endif
+' End

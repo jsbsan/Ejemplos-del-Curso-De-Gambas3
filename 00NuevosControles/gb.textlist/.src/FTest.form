@@ -1,0 +1,21 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,50,50)
+  { Panel1 Panel
+    MoveScaled(3,14,37,16)
+    Background = Color.TextBackground
+    Border = Border.Sunken
+    { TabStrip1 TabStrip
+      MoveScaled(4,1,28,14)
+      Index = 0
+      Text = ("TabStrip1")
+      { TextList1 TextList
+        MoveScaled(2,3,23,3)
+        Text = ("TextList1")
+        ShowsAllZero = True
+      }
+      Index = 0
+    }
+  }
+}

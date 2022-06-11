@@ -1,0 +1,24 @@
+# Gambas Project File 3.0
+# Compiled with Gambas 3.5.3
+Title=TextList
+Startup=FTest
+Icon=txtlist.png
+Version=0.0.6
+Component=gb.image
+Component=gb.qt4
+Component=gb.form
+Component=gb.settings
+Component=gb.qt4.ext
+Description="Liste déroulante avec triage des données par lettres"
+Authors="Roinnel Bernard"
+TabSize=2
+Type=Component
+Maintainer=Roinnel Bernard
+Address=b.roinnel@orange.fr
+License=General Public License
+Prefix=1
+PackageName=gambas3-gb-textlist-0.0.6
+CreateEachDirectory=1
+Packager=1
+Systems=ubuntu
+Groups=ubuntu:"text"

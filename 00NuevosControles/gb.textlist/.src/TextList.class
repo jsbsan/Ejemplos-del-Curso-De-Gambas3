@@ -1,0 +1,361 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Text,List,Height_List,ShowsAllZero"
+Public Const _Similar As String = "TextBox"
+Private FormMere As Object
+Private $txt As TextBox
+
+Private $Lvw As ListView
+Property Values As String[]
+Private $iValues As New String[] ''Valeur a afficher
+Property List As String[]
+Private $iList As New String[]
+Property Cle As String
+Private $iCle As String ''Valeur a afficher
+Property Text As String
+Private $iText As String
+Property Height_List As Float
+Private $iHeight_List As Float
+
+Event Change
+Event Activate
+Event KeyPress
+Property ShowsAllZero As Boolean
+Private $iShowsAllZero As Boolean
+
+Private Function ShowsAllZero_Read() As Boolean
+
+  Return $iShowsAllZero
+
+End
+
+Private Sub ShowsAllZero_Write(ShowsAllZero As Boolean)
+
+  $iShowsAllZero = ShowsAllZero
+
+End
+
+Private Function Height_List_Read() As Float
+
+  Return $iHeight_List
+
+End
+
+Private Sub Height_List_Write(Height_List As Float)
+
+  $iHeight_List = Height_List
+
+End
+
+Private Function Cle_Read() As String
+
+  Return $iCle
+
+End
+
+Private Sub Cle_Write(Cle As String)
+
+  $iCle = Cle
+  triDonn(0)
+
+End
+
+Private Function Text_Read() As String
+
+  Return $iText
+
+End
+
+Private Sub Text_Write(Text As String)
+
+  $iText = Text
+  triDonn(1)
+
+End
+
+Private Function Values_Read() As String[]
+
+  Return $iValues
+
+End
+
+Private Sub Values_Write(Values As String[])
+
+  $iValues = Values
+
+End
+
+Private Function List_Read() As String[]
+
+  Return $iList
+
+End
+
+Private Sub List_Write(List As String[])
+
+  $iList = List
+
+End
+
+Public Sub _new()
+
+  $txt = New TextBox(Me) As "txt"
+  ' $txt.Expand = True
+  ''recherche de la fenêtre principale
+  FormMere = Me.Parent
+  While FormMere.Parent
+    FormMere = FormMere.parent
+  Wend
+  $Lvw = New ListView(FormMere) As "lvw"
+
+  $Lvw.Visible = False
+  Me.Proxy = $txt
+
+End
+
+Public Sub txt_Change()
+
+  $iText = $txt.Text
+  affichList($txt.Text)
+  Raise Change
+
+End
+
+Public Sub txt_Keypress()
+
+  $Lvw.W = Me.W
+
+  selectList($txt, $Lvw)
+  'Raise KeyPress
+
+End
+
+Public Sub txt_MouseDown()
+
+  If $iShowsAllZero = True Then
+    $iText = $txt.Text
+    affichList($txt.Text)
+  Endif
+
+End
+' Public Sub txt_Leave()
+'    If $iShowsAllZero = True Then
+'   $Lvw.Visible = False
+'   Endif
+' End
+
+Private Sub affichList(tx As String)
+
+  Dim i As Integer
+
+  Dim ecartB, ecartH As Float
+
+  $Lvw.Clear
+  $Lvw.W = Me.W
+  $Lvw.Raise
+  For i = 0 To $iValues.Count - 1
+
+    If $iValues.Count - 1 > 500 Then
+
+      Select Case $iShowsAllZero
+        Case True
+          If LCase(String.Left$($iList[i], String.Len(tx))) = LCase(tx) Then
+
+            $Lvw.Add($iValues[i], $iList[i])
+
+          Endif
+        Case False
+          If LCase(String.Left$($iList[i], String.Len(tx))) = LCase(tx) And tx <> "" Then
+
+            $Lvw.Add($iValues[i], $iList[i])
+
+          Endif
+      End Select
+    Else
+
+      Select Case $iShowsAllZero
+        Case True
+          If LCase(sansAccent(String.Left$($iList[i], String.Len(tx)))) = LCase(sansAccent(tx)) Then
+
+            $Lvw.Add($iValues[i], $iList[i])
+
+          Endif
+        Case False
+          If LCase(sansAccent(String.Left$($iList[i], String.Len(tx)))) = LCase(sansAccent(tx)) And tx <> "" Then
+
+            $Lvw.Add($iValues[i], $iList[i])
+
+          Endif
+      End Select
+    Endif
+
+  Next
+  If $Lvw.Count > 0 Then
+    $Lvw.Visible = True
+    If $iHeight_List = 0 Then
+      $Lvw.H = ($lvw.font.size * $Lvw.Count * 2) + 10
+    Else
+      $Lvw.H = $iHeight_List
+    Endif
+    $Lvw.MoveFirst
+    $Lvw.Item.Selected = True
+  Else
+    $Lvw.Visible = False
+  Endif
+
+  If FormMere = Me.Parent Then
+    ecartB = FormMere.H - (Me.Top + Me.H)
+    ecartH = Me.Top
+    If ecartB > ecartH Then
+      $Lvw.Top = Me.Top + Me.H
+      $Lvw.Left = Me.Left
+      If ecartB < $Lvw.H Then
+
+        $Lvw.H = ecartB
+
+      Endif
+    Else
+
+      If ecartH < $Lvw.H Then
+
+        $Lvw.H = ecartH
+
+      Endif
+      $Lvw.Top = Me.Top - $Lvw.H
+      $Lvw.Left = Me.Left
+    Endif
+  Else
+
+    ecartB = (FormMere.ScreenY + FormMere.H) - Me.ScreenY - Me.H
+    ecartH = Me.ScreenY - FormMere.ScreenY
+    If ecartB >= ecartH Then
+      $Lvw.Top = (Me.ScreenY - FormMere.ScreenY) + Me.H
+      $Lvw.Left = Me.ScreenX - FormMere.ScreenX
+      If ecartB < $Lvw.H Then
+        $Lvw.H = ecartB
+      Endif
+    Else
+
+      If ecartH < $Lvw.H Then
+
+        $Lvw.H = ecartH
+
+      Endif
+      $Lvw.Top = Me.ScreenY - FormMere.ScreenY - $Lvw.H
+      $Lvw.Left = Me.ScreenX - FormMere.ScreenX
+    Endif
+
+  Endif
+
+End
+
+Private Sub selectList(txt As TextBox, lvw As ListView)
+
+  If lvw.Available Then
+
+    Select Case Key.Code
+      Case Key.Down
+        lvw.MoveNext
+        Try lvw.Item.Selected = True
+        If Error Then
+          lvw.MoveFirst
+          lvw.Item.Selected = True
+        Endif
+      Case Key.Up
+        lvw.MovePrevious
+        Try lvw.Item.Selected = True
+        If Error Then
+          lvw.MoveLast
+          lvw.Item.Selected = True
+        Endif
+      Case Key.Enter, Key.Return
+        $txt.Text = $Lvw.Current.Text
+        $iCle = $Lvw.Item.Key
+        $iText = $txt.Text
+
+        $Lvw.Visible = False
+        FormMere.setfocus
+      Case Else
+        'txtLieuEvens.SetFocus
+    End Select
+  Else
+    $iText = $txt.Text
+    $iCle = ""
+  Endif
+
+End
+
+Public Sub lvw_DblClick()
+
+  $txt.Text = $Lvw.Current.Text
+  $iCle = $Lvw.Item.Key
+  $iText = $txt.Text
+  $Lvw.Visible = False
+
+End
+
+Public Sub lvw_Leave()
+
+  $Lvw.Visible = False
+
+End
+
+Private Sub triDonn(a As Integer)
+
+  Dim i As Integer
+
+  Select Case a
+    Case 0
+      For i = 0 To $iValues.Count - 1
+        If $iCle = $iValues[i] Then
+          $txt.Text = $iList[i]
+          $iText = $txt.Text
+
+          Break
+        Endif
+      Next
+    Case 1
+      For i = 0 To $iValues.Count - 1
+        If $iText = $iList[i] Then
+          $txt.Text = $iList[i]
+          $iCle = $iValues[i]
+
+          Break
+        Endif
+      Next
+  End Select
+
+  $lvw.Visible = False
+
+End
+
+Private Function sansAccent(g$ As String) As String
+
+  g$ = LCase$(g$)
+  ' g$ = Replace$(g$, " ", "_")
+  g$ = Replace$(g$, "é", "e")
+  g$ = Replace$(g$, "è", "e")
+  g$ = Replace$(g$, "ê", "e")
+  g$ = Replace$(g$, "ë", "e")
+  g$ = Replace$(g$, "à", "a")
+  g$ = Replace$(g$, "â", "a")
+  g$ = Replace$(g$, "ä", "a")
+  g$ = Replace$(g$, "ù", "u")
+  g$ = Replace$(g$, "û", "u")
+  g$ = Replace$(g$, "ü", "u")
+  g$ = Replace$(g$, "î", "i")
+  g$ = Replace$(g$, "ï", "i")
+  g$ = Replace$(g$, "ô", "o")
+  g$ = Replace$(g$, "ö", "o")
+  ' g$ = Replace$(g$, "'", "´")
+  g$ = Replace$(g$, "'", " ")
+  '’
+  g$ = Replace$(g$, ".", "~")
+  g$ = Replace$(g$, "-", " ")
+  Return g$
+
+End
