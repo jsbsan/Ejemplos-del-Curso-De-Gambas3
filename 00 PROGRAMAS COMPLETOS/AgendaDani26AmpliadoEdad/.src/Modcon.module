@@ -1,0 +1,72 @@
+' Gambas module file
+
+'
+' Agenda
+' Simple agenda con base de datos sqlite3
+'
+' Copyright (C)
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
+' Boston, MA  02110-1301  USA
+'
+
+Private hconn As Connection
+
+Public Sub ConnectarBase() As Connection
+
+  hconn = New Connection
+  hconn.host = User.home &/ ".config/gambas3"
+  hconn.name = "agendaEdad.sqlite"
+  hconn.type = "sqlite3"
+  Try hconn.Open()
+
+  Return hconn
+
+  If Error Then
+    hconn = Null
+    Message.Error("Error al conectar con la base")
+  Endif
+
+End
+
+Public Sub cerrarconexion()
+
+  If hconn = Null Then Return
+  hconn.Close()
+  hconn = Null
+
+End
+
+Public Sub RellenarTabla(tabla As ColumnView, h As Result)
+
+  Dim clave As String
+
+  Do While h.Available
+    clave = h["id"]
+    tabla.Add(Clave, Clave)
+    tabla[clave][1] = h["nombre"] ' es muy importante que la palabra "nombre" coincida exactamente con el nombre del campo de la basee de datos, incluso en mayusculas y minusculas
+    tabla[clave][2] = h["apellidos"]  ' es muy importante que la palabra "apellidos" coincida exactamente con el nombre del campo de la basee de datos, incluso en mayusculas y minusculas
+    tabla[clave][3] = h["telefono_fijo"] ' es muy importante que la palabra "telefono_fijo" coincida exactamente con el nombre del campo de la basee de datos, incluso en mayusculas y minusculas"
+    tabla[clave][4] = h["telefono_movil"] ' es muy importante que la palabra "telefono_movil" coincida exactamente con el nombre del campo de la basee de datos, incluso en mayusculas y minusculas
+    tabla[clave][5] = h["cumple"] ' es muy importante que la palabra "cumple" coincida exactamente con el nombre del campo de la basee de datos, incluso en mayusculas y minusculas
+    tabla[clave][6] = h["edad"] ' es muy importante que la palabra "correo" coincida exactamente con el nombre del campo de la basee de datos, incluso en mayusculas y minusculas
+    tabla[clave][7] = h["domicilio"] ' es muy importante que la palabra "correo" coincida exactamente con el nombre del campo de la basee de datos, incluso en mayusculas y minusculas
+
+    tabla[clave][8] = h["correo"] ' es muy importante que la palabra "correo" coincida exactamente con el nombre del campo de la basee de datos, incluso en mayusculas y minusculas
+
+    h.MoveNext()
+  Loop
+
+End

@@ -1,0 +1,296 @@
+' Gambas class file
+
+'
+' Agenda
+' Simple agenda con base de datos sqlite3
+'
+' Copyright (C)
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
+' Boston, MA  02110-1301  USA
+'
+
+Private reporte As Report
+Private hconn As Connection
+Private hresult As Result
+
+Public Sub Form_Open()
+
+  'compuebo si existe la base de datos "agenda", y si no existe
+  'lo copia desde el programa al nuevo directorio
+
+  If Not Exist(User.home &/ ".config/gambas3") Then
+    Try Mkdir User.home &/ ".config"
+    Wait 0.1
+    Try Mkdir User.home &/ ".config/gambas3"
+    Wait 0.1
+
+  Endif
+
+  If Not Exist(User.home &/ ".config/gambas3/agendaEdad.sqlite") Then
+
+    Copy "agendaEdad.sqlite" To User.home &/ ".config/gambas3/agendaEdad.sqlite"
+  Else
+    ' Message("La base ya existe") '<- para informar que ya existe la base de datos.
+  Endif
+
+  recarga() 'ver video nº 4, se hace para reusar las ordenes.
+
+  Me.Center 'centro el formulario
+
+End
+
+Public Sub formato()
+
+  'formato al Columview
+  tabla.Columns.count = 9
+  tabla.Columns[0].text = "id"
+  tabla.Columns[0].width = 20
+  tabla.Columns[0].Alignment = Align.Center
+
+  tabla.Columns[1].text = "Nombre"
+  tabla.Columns[1].width = 120
+  tabla.Columns[1].Alignment = Align.Center
+
+  tabla.Columns[2].text = "Apellidos"
+  tabla.Columns[2].width = 120
+  tabla.Columns[2].Alignment = Align.Center
+
+  tabla.Columns[3].text = "telefono"
+  tabla.Columns[3].width = 120
+  tabla.Columns[3].Alignment = Align.Center
+
+  tabla.Columns[4].text = "movil"
+  tabla.Columns[4].width = 120
+  tabla.Columns[4].Alignment = Align.Center
+
+  tabla.Columns[5].text = "cumpleaños"
+  tabla.Columns[5].width = 150
+  tabla.Columns[5].Alignment = Align.Center
+
+  tabla.Columns[6].text = "edad"
+  tabla.Columns[6].width = 150
+  tabla.Columns[6].Alignment = Align.Center
+
+  tabla.Columns[7].text = "domicilio"
+  tabla.Columns[7].width = 150
+  tabla.Columns[7].Alignment = Align.Center
+
+  tabla.Columns[8].text = "correo"
+  tabla.Columns[8].width = 150
+  tabla.Columns[8].Alignment = Align.Center
+
+End
+
+Public Sub Btnnuevo_Click()
+
+  Modcon.ConnectarBase()
+  Fdata.runnew(hconn)
+  Form_Open() 'para recargar los datos, volvemos a abrir el formulario...
+
+End
+
+Public Sub Btnsalir_Click()
+
+  Me.close
+
+End
+
+Public Sub tabla_Activate()
+
+  Dim hresult As Result
+
+  If tabla.current = Null Then Return
+
+  Modcon.ConnectarBase()
+
+  hresult = hconn.Edit("Amigos", "id=&1", tabla.Current.key)
+
+  Fdata.runedit(hresult)
+  'relleno la tabla con los datos editados
+  tabla.Current[0] = hresult["id"]
+  tabla.Current[1] = hresult["nombre"]
+  tabla.Current[2] = hresult["apellidos"]
+  tabla.Current[3] = hresult["telefono_fijo"]
+  tabla.Current[4] = hresult["telefono_movil"]
+  tabla.Current[5] = hresult["cumple"]
+  tabla.Current[6] = hresult["edad"]
+  tabla.Current[7] = hresult["domicilio"]
+  tabla.Current[8] = hresult["correo"]
+
+End
+
+Public Sub tabla_KeyRelease()
+  'tecla Delete es la tecla "suprimir" supr
+
+  If Key.code = Key.Delete Then
+    'se ha pulsado la tecla borrar:
+    If tabla.Current = Null Then Return 'no hay nada en la tabla, salir
+    If tabla.Current.Selected = False Then Return 'no hay nada seleccionado, salir
+
+    Modcon.ConnectarBase()
+
+    'borro en la tabla Amigos, el registro seleccionado.
+    Try hconn.Exec("delete from Amigos where id=&1", tabla.Current.key)
+    If Error Then
+      Message.Error("Imposible borrar el registro")
+    Else
+      'borro de la tabla la fila
+      tabla.Current.Delete()
+    Endif
+
+  Endif
+
+End
+
+Public Sub recarga()
+
+  Dim clave As String 'variable local de tipo cadena de texto
+
+  tabla.clear
+  hconn = Modcon.ConnectarBase()
+
+  formato() 'da formato a la tabla
+
+  hresult = hconn.Exec("Select * from Amigos")
+
+  Do While hresult.Available
+    Modcon.RellenarTabla(tabla, hresult)
+  Loop
+
+End
+
+Public Sub BtnRefrescar_Click()
+
+  recarga()
+
+End
+
+Public Sub btnBuscar_Click()
+
+  Dim clave As String
+  Dim filtro As String
+
+  tabla.Clear
+  formato()
+
+  Modcon.ConnectarBase()
+
+  filtro = TxtBuscar.Text
+
+  hresult = hconn.Exec("Select * from Amigos where nombre like '%" & filtro & "%'")
+  'Nota:
+  'He modificado la sentencia, en el like, añadiendole los caracteres % ya que asi la busqueda del filtro incluye todos los registros que contengan ese filtro en el campo nombre
+
+  If hresult.Available = False Then
+    Message.Info("No hay datos que coincidan con la búsqueda")
+    recarga()
+  Else
+    Do While hresult.Available
+      Modcon.RellenarTabla(tabla, hresult)
+
+    Loop
+
+  Endif
+
+End
+
+Public Sub BtnReporte_Click()
+
+  reporte = New Reporte 'creamos un objeto del tipo Reporte, llamando al nuevo objeto reporte
+  reporte.Preview()
+
+End
+
+Public Sub Nuevo_Click()
+
+  Btnnuevo_Click()
+
+End
+
+Public Sub Editar_Click()
+
+  Dim hresult As Result
+
+  If tabla.current = Null Then Return
+
+  Modcon.ConnectarBase()
+
+  hresult = hconn.Edit("Amigos", "id=&1", tabla.Current.key)
+
+  Fdata.runedit(hresult)
+  'relleno la tabla con los datos editados
+  tabla.Current[0] = hresult["id"]
+  tabla.Current[1] = hresult["nombre"]
+  tabla.Current[2] = hresult["apellidos"]
+  tabla.Current[3] = hresult["telefono_fijo"]
+  tabla.Current[4] = hresult["telefono_movil"]
+  tabla.Current[5] = hresult["cumple"]
+  tabla.Current[6] = hresult["edad"]
+  tabla.Current[7] = hresult["domicilio"]
+  tabla.Current[8] = hresult["correo"]
+
+End
+
+Public Sub Borrar_Click()
+
+  'se ha pulsado la tecla borrar:
+  If tabla.Current = Null Then Return 'no hay nada en la tabla, salir
+  If tabla.Current.Selected = False Then Return 'no hay nada seleccionado, salir
+
+  Modcon.ConnectarBase()
+
+  'borro en la tabla Amigos, el registro seleccionado.
+  Try hconn.Exec("delete from Amigos where id=&1", tabla.Current.key)
+  If Error Then
+    Message.Error("Imposible borrar el registro")
+  Else
+    'borro de la tabla la fila
+    tabla.Current.Delete()
+  Endif
+
+End
+
+Public Sub btnBuscarEdad2_Click()
+
+  Dim clave As String
+  Dim filtro As String
+
+  tabla.Clear
+  formato()
+
+  Modcon.ConnectarBase()
+
+  If RadioButtonMenor.Value = True Then
+    hresult = hconn.Exec("Select * from Amigos where edad <= " & Str$(ValueBoxMayoMenor1.value) & "")
+  Else
+    hresult = hconn.Exec("Select * from Amigos where edad >= " & Str$(ValueBoxMayoMenor1.value) & "")
+  Endif
+
+  'Nota:
+  'He modificado la sentencia, en el like, añadiendole los caracteres % ya que asi la busqueda del filtro incluye todos los registros que contengan ese filtro en el campo nombre
+
+  If hresult.Available = False Then
+    Message.Info("No hay datos que coincidan con la búsqueda")
+    recarga()
+  Else
+    Do While hresult.Available
+      Modcon.RellenarTabla(tabla, hresult)
+
+    Loop
+
+  Endif
+
+End

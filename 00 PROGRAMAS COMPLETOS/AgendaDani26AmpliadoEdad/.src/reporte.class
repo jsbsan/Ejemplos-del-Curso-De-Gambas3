@@ -1,0 +1,148 @@
+' Gambas class file
+
+'
+' Agenda
+' Simple agenda con base de datos sqlite3
+'
+' Copyright (C)
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
+' Boston, MA  02110-1301  USA
+'
+
+Private hres1 As Result
+Private hconn As Connection
+
+Public Sub _new()
+
+  Dim reportHbox1 As ReportHBox
+  Dim reportVbox1 As ReportVBox
+
+  Dim lbnombre, lbapellido, lbtelfijo, lbtelmovil, lbcumple, lbdomi, lbemail As ReportLabel
+
+  If hconn = Null Then
+    hconn = Modcon.ConnectarBase()
+  Else
+    'no hacemos nada
+
+  Endif
+
+  Me.Orientation = Printer.Landscape
+
+  ReportVbox1 = New ReportVBox(Me)
+  ReportVBox1.Expand = True
+
+  ReportHbox1 = New ReportHBox(ReportVbox1)
+  ReportHbox1.height = "8mm"
+
+  lbnombre = New ReportLabel(reportHbox1) As "lbnombre"
+  lbnombre.Width = "30mm" 'especificamos una ancho fijo
+  '  lbnombre.Expand = True
+  lbnombre.Alignment = Align.Left
+
+  lbapellido = New ReportLabel(reportHbox1) As "lbapellido"
+  lbapellido.Width = "50mm"' ¡lbapellido.Expand = True 'este ancho se adapta al espacio que queda con los otras etiquetas
+  lbapellido.Alignment = Align.Left
+
+  lbtelfijo = New ReportLabel(reportHbox1) As "lbtelfijo"
+  lbtelfijo.Width = "20mm"'lbtelfijo.Expand = True
+  lbtelfijo.Alignment = Align.Left
+
+  lbtelmovil = New ReportLabel(reportHbox1) As "lbtelmovil"
+  lbtelmovil.Width = "20mm"'Expand = True
+  lbtelmovil.Alignment = Align.Left
+
+  lbcumple = New ReportLabel(reportHbox1) As "lbcumple"
+  lbcumple.Width = "30mm"'Expand = True
+  lbcumple.Alignment = Align.Left
+
+  lbdomi = New ReportLabel(reportHbox1) As "lbdomi"
+  lbdomi.Width = "50mm"'Expand = True
+  lbdomi.Alignment = Align.Left
+
+  lbemail = New ReportLabel(reportHbox1) As "lbemail"
+  'lbemail.Expand = True
+  lbemail.Width = "50mm"
+  lbemail.Alignment = Align.Left
+
+  'especifico el tipo de letra que voy a usar en el reporte
+  lbnombre.Font = Font["Courier New,-1"]
+  lbapellido.Font = Font["Courier New,-1"]
+  lbtelfijo.Font = Font["Courier New,-1"]
+  lbtelmovil.Font = Font["Courier New,-1"]
+  lbcumple.Font = Font["Courier New,-1"]
+  lbdomi.Font = Font["Courier New,-1"]
+  lbemail.Font = Font["Courier New,-1"]
+
+  'relleno el informe
+  hres1 = hconn.Exec("Select * from Amigos")
+  reportHbox1.DataCount = hres1.Count
+
+End
+
+Public Sub lbnombre_Data(Index As Integer)
+
+  hres1.MoveTo(index)
+  Last.data = hres1!nombre ' poner el nombre del campo de la base de datos
+  ' Esta seria otra forma de asignar el valor:
+  '  Last.data = hres1["nombre"]
+
+End
+
+Public Sub lbapellido_Data(Index As Integer)
+
+  hres1.MoveTo(index)
+  Last.data = hres1!apellidos ' poner el nombre del campo de la base de datos
+
+End
+
+Public Sub lbtelfijo_Data(Index As Integer)
+
+  hres1.MoveTo(index)
+  Last.data = hres1!telefono_fijo ' poner el nombre del campo de la base de datos
+
+End
+
+Public Sub lbtelmovil_Data(Index As Integer)
+
+  hres1.MoveTo(index)
+  Last.data = hres1!telefono_movil ' poner el nombre del campo de la base de datos
+
+End
+
+Public Sub lbcumple_Data(Index As Integer)
+
+  hres1.MoveTo(index)
+  Last.data = Format(hres1!cumple, "yyyy/mm/dd") ' poner el nombre del campo de la base de datos
+
+End
+
+Public Sub lbdomi_Data(Index As Integer)
+
+  hres1.MoveTo(index)
+  Last.data = hres1!domicilio ' poner el nombre del campo de la base de datos
+
+End
+
+Public Sub lbemail_Data(Index As Integer)
+
+  hres1.MoveTo(index)
+  Last.data = hres1!correo ' poner el nombre del campo de la base de datos
+
+End
+
+Public Sub Report_Open()
+
+End

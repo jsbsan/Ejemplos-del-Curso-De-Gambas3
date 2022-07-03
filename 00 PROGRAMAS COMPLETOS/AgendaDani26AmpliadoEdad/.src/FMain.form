@@ -1,0 +1,102 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,162,79)
+  Arrangement = Arrange.Row
+  { Menu1 Menu
+    Text = ("Menu1")
+    { Nuevo Menu
+      Text = ("Nuevo")
+      Picture = Picture["icon:/24/add"]
+    }
+    { Editar Menu
+      Text = ("Editar")
+      Picture = Picture["icon:/24/edit"]
+    }
+    { Menu2 Menu
+    }
+    { Borrar Menu
+      Text = ("Borrar")
+      Picture = Picture["icon:/24/delete"]
+    }
+  }
+  { tabla ColumnView
+    MoveScaled(1,1,115,42)
+    Font = Font["-1"]
+    Expand = True
+    PopupMenu = "Menu1"
+  }
+  { Panel2 Panel
+    MoveScaled(-7,43,149,30)
+    Expand = True
+    Arrangement = Arrange.Row
+    { Panel1 Panel
+      MoveScaled(26,3,113,29)
+      { Btnnuevo Button
+        MoveScaled(65,3,16,5)
+        ToolTip = ("añadir registro")
+        Text = ("nuevo")
+        Picture = Picture["icon:/16/add"]
+      }
+      { Btnsalir Button
+        MoveScaled(88,9,16,9)
+        Text = ("salir")
+        Picture = Picture["icon:/16/quit"]
+      }
+      { BtnRefrescar Button
+        MoveScaled(65,11,16,5)
+        ToolTip = ("Mostrar todos los valores")
+        Text = ("Refrescar")
+        Picture = Picture["icon:/16/refresh"]
+      }
+      { BtnReporte Button
+        MoveScaled(65,20,16,5)
+        Text = ("Reporter")
+        Picture = Picture["icon:/16/print"]
+      }
+      { btnBuscar Button
+        MoveScaled(49,5,7,5)
+        Picture = Picture["icon:/16/find"]
+      }
+      { TxtBuscar TextBox
+        MoveScaled(24,5,24,5)
+      }
+      { Label1 Label
+        MoveScaled(24,0,24,5)
+        Alignment = Align.Center
+        Text = ("Buscar por nombre:")
+      }
+      { PictureBox1 PictureBox
+        MoveScaled(0,2,9,13)
+        Picture = Picture.Load("logoGambas.png")
+        Stretch = True
+      }
+      { TextLabel1 TextLabel
+        MoveScaled(10,0,11,16)
+        Text = ("Realizado por Dani26 & Jsban Licencia GPL 2.0")
+        Alignment = Align.Center
+      }
+      { LabelEdad Label
+        MoveScaled(23,11,24,5)
+        Alignment = Align.Center
+        Text = ("Buscar por Edad")
+      }
+      { btnBuscarEdad2 Button
+        MoveScaled(49,18,7,5)
+        Picture = Picture["icon:/16/find"]
+      }
+      { ValueBoxMayoMenor1 ValueBox
+        MoveScaled(11,18,11,5)
+      }
+      { RadioButtonMenor RadioButton
+        MoveScaled(26,16,20,4)
+        Text = ("<= menor o igual")
+        Value = True
+      }
+      { RadioButtonMayor RadioButton
+        MoveScaled(26,21,20,4)
+        Text = (">= Mayor o igual")
+      }
+    }
+  }
+}

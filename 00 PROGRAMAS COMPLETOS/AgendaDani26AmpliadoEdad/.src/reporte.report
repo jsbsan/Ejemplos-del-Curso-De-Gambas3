@@ -1,0 +1,28 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,109,64)
+  Index = 0
+  Text = ("")
+  { ReportVBox1 ReportVBox
+    #MoveScaled(1,4,107,14)
+    Fixed = True
+    OnePiece = True
+    { ReportLabel1 ReportLabel
+      #MoveScaled(1,1,105,6)
+      Fixed = True
+      Font = Font["Serif,+4"]
+      AutoResize = True
+      Text = ("Listado de Contactos")
+      Alignment = Align.Center
+    }
+    { ReportLabel2 ReportLabel
+      #MoveScaled(1,7,105,4)
+      Fixed = True
+      Font = Font["Courier New,Underline,-1"]
+      AutoResize = True
+      Text = (" Nombre        Apellidos                  Tlf.fijo      Tlf. móvil     cumpleaños      domicilio                   Email          ")
+    }
+  }
+  Index = 0
+}

@@ -1,0 +1,86 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,60,63)
+  Text = ("Introducción de datos")
+  Icon = Picture["icon:/16/book"]
+  { Label1 Label
+    MoveScaled(2,2,18,5)
+    Alignment = Align.Right
+    Text = ("Nombre:")
+  }
+  { Label2 Label
+    MoveScaled(2,8,18,5)
+    Alignment = Align.Right
+    Text = ("Apellidos:")
+  }
+  { Label3 Label
+    MoveScaled(2,14,18,5)
+    Alignment = Align.Right
+    Text = ("Teléfono fijo:")
+  }
+  { Label4 Label
+    MoveScaled(2,20,18,5)
+    Alignment = Align.Right
+    Text = ("Teléfono móvil:")
+  }
+  { Label5 Label
+    MoveScaled(2,26,18,5)
+    Alignment = Align.Right
+    Text = ("Cumpleaños:")
+  }
+  { Label6 Label
+    MoveScaled(2,45,18,5)
+    Alignment = Align.Right
+    Text = ("Email:")
+  }
+  { txtnombre TextBox
+    MoveScaled(23,2,29,5)
+  }
+  { txtapellido TextBox
+    MoveScaled(23,8,29,5)
+  }
+  { Txtcumple TextBox
+    MoveScaled(23,26,19,5)
+  }
+  { Txtemail TextBox
+    MoveScaled(23,45,29,5)
+  }
+  { vbxfijo ValueBox
+    MoveScaled(23,14,29,5)
+    Text = ("ValueBox1")
+  }
+  { vbxmovil ValueBox
+    MoveScaled(23,20,29,5)
+    Text = ("ValueBox1")
+  }
+  { btnaceptar Button
+    MoveScaled(37,55,15,6)
+    Text = ("Aceptar")
+  }
+  { btncancelar Button
+    MoveScaled(5,55,15,6)
+    Text = ("Cancelar")
+  }
+  { Label7 Label
+    MoveScaled(3,32,18,5)
+    Alignment = Align.Right
+    Text = ("Edad:")
+  }
+  { Label8 Label
+    MoveScaled(3,39,18,5)
+    Alignment = Align.Right
+    Text = ("Domicilio:")
+  }
+  { vbxEDAD ValueBox
+    MoveScaled(23,32,29,5)
+    Text = ("ValueBox1")
+  }
+  { TxtDomicilio TextBox
+    MoveScaled(23,39,29,5)
+  }
+  { Label9 Label
+    MoveScaled(44,26,12,5)
+    Text = ("mm/dd/yyyy")
+  }
+}

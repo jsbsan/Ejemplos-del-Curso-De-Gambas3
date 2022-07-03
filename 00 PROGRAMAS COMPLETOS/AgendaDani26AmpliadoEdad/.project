@@ -1,0 +1,24 @@
+# Gambas Project File 3.0
+Title=Agenda
+Startup=FMain
+Version=0.0.1
+Component=gb.image
+Component=gb.qt4
+Component=gb.form
+Component=gb.db
+Component=gb.db.form
+Component=gb.qt4.ext
+Component=gb.report
+TabSize=2
+Translate=1
+Language=es
+Maintainer=jsbsan
+Address=jusabejusabe@gmail.com
+Url=https://jsbsan.blogspot.com/
+License=General Public License
+PackageName=agendadani26ampliadoedad-0.0.1
+Packager=1
+Systems=debian
+Menus=debian:"Applications/Accessibility"
+Categories=debian:"Accessibility"
+Groups=debian:"admin"

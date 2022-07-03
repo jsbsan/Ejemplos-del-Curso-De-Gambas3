@@ -1,0 +1,136 @@
+' Gambas class file
+
+'
+' Agenda
+' Simple agenda con base de datos sqlite3
+'
+' Copyright (C)
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
+' Boston, MA  02110-1301  USA
+'
+
+Private valor As Integer 'variable usada por controla_datos() para comprobar si estan rellenos todos los datos.
+
+Private hconn As Connection
+Private hresult As Result
+Private editando As Boolean ' nos sirve para saber si estamos editanto o agregando datos nuevo
+
+Public Sub Form_Open()
+
+  txtnombre.SetFocus
+  Me.Center
+
+End
+
+Public Sub Txtemail_lostfocus()
+
+  If InStr(Txtemail.Text, "@") = 0 Then
+    Message.Error("Escriba una dirección de correo válida")
+    Txtemail.SetFocus
+  Else
+
+  Endif
+
+End
+
+Public Sub runnew(data As Connection)
+
+  hconn = data
+  Me.ShowModal() 'ShowModal: muestra el formulario que no desaparece hasta que no se ciere
+
+End
+
+Public Sub runedit(data As Result)
+
+  hresult = data
+  editando = True 'estoy editando !!!
+
+  txtnombre.Text = data["nombre"]
+  txtapellido.Text = data["apellidos"]
+  vbxfijo.Value = data["telefono_fijo"]
+  vbxmovil.Value = data["telefono_movil"]
+  Txtcumple.Text = data["cumple"]
+  Txtemail.Text = data["correo"]
+  TxtDomicilio.Text = data["domicilio"]
+  vbxEDAD.Value = data["edad"]
+  Me.ShowModal()
+
+End
+
+Private Sub controla_datos()
+
+  Dim objtemp As Object
+
+  valor = 1
+  'bucle que recorre todos los controles del formulario...
+  For Each objtemp In Me.Controls
+    Select Object.Type(objtemp)
+      Case "TextBox"
+        If objtemp.text = "" Then valor += 1 ' esto es lo mismo que poner valor=valor+1
+      Case "ValueBox"
+        If objtemp.value = 0 Then valor += 1
+    End Select
+  Next
+
+  'si valor distinto a 0 , es que hay algun valor no relleno
+
+End
+
+Public Sub btnaceptar_Click()
+
+  If editando Then
+    'estamos editando un registro
+    hresult["nombre"] = txtnombre.Text
+    hresult["apellidos"] = txtapellido.Text
+    hresult["telefono_fijo"] = vbxfijo.Value
+    hresult["telefono_movil"] = vbxmovil.Value
+    hresult["cumple"] = Txtcumple.text
+    hresult["edad"] = vbxEDAD.Value
+    hresult["domicilio"] = TxtDomicilio.Text
+    hresult["correo"] = Txtemail.Text
+    'actualizamos valores....
+    hresult.Update()
+    Me.Close()
+
+  Else
+    'estamos insertando un nuevo registro
+    controla_datos()
+    If valor <> 1 Then
+      Message("Debe insertar todos los datos")
+    Else
+      'el campo "id" al ser autoenumerado , se define como Null
+      hconn.Exec("insert into Amigos values (&1,&2,&3,&4,&5,&6,&7,&8,&9)", Null, txtnombre.Text, txtapellido.text, vbxfijo.text, vbxmovil.text, Txtcumple.text, Txtemail.text, vbxEDAD.value, TxtDomicilio.text)
+      Me.Close()
+    Endif
+
+  Endif
+
+Catch
+  Message.Error("Imposible introducir los datos solicitados")
+  'escribo en la consola el error...
+  Print Error.Where, Error.Text, Error.Code
+
+End
+
+Public Sub btncancelar_Click()
+
+  Me.Close()
+
+End
+
+Public Sub DateBox1_MouseDown()
+
+End
