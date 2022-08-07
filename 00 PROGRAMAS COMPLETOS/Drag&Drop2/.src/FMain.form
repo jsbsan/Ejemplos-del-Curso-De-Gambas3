@@ -1,0 +1,37 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,135,66)
+  Icon = Picture["logo.png"]
+  Arrangement = Arrange.Vertical
+  Padding = 5
+  { Label1 Label
+    MoveScaled(8,2,64,5)
+    Text = ("Drag the Panels from top to bottom and visa versa")
+  }
+  { Panel2 Panel Panels
+    Name = "Panel2"
+    MoveScaled(8,8,44,7)
+    Background = Color.White
+    Drop = True
+    Expand = True
+    Padding = 5
+    Border = Border.Plain
+  }
+  { Panel3 Panel
+    MoveScaled(26,21,8,1)
+  }
+  { Panel1 Panel Panels
+    Name = "Panel1"
+    MoveScaled(8,26,41,33)
+    Background = Color.White
+    Drop = True
+    Expand = True
+    Padding = 5
+    Border = Border.Plain
+  }
+  { Timer1 #Timer
+    #MoveScaled(116,27)
+    Delay = 1
+  }
+}

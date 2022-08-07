@@ -1,0 +1,62 @@
+' Gambas module file
+
+Public Function extraeColumnaArray(datos As Variant[], nombrecampo As String) As String
+  
+  Dim datotmp As Object
+  Dim lista As New String[]
+  
+  For Each datotmp In datos
+    lista.Add(Object.GetProperty(datotmp, nombrecampo))
+  Next
+  
+  Return lista.Join(",")
+  
+End
+
+'-------------------------------------------------------------------------------------------------
+'funcion generica para extraer dos columnas (como colecciones, key="compuesto" y key="Id")
+'y devuelve valores separados por coma
+'-------------------------------------------------------------------------------------------------
+
+Public Function ExtraerLista(nombreVista As String, nombreCampo As String, nombreId As String) As Collection
+  
+  Dim devolver As New Collection
+  Dim hre As Result
+  
+  Dim manejadorTemporalDAO As Object
+  Dim datostemporalVO As Object[]
+  
+  manejadorTemporalDAO = Object.New(nombreVista & "DAO")
+  datostemporalVO = Object.New(nombreVista & "VO[]")
+  
+  hre = manejadorTemporalDAO.contenido() 'obtener todos los registros
+  datostemporalVO = manejadorTemporalDAO.ConvertirResult(hre) 'convierto los resultados en un array de clases Vista objeto
+  
+  devolver.add(manejadorTemporalDAO.extraeColumnaArray(datostemporalVO, nombreCampo), "Compuesto")
+  devolver.add(manejadorTemporalDAO.extraeColumnaArray(datostemporalVO, nombreId), "Id")
+  
+  Return devolver
+  
+End
+
+'----------------------------------------------
+Public Sub cambiarFecha(f As String) As String
+  
+  Dim anno As String
+  Dim dia As String
+  Dim mes As String
+  
+  ''NOTE: Cuidado con el formato de datos que tiene segun el pais
+  mes = Mid$(f, 1, 2)
+  dia = Mid$(f, 4, 2)
+  anno = Mid$(f, 7, 4)
+  
+  Return anno & "-" & mes & "-" & dia
+  
+End
+
+Public Sub MensajeError()
+  
+  Message.error(Error.Where & "\n" & error.Text & "\n" & ("Trazada:") & "\n" & Error.Backtrace.Join("\n"))
+  
+End

@@ -1,0 +1,541 @@
+' Gambas class file
+
+' version 0.0.7
+
+Public Struct dato
+  nombre_campo As String
+  nombre_control As Control
+End Struct
+
+Public titulo As String
+Private ListaDatos As New Dato[]
+Private respuesta As New Collection
+Private ContadorPanel As New ScrollView[]
+
+Public Function iniciar(definicion_campos As String, Optional titulo As String, Optional numeropaneles As Integer) As Collection
+
+  Dim a As Integer
+  Dim paneles As ScrollView
+
+  If Not IsNull(titulo) Then
+    Me.Title = titulo
+  Endif
+
+  If IsNull(numeropaneles) Or numeropaneles = 1 Or numeropaneles = 0 Then
+    paneles = New ScrollView(PanelPrincipal)
+    paneles.Expand = True
+    paneles.Arrangement = Arrange.row
+    ContadorPanel.Add(paneles)
+    numeropaneles = 1
+  Else
+    For a = 0 To numeropaneles - 1
+      paneles = New ScrollView(PanelPrincipal)
+      paneles.Expand = True
+      paneles.Arrangement = Arrange.row
+      ContadorPanel.Add(paneles)
+    Next
+
+  Endif
+
+  setCampos(definicion_campos)
+  Me.w = Me.w * (numeropaneles * 0.75)
+  Me.title = Me.titulo
+  Me.ShowModal()
+
+  Return respuesta
+
+End
+
+Private Sub Form_Open()
+
+  Me.Arrangement = Arrange.Vertical
+  Me.center
+
+End
+
+Private Function DevuelveArea(contador As Integer, totalcontroles As Integer, ContadorPanel As ScrollView[]) As ScrollView
+
+  Dim numero As Integer
+  Dim area As ScrollView
+  Dim eligepanel As Integer
+
+  numero = totalcontroles / ContadorPanel.Count
+  eligepanel = (contador - 2) / numero
+  If eligepanel < 0 Then eligepanel = 0
+  If eligepanel > (ContadorPanel.count - 1) Then eligepanel = ContadorPanel.count - 1
+  area = ContadorPanel[eligepanel]
+
+  Return area
+
+End
+
+Private Sub setCampos(cadena As String)
+
+  Dim contador As Integer
+  Dim campos As String[]
+  Dim campoT As String[]
+  Dim area As ScrollView
+  Dim c As String
+
+  'eliminar comentarios '
+  cadena = eliminaComentarios(cadena)
+
+ ' cadena = Replace(cadena, "\n", ";") anulo esta linea, que da problema con las textarea
+  cadena = Replace(cadena, ";;", ";")
+  cadena = Replace(cadena, ";;", ";")
+  campos = Split(cadena, ";")
+
+  'formato datos
+  ' control | nombre | titulo | opciones
+
+  For Each c In campos
+    contador += 1
+
+    area = DevuelveArea(contador, campos.count, ContadorPanel)
+
+    campoT = Split(c, "|")
+    'modificado version 0.0.7
+      If c = "" Or campoT.count = 0 Or campoT[0] = "\n" Then Return
+
+    If campoT.count = 1 Then
+      'es del tipo texto
+      crearHboxTexto(area, campoT[0], campoT[0])
+    Else
+      Select Case LCase(campoT[0])
+        Case "null"
+          'no hacer nada
+        Case "valuebox"
+          ' control | nombre | titulo | opciones | activado/desactivado
+          If campoT.count = 4 Then
+            Try crearhboxValue(area, campoT[1], campoT[2], Val(Replace(campoT[3], ".", ",")))
+            If Error Then 
+              'formato americano -> por si hay error al convertir en decimal
+              crearhboxValue(area, campoT[1], campoT[2], Val(campoT[3]))
+            Endif
+            
+          Else
+            Try crearhboxValue(area, campoT[1], campoT[2], Val(Replace(campoT[3], ".", ",")), Val(campoT[4]))
+              If Error Then
+              'formato americano,por si hay error al convertir en decimal
+              crearhboxValue(area, campoT[1], campoT[2], Val(campoT[3]), Val(campoT[4]))
+            Endif
+          Endif
+
+        Case "datebox"
+          ' control | nombre | titulo | opciones
+          crearhboxDate(area, campoT[1], campoT[2], Val(campoT[3]))
+        Case "combobox"
+          If campoT.count = 4 Then
+            crearhboxCombobox(area, campoT[1], campoT[2], campoT[3])
+          Else
+            If campoT.count = 5 Then
+              'solo dado valores
+              crearhboxCombobox(area, campoT[1], campoT[2], campoT[3], campoT[4])
+            Else
+              'dado valores y id
+              crearhboxCombobox(area, campoT[1], campoT[2], campoT[3], campoT[4], campoT[5])
+
+            Endif
+
+          Endif
+
+        Case "labelbox"
+          If campoT.count = 2 Then
+            crearhboxTitulo(area, campoT[1], campoT[1])
+          Else
+            crearhboxTitulo(area, campoT[1], campoT[2])
+          Endif
+
+        Case "checkbox"
+          If campoT.count = 2 Then
+            crearhboxCheckbox(area, campoT[1], campoT[2], False)
+          Else
+            crearhboxCheckbox(area, campoT[1], campoT[2], Val(campoT[3]))
+          Endif
+        Case "textbox"
+          If campoT.count = 2 Then
+            crearHboxTexto(area, campoT[1], campoT[1])
+          Else
+            crearHboxTexto(area, campoT[1], campoT[2], campoT[3])
+          Endif
+        Case "textarea"
+          Select Case campoT.count
+            Case 2
+              crearHboxTextarea(area, campoT[1], "", "")
+            Case 3
+              crearHboxTextarea(area, campoT[1], campoT[2], "")
+            Case 4
+              crearHboxTextarea(area, campoT[1], campoT[2], campoT[3])
+          End Select
+
+        Default
+          If campoT.count = 1 Then
+            crearHboxTexto(area, campoT[0], campoT[0])
+          Else
+            If campoT.count = 2 Then
+              crearHboxTexto(area, campoT[0], campoT[1])
+            Else
+              crearHboxTexto(area, campoT[0], campoT[1], campoT[2])
+            Endif
+
+          Endif
+
+      End Select
+    Endif
+  Next
+
+End
+
+Private Sub crearHboxTextarea(ScrollViewArea As ScrollView, nombrecampo As String, titulo As String, Optional contenido As String)
+
+  Dim hpaneles As Vbox ' HBox
+  Dim l As Label
+  Dim t As TextArea
+  'creo hbox
+  hpaneles = New Vbox(ScrollViewArea)
+  hpaneles.Expand = True
+  hpaneles.h = 100
+  l = New Label(hpaneles)
+
+  l.text = titulo & ": "
+
+  l.Expand = True
+  l.Alignment = Align.Left
+
+  t = New TextArea(hpaneles)
+  t.h = 75 't.Expand = True
+
+  t.Wrap = True
+  t.Text = contenido
+
+  AsociaDatoAControl(nombrecampo, t)
+
+End
+
+Private Sub crearHboxTexto(ScrollViewArea As ScrollView, nombrecampo As String, titulo As String, Optional texto As String)
+
+  Dim hpaneles As HBox
+  Dim l As Label
+  Dim t As TextBox
+  'creo hbox
+  hpaneles = New Hbox(ScrollViewArea)
+  hpaneles.Expand = True
+  hpaneles.h = 35
+  'creo label
+
+  l = New Label(hpaneles)
+
+  If Len(titulo) <> 0 Then l.text = titulo & ": "
+
+  l.Expand = True
+  l.Alignment = Align.Right
+
+  'creo textbox
+  t = New TextBox(hpaneles) As "control"
+  If Not IsNull(texto) Then
+    t.text = texto
+  Endif
+  t.Expand = True
+
+  AsociaDatoAControl(nombrecampo, t)
+
+End
+
+Private Sub crearhboxDate(ScrollViewArea As ScrollView, nombrecampo As String, textocampo As String, valorNumerico As Date)
+
+  Dim hpaneles As HBox
+  Dim l As Label
+  Dim t As DateBox
+
+  'creo hbox
+  hpaneles = New Hbox(ScrollViewArea)
+  hpaneles.Expand = True
+  hpaneles.h = 35
+  'creo label
+
+  l = New Label(hpaneles)
+  l.text = textocampo & ": "
+  l.Expand = True
+  l.Alignment = Align.Right
+
+  'creo datebox
+  t = New DateBox(hpaneles) As "control"
+  t.Expand = True
+
+  t.Value = valorNumerico
+  AsociaDatoAControl(nombrecampo, t)
+
+End
+
+Private Sub crearhboxValue(ScrollViewArea As ScrollView, nombrecampo As String, textocampo As String, valorNumerico As Float, Optional desactivo As Integer)
+
+  Dim hpaneles As HBox
+  Dim l As Label
+  Dim t As ValueBox
+
+  'creo hbox
+  hpaneles = New Hbox(ScrollViewArea)
+  hpaneles.Expand = True
+  hpaneles.h = 35
+  'creo label
+
+  l = New Label(hpaneles)
+  l.text = textocampo & ": "
+  l.Expand = True
+  l.Alignment = Align.Right
+
+  'creo textbox
+  t = New ValueBox(hpaneles) As "control"
+  t.Value = valorNumerico
+  t.Expand = True
+
+  Select Case desactivo
+    Case False
+      t.Enabled = True
+    Case True
+      t.Enabled = False
+    Case 2
+      t.Visible = False
+      hpaneles.h = 0
+  End Select
+
+  AsociaDatoAControl(nombrecampo, t)
+
+End
+
+Private Sub crearhboxCheckbox(ScrollViewArea As ScrollView, nombrecampo As String, textocampo As String, valor As Boolean)
+
+  Dim hpaneles As HBox
+  Dim l As Label
+  Dim t As Checkbox
+
+  'creo hbox
+  hpaneles = New Hbox(ScrollViewArea)
+  hpaneles.Expand = True
+  hpaneles.h = 35
+  'creo label
+
+  l = New Label(hpaneles)
+
+  l.Expand = True
+
+  'creo checbox
+  t = New CheckBox(hpaneles) As "control"
+  t.Value = valor
+
+  t.text = textocampo
+
+  t.Expand = True
+
+  AsociaDatoAControl(nombrecampo, t)
+
+End
+
+Private Sub crearhboxCombobox(ScrollViewArea As ScrollView, nombrecampo As String, textocampo As String, opciones As String, Optional valorDefinido As String, Optional valoresId As String)
+
+  Dim a As Integer
+
+  Dim hpaneles As HBox
+  Dim l As Label
+  Dim t As ComboBox
+  Dim op As New String[]
+
+  'creo hbox
+  hpaneles = New Hbox(ScrollViewArea)
+  hpaneles.Expand = True
+  hpaneles.h = 35
+  'creo label
+
+  l = New Label(hpaneles)
+  l.text = textocampo & ": "
+  l.Expand = True
+  l.Alignment = Align.Right
+
+  'creo textbox
+  t = New ComboBox(hpaneles) As "control"
+
+  t.Expand = True
+  t.ReadOnly = True
+
+  t.list = Split(Trim(opciones), ",")
+
+  If Not IsNull(valorDefinido) Then
+    ' Print valorDefinido
+    t.text = valorDefinido
+  Endif
+  If Not IsNull(valoresId) Then
+    t.tag = Split(valoresId, ",") 'valores id, separados por comas
+  Endif
+
+  AsociaDatoAControl(nombrecampo, t)
+
+End
+
+Private Sub crearhboxTitulo(ScrollViewArea As ScrollView, nombrecampo As String, Optional traduccion As String)
+
+  Dim hpaneles As HBox
+  Dim l As Label
+  'creo hbox
+  hpaneles = New Hbox(ScrollViewArea)
+  hpaneles.Expand = True
+  hpaneles.h = 35
+
+  l = New Label(hpaneles)
+
+  If traduccion <> " " Then l.text = traduccion & ": "
+
+  l.font = Font[",Bold"]
+  l.Expand = True
+  l.Alignment = Align.center
+
+End
+
+Private Sub AsociaDatoAControl(n_campo As String, c As Object)
+
+  Dim datotmp As New Dato
+
+  Dim T As New String[]
+
+  T = Split(n_campo, "/")
+
+  datotmp.nombre_campo = t[0] 'el primer trozo es el nombre del campo
+  datotmp.nombre_control = c
+
+  ListaDatos.Add(datotmp)
+
+End
+
+Private Sub eliminaComentarios(cadena As String) As String
+
+  Dim lineas As String[]
+  Dim a As Integer
+  Dim comentario As Integer
+  Dim contenido As String
+
+  lineas = Split(cadena, "\n")
+
+  For a = 0 To lineas.Max
+
+    If cadena <> "" Then
+      comentario = RInStr(lineas[a], "'")
+
+      If comentario = 0 Then
+        contenido &= lineas[a] & "\n"
+      Else
+
+        If Mid$(lineas[a], 1, comentario - 1) <> "" Then
+
+          contenido &= Mid$(lineas[a], 1, comentario - 1) & "\n"
+        Endif
+      Endif
+    Endif
+
+  Next
+
+  Return contenido
+
+End
+
+Public Sub ButtonOk_Click()
+
+  pasarvalores()
+
+  Me.Close()
+
+End
+
+Public Sub ButtonCancelar_Click()
+  'cancelada edicion/insercion
+
+  respuesta = Null
+  Me.Close()
+
+End
+
+Private Sub pasarvalores()
+
+  Dim datotemp As Dato
+  Dim tipocontrol As String
+  'asigno datos introducidos ...
+  Dim ctextbox As TextBox
+  Dim cvaluebox As ValueBox
+  Dim ccombobox As ComboBox
+  Dim cdatebox As DateBox
+  Dim ccheckbox As CheckBox
+  Dim ctextarea As TextArea
+
+  For Each datotemp In ListaDatos
+    tipocontrol = Object.Class(datotemp.nombre_control).name
+    Select Case LCase(tipocontrol)
+      Case "textbox"
+        ctextbox = datotemp.nombre_control 'convierto tipo de control generico al tipo textbox
+        respuesta.Add(RTrim$(ctextbox.text), datotemp.nombre_campo) 'para quitar espacios a la derecha, cosa que daba problemas con los combobox
+      Case "valuebox"
+        cvaluebox = datotemp.nombre_control 'convierto tipo de control generico al tipo valuebox
+        respuesta.Add(cvaluebox.value, datotemp.nombre_campo)
+      Case "combobox"
+        ccombobox = datotemp.nombre_control 'convierto tipo de control generico al tipo combobox
+        If IsNull(ccombobox.tag) Then
+          respuesta.Add(ccombobox.text, datotemp.nombre_campo)
+        Else
+          ' find en lista de valores
+          ' hallar numero inidce de la cadena elegida
+          respuesta.Add(Val(ccombobox.tag[ccombobox.Find(ccombobox.text)]), datotemp.nombre_campo)
+        Endif
+
+      Case "datebox"
+        cdatebox = datotemp.nombre_control 'convierto tipo de control generico al tipo datebox
+        respuesta.Add(cdatebox.Value, datotemp.nombre_campo)
+      Case "checkbox"
+        ccheckbox = datotemp.nombre_control 'convierto tipo de control generico al tipo checkbox
+        respuesta.Add(ccheckbox.Value, datotemp.nombre_campo)
+      Case "textarea"
+        ctextarea = datotemp.nombre_control 'convierto tipo de control generico al tipo textbox
+        respuesta.Add(ctextarea.text, datotemp.nombre_campo)
+    End Select
+  Next
+
+End
+
+Public Function DevolverPanel(definicion_campos As String, Optional titulo As String, Optional numeropaneles As Integer, contenedor As Container) As Panel
+
+  Dim a As Integer
+  Dim paneles As ScrollView
+  Dim PanelPrincipal As New Panel(contenedor)
+
+  PanelPrincipal.Arrangement = Arrange.Horizontal
+  PanelPrincipal.Expand = True
+
+  If Not IsNull(titulo) Then
+    Me.Title = titulo
+  Endif
+
+  If IsNull(numeropaneles) Or numeropaneles = 1 Or numeropaneles = 0 Then
+    paneles = New ScrollView(PanelPrincipal)
+    paneles.Expand = True
+    paneles.Arrangement = Arrange.row
+    ContadorPanel.Add(paneles)
+    numeropaneles = 1
+  Else
+    For a = 0 To numeropaneles - 1
+      paneles = New ScrollView(PanelPrincipal)
+      paneles.Expand = True
+      paneles.Arrangement = Arrange.row
+      ContadorPanel.Add(paneles)
+    Next
+
+  Endif
+
+  setCampos(definicion_campos)
+  pasarvalores()
+  Return PanelPrincipal
+
+End
+
+Public Function devolverRespuesta() As Collection
+
+  pasarvalores()
+
+  Return respuesta
+
+End

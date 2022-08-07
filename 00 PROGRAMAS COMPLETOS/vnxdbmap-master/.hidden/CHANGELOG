@@ -1,0 +1,159 @@
+* Fri Mar 11 2016 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99920
+- corregido formulario final de salida de clases
+
+* Fri Mar 11 2016 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99919
+
+* Fri Mar 11 2016 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99919
+
+* Fri Mar 11 2016 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99919
+
+* Fri Mar 11 2016 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99919
+- Acepta definiciones de varias lineas en tablas
+
+* Thu Feb 18 2016 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99918
+- modifico  gridviewPropio.rows.count = 0 por  gridviewPropio.clear(), para actualizar los picture
+- de los gridview
+
+* Fri Feb 12 2016 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99916
+- Corregido más lineas con el mismo error  Corregido busqueda en contenido, añadiendo Subst(SQLString, valor)). He añadido apostrofes a las busqueda en vez de &1 pongo '&1'.
+
+* Wed Feb 10 2016 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99915
+- Corregido busqueda en contenido, añadiendo Subst(SQLString, valor))
+
+* Tue Jul 28 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99913
+
+* Tue Jul 28 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99912
+- CONVIERTE A NUMERO SI LA FECHA O EL NUMERO ERAN LETRAS
+
+* Sun Apr 19 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99911
+- agregado update y colores iniciales en los gridview
+
+* Mon Mar 16 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99910
+- quito espacios al final de la captura de los textbox en el formularioAutomatico
+
+* Wed Mar 11 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99909
+
+* Tue Mar 10 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99909
+
+* Tue Mar 10 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99909
+
+* Tue Mar 10 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99909
+
+* Tue Mar 10 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99909
+
+* Tue Mar 10 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99909
+
+* Tue Mar 10 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99909
+- Revisado algunos preocedimiento de busqueda que usaban comillas y cadenas , y los he cambiado a susbituciones por hconn.Exec(..)
+
+* Mon Mar 09 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99908
+
+* Mon Mar 09 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99908
+- si no puede extraer un registro, devuelve null y muesta un mensaje en consola
+
+* Sat Mar 07 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99907
+
+* Sat Mar 07 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99907
+- me.NoesTipoId(,,,)
+- funcion que devuelve si una columna es del tipo ID o no
+
+* Sat Mar 07 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99906
+
+* Sat Mar 07 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99906
+- Los campos ID, no los formateo, para que no haya problemas con la conversion a numerico
+
+* Sat Mar 07 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99906
+- filaseleccionadaVO() corregido bug al leer gridview columna 0, convierte el numero (pero antes cambia el . por la ,
+
+* Fri Mar 06 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99905
+
+* Fri Mar 06 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99905
+- UltimoIntroducido() y mejora en creacion de svg
+
+* Fri Mar 06 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99904
+
+* Fri Mar 06 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99904
+- agregado conectores entre tablas y vistas segun los campos id
+
+* Thu Mar 05 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99903
+- creacion de diagrama .svg, añade archivo comprimido de la base de datos .tar.gz
+
+* Tue Mar 03 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99902
+- nueva variable en DAO para ocultar las columnas
+
+* Mon Mar 02 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99901
+- una clase VO, tiene la funcion Copia, que copia devuelve una copia de si misma o de otra clase Vo pasada como argumento.
+
+* Mon Mar 02 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.999
+- vistas con * avisa de que no se pueden usar en mapbdvistas
+
+* Sun Mar 01 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.998
+- Resuelto problemas con el editor de gambas3 de bases de datos con los nombres de las tablas y campos y tipos de datos
+
+* Sat Feb 28 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.997
+- quito las propiedades en mayusculas
+
+* Fri Feb 27 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.996
+
+* Fri Feb 27 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.996
+- Modificacion para las columnas cuyo campo empieza por ID no se vean (ancho 0)
+
+* Fri Feb 27 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.995
+- varios problemas resueltos. Agregado el formato de numeros en las celdas de los gridviews
+
+* Fri Feb 27 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.994
+- enlace al blog del proyecto
+
+* Fri Feb 27 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.993
+- Clases DAO: Añadido funcion de copia que de vuelve una copia de un objeto VO dado
+
+* Fri Feb 27 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.992
+
+* Thu Feb 26 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.992
+- cooregido proglema que habia en FormAutomaticoDinamico, con los textArea, que fallaba al insertar varios retornos de lineas
+
+* Sun Feb 22 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99
+
+* Fri Feb 20 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.99
+- EXTRAER DATO DE UN REGISTRO añado funcion para extraer un registro dado un id iNdicado de la TABLA  function ExtraerRegistro(NombreCampo as string,id as integer)
+
+* Fri Feb 20 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.98
+- EXTRAER DATO DE UN REGISTRO añado funcion para extraer un registro dado un id iNdicado de la TABLA  function ExtraerRegistro(NombreCampo as string,id as integer)
+
+* Fri Feb 20 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.98
+- agrego archivo EstructuraBD.txt para mostrar como es la base de datos analizada
+
+* Fri Feb 20 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.98
+- borrado del directorio temporal al iniciar y agregado estadistiscas finales
+
+* Wed Feb 18 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.97
+
+* Wed Feb 18 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.97
+ try datocontenido=me.hresultadoNuevo[replace(me.gridviewPropio.columns[column].text,"_",".")]
+ if error then 
+ print "warning !!: nombre de campo que no encuentro "& me.GridViewPropio.tag[column]  & " en la tabla/vista"
+  endif
+ 
+* Wed Feb 18 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.96
+
+* Tue Feb 17 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.95
+
+* Mon Feb 16 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.94
+- Añadido opcion de ocultar un control en el formulario automatico
+
+* Mon Feb 16 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.93
+
+* Mon Feb 16 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.93
+- comun module añadido
+
+* Mon Feb 16 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.92
+
+* Mon Feb 16 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.92
+
+* Mon Feb 16 2015 Julio Sánchez Berro <jusabejusabe@gmail.com> 0.2.92
+
+* Mon Feb 16 2015 minino <minino@minino> 0.2.91
+
+* Mon Feb 16 2015 minino <minino@minino> 0.2.91
+- Lanzamiento inicial
+

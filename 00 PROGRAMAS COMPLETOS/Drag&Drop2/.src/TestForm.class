@@ -1,0 +1,9 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+'Me.Background = Rand(0, &hffffff)
+'LCDLabel1.Text = Str$(Timer())
+
+End

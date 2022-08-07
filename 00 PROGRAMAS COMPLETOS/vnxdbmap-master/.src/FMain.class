@@ -1,0 +1,381 @@
+' Gambas class file
+
+''' FMain:<br>
+''' ventana del programa principal
+' ##
+'   This program its under a license that required the CC-BY-SA rules.
+'   Cant be used commercialy unless permision of Julio Sanchez B jusabejusabe@gmail.com
+' ##
+'   This program Is Distributed In the hope that it will be useful,
+'   but WITHOUT ANY WARRANTY; without even the implied warranty Of
+'   MERCHANTABILITY Or FITNESS For A PARTICULAR PURPOSE. If you want
+'   some kind of support please comunicate in https://gitlab.com/venenux/vnxdbmap
+'   and provide some contribution to the project
+' ##
+
+Private rutaproject As String = User.home & "/Devel/newproject"
+Private datos As New Collection 'se guardan las vistas, campos,tipo de campos y ruta
+
+Private nombreBaseDeDatos As String
+Private rutabasededatos As String
+
+Public contenidoTablasVistas As String
+Public estructuradbsql As String
+
+Private generarSVG As New GenerarDiagramaSVG
+
+Public Sub _new()
+
+End
+
+Public Sub Form_Open()
+
+  VSplit1.Layout = [1, 5, 5]
+  TextBoxRuta.text = rutaproject
+
+  'borrado de el directorio temporal para iniciar el trabajo
+  Shell "rm -r -f " & rutaproject Wait 'borro el directorio temporal 0.2.98
+
+  'creando rutas para vistas y tablas
+
+  creaDirectorio(rutaproject)
+  creaDirectorio(rutaproject & "/.src")
+  creaDirectorio(rutaproject & "/.src/modelo")
+  creaDirectorio(rutaproject & "/.src/modelo/modeloVista")
+
+  creaDirectorio(rutaproject & "/.src/modelo/modeloVista/VistasVO")
+
+  creaDirectorio(rutaproject & "/.src/modelo/modeloVista/VistasDAO")
+
+  'tablas...
+
+  creaDirectorio(rutaproject & "/.src/modelo/modeloTabla")
+  creaDirectorio(rutaproject & "/.src/modelo/conexion")
+  creaDirectorio(rutaproject & "/.src/modelo/modeloTabla/VO")
+  creaDirectorio(rutaproject & "/.src/modelo/modeloTabla/DAO")
+
+  Labelversion.text = "Versión: " & Application.Version
+  Me.Center
+
+End
+
+Public Sub creaDirectorio(directorio As String)
+
+  If Exist(directorio) Then
+    Return
+  Else
+    Try Mkdir User.home & "/" & "Devel"
+    Wait 0.1
+    Mkdir directorio
+    Wait 0.1 'para que le de tiempo a crearlo al sistema
+  Endif
+
+End
+
+Public Sub ButtonAnalizar_Click()
+
+  ButtonAnalizarDato()
+
+End
+
+Public Function ButtonAnalizarDato() As String 'devuelve si era tabla o vista '_Click()
+
+  Dim textos As String
+  Dim b As Integer
+  Dim vista As String
+  Dim tabla As String
+
+  If TextAreaUnaVista.text = "" Then
+    ' Message.Info("Tiene que poner la descricion que da la orden .schema de una tabla")
+    Return
+
+  Endif
+
+  TextAreaTipos.text = ""
+
+  datos = New Collection
+  datos = analizar.tarea(TextAreaUnaVista.text)
+  datos.add(TextBoxRuta.text, "rutaproject")
+
+  'datos["campos"]
+
+  'datos["vistas"]
+  'analiza una vista por vista
+  Try vista = datos["vista"]
+  If Error Or vista = "" Then
+    'NOTE: añado opcion de que encuentre una tabla!!!
+    'puede que sear una tabla...
+    datos = New Collection
+    datos = analizar.tareaTabla(TextAreaUnaVista.text)
+    datos.add(TextBoxRuta.text, "rutaproject")
+    Try tabla = datos["tabla"][0]
+    If Error Or tabla = "" Then
+      Return "" 'no he reconocido que es...
+    Else
+      For b = 0 To datos["campos" & comun.primeraMay(tabla)].max
+        'mismo sistema de definicion de vista....
+        textos &= tabla & " " & datos["campos" & comun.primeraMay(tabla)][b] & " " & datos["campostipo" & comun.primeraMay(tabla)][b] & "\n"
+
+      Next
+      TextAreaTipos.text = textos
+      Return "tabla" 'analisis de tabla
+    Endif
+
+    Return 'será una tabla o algo que no pueda analizar
+  Endif
+  For b = 0 To datos["campos" & comun.primeraMay(vista)].max
+    textos &= vista & " " & datos["campos" & comun.primeraMay(vista)][b] & " " & datos["campostipo" & comun.primeraMay(vista)][b] & "\n"
+  Next
+
+  'comprimir la base de datos....
+
+  TextAreaTipos.text = textos
+  Return "vista"
+
+End
+
+Public Sub ButtonGenerarCodigoVista_Click()
+
+  ButtonGenerarCodigoVistaCodigo()
+
+End
+
+Public Sub ButtonGenerarCodigoTablaCodigo()
+  ''NOTE: nota o comentario:generar el codigo de una tabla.....
+
+  ' Dim repiteTipos As Integer
+  Dim a As Integer
+  Dim codigoCampo As String
+  Dim db_tabla_registro As String
+  Dim codigoClaseTabla As String
+  Dim nombretabla As String
+  Dim campo As String[]
+  Dim campotipo As String[] '
+  'lectura del textArea2, y sacar los tipos....
+  '   extraer de cada linea desde tipo al final
+  Dim lineas As String[]
+  Dim n As String
+  Dim tipo As String
+  Dim tipos As New String[]
+
+  If TextAreaTipos.text = "" Then
+    '  Message.Info("Pulsa el 1º botón")
+    Return
+  Endif
+
+  lineas = Split(TextAreaTipos.text, gb.NewLine)
+
+  For a = 0 To lineas.max
+    If lineas[a] <> "" Then
+      n = Mid$(lineas[A], 1, InStr(lineas[A], " ") - 1)
+      tipo = RTrim$(lineas[a])
+      tipo = Mid$(lineas[a], RInStr(lineas[a], " ") + 1)
+      tipos.add(tipo)
+    Endif
+  Next
+  datos.Add(tipos, "campostipos" & comun.primeraMay(n))
+  '
+
+  campotipo = tipos
+  nombretabla = Replace$(datos["tabla"][0], "'", "") ' quita las simple comillas que pone gambas3, cuando edita
+  campo = datos["campos" & comun.primeraMay(nombretabla)]
+
+  'creando codigo de la tabla....
+  codigoCampo = creatabla.propiedades(campo, campotipo)
+  codigoCampo &= creatabla.metodos(campo, campotipo)
+  codigoCampo &= creatabla.FuncionesConsversion(campo, nombretabla)
+
+  db_tabla_registro = nombretabla & "VO" 'se formara una clase con cada tipo de registro
+
+  File.Save(rutaproject & "/.src/modelo/modeloTabla/VO/" & db_tabla_registro & ".class", codigoCampo)
+  '   numero_lineas_codigo += numero(codigoCampo)
+  codigoClaseTabla = creatabla.codigoClaseTabla(nombretabla, db_tabla_registro, campo, campotipo, File.Name(rutabasededatos), "Sqlite3", rutabasededatos, "Sqlite3", "", "", "")
+  codigoClaseTabla &= creatabla.codigoConversionesResultGridDAO(nombretabla, campo, campotipo)
+  codigoClaseTabla &= creatabla.generaGridaHTML()
+  File.Save(rutaproject & "/.src/modelo/modeloTabla/DAO/" & nombretabla & "DAO.class", codigoClaseTabla)
+  '   numero_lineas_codigo += numero(codigoClaseTabla)
+  generarSVG.addTabla(nombretabla, campo, campotipo, "tabla")
+
+End
+
+Public Sub ButtonGenerarCodigoVistaCodigo()
+
+  Dim repiteTipos As Integer
+  Dim a As Integer
+  Dim codigoCampo As String
+  Dim db_tabla_registro As String
+  Dim codigoClaseTabla As String
+  Dim nombretabla As String
+  Dim campo As String[]
+  Dim campotipo As String[] '
+  'lectura del textArea2, y sacar los tipos....
+  '   extraer de cada linea desde tipo al final
+  Dim lineas As String[]
+  Dim n As String
+  Dim tipo As String
+  Dim tipos As New String[]
+
+  If TextAreaTipos.text = "" Then
+    '  Message.Info("Pulsa el 1º botón")
+    Return
+  Endif
+
+  lineas = Split(TextAreaTipos.text, gb.NewLine)
+
+  For a = 0 To lineas.max
+    If lineas[a] <> "" Then
+      n = Mid$(lineas[A], 1, InStr(lineas[A], " ") - 1)
+      tipo = RTrim$(lineas[a])
+      tipo = Mid$(lineas[a], RInStr(lineas[a], " ") + 1)
+      tipos.add(tipo)
+    Endif
+  Next
+  datos.Add(tipos, "campostipos" & comun.primeraMay(n))
+  '
+
+  campotipo = tipos
+  nombretabla = Replace(datos["vistas"][0], "'", "") ' añadido 0.2.998 para eliminar comilla simple que ponia gambas3 al editar la tabla
+  nombretabla = Replace(datos["vistas"][0], "\"", "") ' añadido 0.2.998 para eliminar comilla simple que ponia gambas3 al editar la tabla
+  campo = datos["campos" & comun.primeraMay(nombretabla)]
+  'campotipo = datos["campostipos" & comun.primeraMay(nombretabla)]
+  campotipo.Clear()
+  For repiteTipos = 0 To campo.max
+    campotipo.add("string")
+  Next
+
+  codigoCampo = creaVista.propiedades(campo, campotipo)
+  codigoCampo &= creaVista.metodos(campo, campotipo)
+  codigoCampo &= creaVista.FuncionesConsversion(campo, nombretabla)
+  codigoClaseTabla = creaVista.codigoClaseVISTA(nombretabla, campo, campotipo)
+  codigoClaseTabla &= creaVista.codigoConversionesResultGridDAO(nombretabla, campo, campotipo)
+  codigoClaseTabla &= creaVista.generaGridaHTML()
+  db_tabla_registro = nombretabla & "VO" 'se formara una clase con cada tipo de registro
+
+  File.Save(rutaproject & "/.src/modelo/modeloVista/VistasVO/" & db_tabla_registro & ".class", codigoCampo)
+  File.Save(rutaproject & "/.src/modelo/modeloVista/VistasDAO/" & nombretabla & "DAO.class", codigoClaseTabla)
+  generarSVG.addTabla(nombretabla, campo, campotipo, "vista", TextAreaUnaVista.text)
+
+End
+
+Public Sub ButtonBuscarBaseDeDatos_Click()
+
+  Dim nombrecomprimido As String
+  Dim hconn As New Connection
+  Dim hresult As Result
+  Dim contenido As String
+
+  Dialog.Filter = ["*.sqlite", "sqlite"]
+  If Not Dialog.OpenFile() Then
+
+    hconn.host = Dialog.Path
+    hconn.name = Dialog.Path
+    hconn.type = "Sqlite3"
+    LabelNombreBaseDeDatos.text = "Base de datos .sqlite: " & Dialog.Path
+    Try hconn.Open()
+
+    If Error Then
+      Message.Error("Se ha producido un error al intentar leer la base de datos")
+      Return
+    Endif
+
+    hresult = hconn.Exec("select sql from sqlite_master")
+
+    contenido = ""
+    While hresult.Available
+      contenido &= hresult["sql"] & gb.NewLine
+      hresult.MoveNext
+    Wend
+    estructuradbsql = contenido ' el contenido preprocesado perjudica las lineas de comentarios, salvar sin preprocesar
+    contenido = comun.preprocesarContenido(contenido) ''NOTE: Mejora para quitar retornos de carro.
+    TextAreaCompleta.text = contenido ' el contenido preprocesado es solo util para la creacion de codigo, ya que funciona linea a linea en cada tabla
+    rutabasededatos = Dialog.Path
+    'copio la base de datos dentro del proyecto...
+    'Try Copy Dialog.Path To rutaproject & "/.src" & "/" & File.Name(Dialog.path)
+    Try Copy Dialog.Path To rutaproject & "/" & File.Name(Dialog.path) 'la base de datos la copio fuera de la carpeta .src, ya que necesitoque este en la carpeta "Datos"
+    ''NOTE: nota o comentario:: ver nombre del fichero...
+    ' Shell "cd " & User.home & ";tar -czfv " & Replace$(Dialog.path, ".sqlite", "") & ".tag.gz " & File.Name(Dialog.path) To espera
+    ' Copy Replace$(Dialog.path, ".sqlite", "") & ".tag.gz"
+    File.Save(rutaproject & "/.src/modelo/conexion/Conexion.class", creatabla.ModuloBaseDatos(Dialog.path, "Sqlite3", Dialog.path))
+    Try Copy "estructura.html" To rutaproject & "/" & "estructura.html"
+    Try Copy ".hidden/datacopy/FormAutomaticoDinamico.class" To rutaproject & "/.src/" & "FormAutomaticoDinamico.class"
+    Try Copy ".hidden/datacopy/FormAutomaticoDinamico.form" To rutaproject & "/.src/" & "FormAutomaticoDinamico.form"
+    '------------------------------------------------------------------------------
+    Try Copy ".hidden/datacopy/comun.module" To rutaproject & "/.src/" & "comun.module"  'Añade copia de modulo comun de funciones 0.2.93
+    '------------------------------------------------------------------------------
+    nombrecomprimido = File.Name(Replace$(Dialog.Path, ".sqlite", "") & ".tar.gz")
+
+    Shell "cd " & File.Dir(Dialog.Path) & ";tar czvf \"" & nombrecomprimido & "\" ./" & File.Name(Dialog.Path)
+    Wait 0.1
+    Shell "mv " & Replace$(Dialog.Path, File.Ext(Dialog.path), "tar.gz") & " " & rutaproject & File.Name(nombrecomprimido)
+
+  Endif
+
+End
+
+Public Sub ButtonAnalisisCompleto_Click()
+
+  Dim lineasDeCodigo As String[]
+  Dim a, cantidadtablasprocesar As Integer
+  Dim caso As String
+
+  If TextAreaCompleta.text <> "" Then
+    'Analiza Vista
+
+    lineasDeCodigo = Split(TextAreaCompleta.text, gb.NewLine)
+    cantidadtablasprocesar = lineasDeCodigo.Count - 1
+
+    For a = 0 To cantidadtablasprocesar ' max es solo soportado en gabmas >> 3.2
+      If cantidadtablasprocesar = 0 Then
+        ProgressBar1.Value = 1    ' hack para bug #11 https://gitlab.com/venenux/vnxdbmap/issues/11
+      Else
+        ProgressBar1.Value = a / cantidadtablasprocesar
+      Endif
+      TextAreaUnaVista.text = lineasDeCodigo[a]
+      caso = ButtonAnalizarDato()
+
+      Wait 0.1
+      If caso = "vista" Then
+        'vista
+        ButtonGenerarCodigoVistaCodigo()
+      Else
+        If caso = "tabla" Then
+          'genero codigo de tabla...
+          ButtonGenerarCodigoTablaCodigo()
+
+        Endif
+      Endif
+
+      Wait 0.1
+      contenidoTablasVistas &= "-----------------------------------------" & "\n"
+      contenidoTablasVistas &= TextAreaUnaVista.Text
+      contenidoTablasVistas &= TextAreaTipos.text
+      TextAreaTipos.text = ""
+      TextAreaUnaVista.Text = ""
+    Next
+
+  Endif
+
+  ' nota importante> el contenid preprocesado es una linea por estructura,
+  ' esto porque el programa crea un mapa/clase por cada linea, asume una linea=una estructura de tabla/vista
+  ' esto es ineficiente en cuanto a los comentarios, en el preprocesador se debe eliminar a partir del caracter de --
+  ' por ende aqui se salva la estructura original, ya que el preprocesador no tiene la capacidad de salvar todo sin estropearla
+  File.Save(rutaproject & "/EstructuraBD.txt", estructuradbsql)
+
+  'grafica de las tablas y vistas
+  generarSVG.Generar() 'genera el archivo grafico de la base de datos 0.2.99903
+
+  formInforme.show()
+
+End
+
+Public Sub TextLabel2_MouseDown()
+
+  Desktop.Open("http://mapbdvistas.blogspot.com.es/")
+
+End
+
+Public Sub PictureBoxUpdate_MouseDown()
+
+  ModuleUpdate.comprobar("mapbdvistas", Application.Version, "http://seguimientodeapuestas.blogspot.com.es/2015/04/mapbdvistas.html")
+
+End

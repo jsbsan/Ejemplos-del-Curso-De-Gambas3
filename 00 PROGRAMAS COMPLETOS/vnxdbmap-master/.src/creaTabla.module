@@ -1,0 +1,886 @@
+' Gambas module file
+
+''' creaTabla:<br>
+''' genrea el codigo contenido de cada clase tabla DAO y VO
+' ##
+'   This program its under a license that required the CC-BY-SA rules.
+'   Cant be used commercialy unless permision of Julio Sanchez B jusabejusabe@gmail.com
+' ##
+'   This program Is Distributed In the hope that it will be useful,
+'   but WITHOUT ANY WARRANTY; without even the implied warranty Of
+'   MERCHANTABILITY Or FITNESS For A PARTICULAR PURPOSE. If you want
+'   some kind of support please comunicate in https://gitlab.com/venenux/vnxdbmap
+'   and provide some contribution to the project
+' ##
+
+Public Sub ModuloBaseDatos(nombrebase As String, tipo As String, ruta As String) As String
+
+  Dim codigo As String
+  Dim ficheroBd As String[]
+  'funcion de conexion a base de datos..."
+  codigo = "' Gambas class file \n"
+  codigo &= "''NOTE: Realizado con MapBd-Vistas. version " & Application.Version & "  Fecha: " & Format$(Now, "yyyy-mm-dd hh:nn:ss") & "\n"
+
+  codigo &= "Public hconn As New Connection \n"
+  codigo &= "Public NombreBaseDatos As string= user.home & \"" & Replace$(ruta, User.home, "") & "\"\n"
+  codigo &= "PUBLIC FUNCTION conexion()\n"
+  codigo &= "' hace la conexion a la base de datos\n"
+  'si no existe el archivo de base de datos SQLITE, lo copia al directorio indicado por MapBD
+  ficheroBd = Split(ruta, "/")
+  '------------------------------------------------------------------------------
+  'copio la base de datos dentro del proyecto...
+  If tipo = "Sqlite3" Then
+    ficheroBd = Split(ruta, "/")
+    codigo &= "dim rutabd as string\n"
+    codigo &= "rutabd=File.Dir(User.home & Replace(NombreBaseDatos, User.home, \"\"))\n"
+    codigo &= "  'comprueba que exista ruta\n"
+    codigo &= "If Not Exist(rutabd) Then \n"
+    codigo &= "Mkdir rutabd\n"
+    codigo &= "ENDIF\n"
+    codigo &= "  'comprueba que exista fichero de bd\n"
+    codigo &= "IF NOT Exist( rutabd &/ file.name(NombreBaseDatos)) THEN \n"
+    codigo &= "application.busy=1\n"
+    codigo &= "try COPY \"" & File.BaseName(ficheroBd[ficheroBd.count - 1]) & ".tar.gz" & "\" to rutabd &/ \"" & File.BaseName(Replace$(ruta, User.home, "")) & ".tar.gz" & "\"\n"
+    codigo &= "Shell \"cd \" & rutabd & \";tar xzvf \" & rutabd  &/ \"" & File.BaseName(ficheroBd[ficheroBd.count - 1]) & ".tar.gz\"\n"
+    codigo &= "wait 2\n"
+    codigo &= "try kill rutabd &/ \"" & File.BaseName(ficheroBd[ficheroBd.count - 1]) & ".tar.gz" & "\"\n"
+
+    codigo &= "application.busy=0\n"
+    codigo &= "ENDIF\n"
+    codigo &= "  hconn.Name = user.home & \"" & Replace$(ruta, User.home, "") & "\"\n"
+    codigo &= "  hconn.host = user.home & \"" & Replace$(ruta, User.home, "") & "\"\n"
+
+    codigo &= "  hconn.Type =\"" & tipo & "\"\n"
+    codigo &= "  hconn.open\n"
+    codigo &= "RETURN \n"
+    codigo &= "END\n"
+    codigo &= "\n"
+    codigo &= "Public Sub desconectar()\n"
+    codigo &= "  hconn.close()\n"
+    codigo &= "End\n"
+    Return codigo
+  Else
+    If tipo = "MySql" Then
+      '  codigo &= "conexion.Login = \"" & login & "\"\n"
+      '  codigo &= "conexion.Port = \"" & port & "\"\n"
+      '  codigo &= "conexion.Password = \"" & password & "\"\n"
+    Endif
+  Endif
+
+End
+
+Public Sub propiedades(campo As String[], tipo As String[]) As String
+
+  Dim codigo As String
+  Dim texto As String
+  Dim a As Integer
+  ' "PROPERTY {nombre_campo} AS {tipo_datos}/n PRIVATE h{nombre_campo} AS {tipo_datos}"
+  texto = "PROPERTY &1 AS &2 \nPRIVATE h&1 AS &2\n\n"
+  For a = 0 To campo.count - 1
+    codigo &= Subst(texto, campo[a], tipo[a])
+  Next
+  texto = "PROPERTY &1 AS &2 \nPRIVATE h&1 AS &3\n\n"
+  codigo &= Subst(texto, "campo", "string[]", "new string[]")
+  texto = "PROPERTY &1 AS &2 \nPRIVATE h&1 AS &3\n\n"
+  codigo &= Subst(texto, "campotipo", "string[]", "new string[]")
+  texto = "PROPERTY &1 AS &2 \nPRIVATE h&1 AS &3\n\n"
+  codigo &= Subst(texto, "campovisible", "string[]", "new string[]")
+  Return Replace$(codigo, "Null", "Integer")
+
+End
+
+Public Sub metodos(campo As String[], tipo As String[]) As String
+
+  Dim codigo As String
+  Dim texto As String
+  Dim a As Integer
+
+  texto = "PRIVATE FUNCTION &1_read() AS &2\n RETURN h&1 \nEND \n \nPRIVATE SUB &1_write(Valor AS &2)\n h&1= Valor \nEND  \n \n"
+  For a = 0 To campo.count - 1
+    codigo &= Subst(texto, campo[a], tipo[a])
+  Next
+  texto = "PRIVATE FUNCTION &1_read() AS &2\n RETURN h&1 \nEND \n \nPRIVATE SUB &1_write(Valor AS &2)\n h&1= Valor \nEND  \n \n"
+  codigo &= Subst(texto, "campo", "string[]")
+  texto = "PRIVATE FUNCTION &1_read() AS &2\n RETURN h&1 \nEND \n \nPRIVATE SUB &1_write(Valor AS &2)\n h&1= Valor \nEND  \n \n"
+  codigo &= Subst(texto, "campotipo", "string[]")
+  texto = "PRIVATE FUNCTION &1_read() AS &2\n RETURN h&1 \nEND \n \nPRIVATE SUB &1_write(Valor AS &2)\n h&1= Valor \nEND  \n \n"
+  codigo &= Subst(texto, "campovisible", "string[]")
+
+  codigo = Replace(codigo, "Null", "Integer")
+
+  Return codigo
+
+End
+
+Public Sub FuncionesConsversion(campo As String[], nombretabla As String) As String
+
+  Dim texto As String
+  Dim a As Integer
+
+  '-----------------------------------------------------------
+  'crear copia de un VO
+  '----------------------------------------------------------
+  texto &= Subst("PUBLIC FUNCTION Copia(Optional dato as &1VO) AS &1VO\n", nombretabla)
+  texto &= Subst("Dim datoVOtmp as new &1VO\n", nombretabla)
+  texto &= Subst("Dim datoVOtmpOriginal as &1VO\n", nombretabla)
+  texto &= "If isnull(dato) then\n"
+  texto &= "dato=me 'se copia a si mismo\n"
+  texto &= "endif\n"
+  For a = 0 To campo.count - 1
+    texto &= Subst("datoVOtmp.&1=dato.&1\n", campo[a])
+  Next
+
+  texto &= "return datoVOtmp\n"
+  texto &= "end\n\n"
+
+  '---------------------------------------------
+  'conversion de objeto ...VO a coleccion
+  '---------------------------------------------
+  texto &= Subst("PUBLIC FUNCTION ConvertirVOaColeccion(dato as &1VO) AS collection\n", nombretabla)
+  texto &= "Dim colecciontmp as new collection\n"
+  For a = 0 To campo.max
+    texto &= Subst("colecciontmp.add(dato.&1,\"&1\")\n", campo[a])
+  Next
+  texto &= "return colecciontmp\n"
+  texto &= "end\n"
+  '---------------------------------------------
+  'conversion de objeto coleccion a ...VO
+  '---------------------------------------------
+  texto &= Subst("PUBLIC FUNCTION ConvertirColeccionaVO(dato as collection) AS &1VO\n", nombretabla)
+  texto &= Subst("Dim datoVOtmp as new &1VO\n", nombretabla)
+  For a = 0 To campo.max
+    texto &= Subst("try datoVOtmp.&1=dato[\"&1\"]\n", campo[a])
+  Next
+  texto &= "return datoVOtmp\n"
+  texto &= "end\n"
+  Return texto
+
+End
+
+Public Sub codigoClaseTabla(nombretabla As String, registro As String, campo As String[], campotipo As String[], nombrebase As String, tipo As String, ruta As String, tipobasedatos As String, login As String, port As String, password As String) As String
+
+  Dim claseorigen As String
+  Dim codigo As String
+  Dim texto As String
+  Dim a As Integer
+  Dim b As Integer
+  Dim iniciar As Integer
+  Dim lineaAmodificar As String
+
+  texto = "' Gambas class file\n"
+  'texto &= " Private Gridview1 as Gridview \n"
+  'texto &= "PRIVATE t1 AS Object\n\n"
+  codigo = texto
+  '-----------------------------------------------------------------------------------
+  'devolver total de tabla
+  texto = ""
+  texto = "PUBLIC FUNCTION Total() AS integer \n"
+  texto &= "     Dim conectar as new conexion\n"
+  texto &= "     Dim SQLString as string\n"
+  texto &= "     Dim mRs as result\n"
+  texto &= "     conectar.Conexion()\n"
+  texto &= "    SQLString  = \"SELECT " & campo[0] & " FROM " & nombretabla & "\" \n"
+  texto &= "try    mRs = conectar.hconn.Exec(SQLString) \n"
+  texto &= "IF ERROR THEN \n"
+  texto &= "  Message.Error(\" Se ha producido un ERROR al Intentar obtener lista\")\n"
+  texto &= "  return -1 \n"
+  texto &= "endif \n"
+  texto &= "RETURN val(Str$(mRs.Count)) \n"
+  texto &= "End\n\n"
+  codigo &= texto
+  '--------------------------------------------------------------------------------
+  texto = ""
+  texto &= "PUBLIC function registrar( Nueva" & nombretabla & " as " & nombretabla & "VO) as boolean\n"
+  texto &= "  Dim conectar as new conexion\n"
+  texto &= " ' Dim SQLString As String\n"
+  texto &= "  Dim hresult As result\n"
+  texto &= "   conectar.Conexion()\n"
+  texto &= "     hresult = conectar.hconn.Create(\"" & nombretabla & "\")\n"
+
+  For a = 0 To campo.count - 1
+    If Lower$(campotipo[a]) = Lower$("null") Then
+      texto &= "    hresult[\"" & campo[a] & "\"]= null \n"
+    Else
+      texto &= "    hresult[\"" & campo[a] & "\"]= Nueva" & nombretabla & "." & campo[a] & "\n"
+    Endif
+
+  Next
+  texto &= "hresult.update\n"
+  texto &= "conectar.hconn.commit\n"
+  texto &= "conectar.desconectar() \n"
+  texto &= "return true \n"
+  texto &= "\n"
+  texto &= "END\n\n"
+  codigo &= texto
+  '------------------------------------------------------------------------
+  ' update por campo (normalmente solo usaremos el Id, con el dato del ideditado
+
+  For b = 0 To campo.count - 1
+    texto = ""
+    'solo modifico el campo que tenga el tipo NULL
+    If Upper$(campotipo[b]) = Upper$("Null") Then
+      texto &= "PUBLIC FUNCTION Modificar" & primeraMay(campo[b]) & "(editado as Integer" & ",Nueva" & nombretabla & " as " & nombretabla & "VO) as boolean\n"
+      'solo modifico el campo que tenga el tipo NULL
+      'Else
+
+      ' texto &= "PUBLIC FUNCTION Modificar" & primeraMay(campo[b]) & "(editado as " & campotipo[b] & ",Nueva" & nombretabla & " as " & nombretabla & "VO) as boolean\n"
+      ' Endif
+      texto &= "     Dim conectar as new conexion\n"
+      texto &= "   '  Dim SQLString as string\n"
+
+      texto &= "  Dim hresult As result\n"
+      texto &= "   conectar.Conexion()\n"
+
+      lineaAmodificar = "hresult = conectar.hconn.Edit(\"TABLA\", \"FIELD=&1\", NuevaTABLA.FIELD)"
+
+      lineaAmodificar = Replace$(lineaAmodificar, "TABLA", nombretabla)
+      lineaAmodificar = Replace$(lineaAmodificar, "FIELD", campo[b])
+      texto &= lineaAmodificar & "\n"
+
+      For a = 0 To campo.count - 1
+        If "Nueva" & nombretabla & "." & campo[b] = "Nueva" & nombretabla & "." & campo[a] Then
+          'no escribir nada
+        Else
+          texto &= "    hresult[\"" & campo[a] & "\"]= Nueva" & nombretabla & "." & campo[a] & "\n"
+        Endif
+
+      Next
+      texto &= " hresult.update\n"
+      texto &= " conectar.hconn.commit\n"
+
+      texto &= "END\n"
+    Endif
+
+    codigo &= texto
+  Next
+  '----------------------------------------------------------------------------
+  texto = ""
+  a = 0
+  For a = 0 To campo.count - 1
+    'solo borrar dado el ID
+    If Upper$(campotipo[a]) = Upper$("Null") Then
+      texto &= "PUBLIC function Borrar" & primeraMay(campo[a]) & "( valor AS Integer ) as boolean\n"
+      texto &= "Dim conectar as new conexion\n"
+      texto &= "Dim SQLString as string\n"
+      texto &= "conectar.Conexion()\n"
+
+      texto &= "sqlstring=\"DELETE FROM " & nombretabla & " WHERE " & campo[a] & "='&1'\"\n"
+
+      texto &= "Try conectar.hconn.Exec(Subst$(SQLString, valor))\n"
+      texto &= "IF ERROR THEN \n"
+      texto &= "Message.Error(\" Se ha producido un ERROR al intentar Borrar datos, revise ID , \" & \"\\nError: \" & error.text)\n"
+      texto &= "return false\n"
+      texto &= "else\n"
+      texto &= "conectar.desconectar()\n"
+      texto &= "return true\n"
+      texto &= "ENDIF\n"
+      texto &= "END\n"
+    Endif
+
+  Next
+  codigo &= texto
+  texto = ""
+
+  '-------------------------------------------------
+  ' asigna un resultado a una clase
+  '-----------------------------------------------
+
+  '-------------------------------------------------------
+  'consulta de texto contenido...
+  '  Print "consulta busqueda...."
+
+  texto = "PUBLIC function BuscarIgual( valor AS integer,campoId as string, optional CampoOrden as string,optional restosql as string,optional fecha1 as variant, optional fecha2 as variant ) as result\n"
+  texto &= "     Dim conectar as new conexion\n"
+  texto &= "     Dim SQLString as string\n"
+  texto &= "     Dim mRs as result\n"
+  texto &= "     conectar.Conexion()\n"
+  texto &= "SQLString=\"Select * From " & nombretabla & "\"\n"
+  texto &= "If CampoOrden=null then \n"
+  texto &= "   SQlString &= \" WHERE \" & campoId & \" like '&1' \" & restosql\n"
+  texto &= "else \n"
+  texto &= "   SQlString &= \" WHERE \" & campoId & \" like '&1' \" & restosql & \" Order by \" & CampoOrden \n"
+  texto &= "endif \n"
+  texto &= "If IsNull(fecha1) Or IsNull(fecha2) Then\n"
+  texto &= "    Try mRs=conectar.hconn.Exec(Subst$(SQLString, valor)) \n"
+  texto &= "          IF ERROR THEN \n"
+  texto &= "              Message.Error(\" Se ha producido un ERROR al Buscar datos, \" & \"\\nError:  \"   & error.text )\n"
+  texto &= "          else \n"
+  texto &= "              return mRs\n"
+  texto &= "          ENDIF \n"
+  texto &= "else \n"
+  texto &= "    Try mRs=conectar.hconn.Exec(Subst$(SQLString, valor,fecha1,fecha2)) \n"
+  texto &= "          IF ERROR THEN \n"
+  texto &= "              Message.Error(\" Se ha producido un ERROR al Buscar datos, \" & \"\\nError:  \"   & error.text )\n"
+  texto &= "          else \n"
+  texto &= "              return mRs\n"
+  texto &= "          ENDIF \n"
+  texto &= "ENDIF \n"
+
+  texto &= "IF ERROR THEN \n"
+  texto &= "Message.Error(\" Se ha producido un ERROR al Buscar datos, \" & \"\\nError:  \"   & error.text )\n"
+  texto &= "else \n"
+  texto &= "return mRs\n"
+  texto &= "ENDIF \n"
+  texto &= "END\n\n"
+  codigo &= texto
+
+  For a = 0 To campo.count - 1
+    If campotipo[a] = "String" Then
+      texto = "PUBLIC function BuscarContenido" & primeraMay(campo[a]) & "( valor AS " & campotipo[a] & ",optional CampoOrden as string ) as result\n"
+      texto &= "     Dim conectar as new conexion\n"
+      texto &= "     Dim SQLString as string\n"
+      texto &= "     Dim mRs as result\n"
+      texto &= "     conectar.Conexion()\n"
+      texto &= "SQLString=\"Select * From " & nombretabla & "\"\n"
+      texto &= "If CampoOrden=null then \n"
+      texto &= "   SQlString &= \" WHERE " & campo[a] & " like '%&1%'\" \n"
+      texto &= "else \n"
+      texto &= "   SQlString &= \" WHERE " & campo[a] & " like '%&1%'  Order by \"& CampoOrden\n"
+      texto &= "endif \n"
+      texto &= "Try mRs=conectar.hconn.Exec(Subst$(SQLString, valor)) \n"
+      texto &= "IF ERROR THEN \n"
+      texto &= "Message.Error(\" Se ha producido un ERROR al Buscar datos, \" & \"\\nError:  \"   & error.text )\n"
+      texto &= "else \n"
+      texto &= "return mRs\n"
+      texto &= "ENDIF\n"
+      texto &= "END\n"
+      codigo &= texto
+    Endif
+
+    If campotipo[a] = "Null" Then
+      texto = "PUBLIC function BuscarIgual" & primeraMay(campo[a]) & "( valor AS integer,optional CampoOrden as string ) as result\n"
+    Else
+      texto = "PUBLIC function BuscarIgual" & primeraMay(campo[a]) & "( valor AS " & campotipo[a] & ",optional CampoOrden as string ) as result\n"
+    Endif
+    texto &= "     Dim conectar as new conexion\n"
+    texto &= "     Dim SQLString as string\n"
+    texto &= "     Dim mRs as result\n"
+    texto &= "     conectar.Conexion() \n"
+    texto &= "SQLString=\"Select * From " & nombretabla & "\"\n"
+    texto &= "If CampoOrden=null then \n"
+    texto &= "SQlString &= \" WHERE " & campo[a] & " like '&1' \n"
+    texto &= "else\n"
+    texto &= "SQlString &= \" WHERE " & campo[a] & " like '&1' Order by \"& CampoOrden \n"
+    texto &= "endif \n"
+    texto &= "Try mRs=conectar.hconn.Exec(Subst$(SQLString, valor)) \n"
+    texto &= "IF ERROR THEN \n"
+    texto &= "Message.Error(\" Se ha producido un ERROR al Buscar datos, \" & \"\\nError: \" & error.text )\n"
+    texto &= "else\n"
+    texto &= "return mRs\n"
+    texto &= "ENDIF\n"
+    texto &= "END\n\n"
+    codigo &= texto
+    If campotipo[a] = "Date" Or campotipo[a] = "Integer" Or campotipo[a] = "Float" Then
+      texto = "PUBLIC function BuscarMenorQue" & primeraMay(campo[a]) & "( valor AS " & campotipo[a] & ",optional CampoOrden as string ) as result\n"
+      texto &= "Dim conectar as new conexion\n"
+      texto &= "Dim SQLString as string\n"
+      texto &= "Dim mRs as result\n"
+      texto &= "conectar.Conexion() \n"
+      texto &= "SQLString=\"Select * From " & nombretabla & "\"\n"
+      texto &= "If CampoOrden=null then \n"
+      texto &= "   SQlString &= \" WHERE " & campo[a] & "<'&1' \n"
+      texto &= "else\n"
+      texto &= "   SQlString &= \" WHERE " & campo[a] & "<'&1' Order by \" &  CampoOrden \n"
+      texto &= "endif\n"
+      texto &= "Try mRs=conectar.hconn.Exec(Subst$(SQLString, valor))\n"
+
+      texto &= "IF ERROR THEN\n"
+      texto &= "Message.Error(\" Se ha producido un ERROR al Buscar datos, \" & \"\\nError: \" & error.text )\n"
+      texto &= "else\n"
+      texto &= "return mRs\n"
+      texto &= "ENDIF\n"
+      texto &= "END\n\n"
+      codigo &= texto
+      texto = "PUBLIC function BuscarMayorQue" & primeraMay(campo[a]) & "( valor AS " & campotipo[a] & ",optional CampoOrden as string ) as result\n"
+      texto &= "     Dim conectar as new conexion\n"
+      texto &= "     Dim SQLString as string\n"
+      texto &= "     Dim mRs as result\n"
+      texto &= "     conectar.Conexion()\n"
+      texto &= "SQLString=\"Select * From " & nombretabla & "\"\n"
+      texto &= "If CampoOrden=null then \n"
+      texto &= "   SQlString &= \" WHERE " & campo[a] & ">'&1'  \n"
+      texto &= "else \n"
+      texto &= "   SQlString &= \" WHERE " & campo[a] & ">'&1' Order by \" & CampoOrden\n"
+      texto &= "endif \n"
+      texto &= "Try mRs=conectar.hconn.Exec(Subst$(SQLString, valor))\n"
+      texto &= "IF ERROR THEN \n"
+      texto &= "Message.Error(\" Se ha producido un ERROR al Buscar datos, \" & \"\\nError: \" & error.text )\n"
+      texto &= "else\n"
+      texto &= "return mRs\n"
+      texto &= "ENDIF\n"
+      texto &= "END\n\n"
+      codigo &= texto
+      texto = "PUBLIC function BuscarEntre" & primeraMay(campo[a]) & "( valorMin AS " & campotipo[a] & ", valorMax AS " & campotipo[a] & ",optional CampoOrden as string ) as result\n"
+      texto &= "     Dim conectar as new conexion\n"
+      texto &= "     Dim SQLString as string\n"
+      texto &= "     Dim mRs as result\n"
+      texto &= "     conectar.Conexion()\n"
+      texto &= "SQLString=\"Select * From " & nombretabla & "\"\n"
+      texto &= "If CampoOrden=null then\n"
+      texto &= "   SQlString &= \" WHERE " & campo[a] & " BETWEEN &1 and &2 \n"
+      texto &= "else\n"
+      texto &= "   SQlString &= \" WHERE " & campo[a] & " BETWEEN &1 and &2 Order by \"& CampoOrden\n"
+      texto &= "endif\n"
+      texto &= "Try mRs=conectar.hconn.Exec(Subst$(SQLString, valorMin,valorMax))\n"
+      texto &= "IF ERROR THEN\n"
+      texto &= "Message.Error(\" Se ha producido un ERROR al Buscar datos, \" & \"\\nError: \" & error.text )\n"
+      texto &= "else\n"
+      texto &= "return mRs\n"
+      texto &= "ENDIF\n"
+      texto &= "END\n\n"
+      codigo &= texto
+    Endif
+  Next
+  '--------------------------------------------------------
+  '------------------------------------------
+  ' realizar una consulta sql
+  texto = "PUBLIC function sql( consulta AS string) As result\n"
+  texto &= "     Dim conectar as new conexion\n"
+  texto &= "    ' Dim SQLString as string\n"
+  texto &= "     Dim mRs as result\n"
+  texto &= "  conectar.Conexion()\n"
+  texto &= "try mRs=conectar.hconn.Exec(consulta) \n"
+  texto &= "If error then message.info(\"Consulta erronea, revisela\")\n"
+  texto &= "return mRs\n"
+  texto &= "END\n\n"
+  codigo &= texto
+  '------------------------------------------------------
+  'mostrar informacion de la base de la tabla
+  '------------------------------------------------------
+  texto = "PUBLIC Function informe() as string\n"
+  texto &= " dim texto as string\n"
+  texto &= "print \"Base de datos: " & nombrebase & "\"\n"
+  texto &= "print \"        Tabla: " & nombretabla & "\"\n"
+  For a = 0 To campo.count - 1
+    texto &= "print \"             Campo: " & campo[a] & " Tipo: " & campotipo[a] & "\"\n"
+  Next
+  texto &= " texto= \"Base_de_datos:|" & nombrebase & "|\"\n"
+  texto &= " texto &= \"Tabla:|" & nombretabla & "\"\n"
+  For a = 0 To campo.count - 1
+    texto &= " texto &= \"|campo:|" & campo[a] & "|tipo:|" & campotipo[a] & "\"\n"
+  Next
+  texto &= " Return texto \n"
+  texto &= "end\n\n"
+  codigo &= texto
+  '---------------------------------------------------
+  'definir gridviews
+  '---------------------------------------------------
+  texto = "PUBLIC Function gridFormatearColumnas(grid AS GridView) as gridview\n"
+  texto &= " Dim f As New Font\n"
+  texto &= " f.name = \"Sans\"\n"
+  texto &= " f.size =  me.sizefont\n "
+  texto &= "  me.formatearFechaIdioma()\n"
+  texto &= "   me.arrayAnchoColumnas = new integer[]\n"
+  texto &= "   WITH grid \n"
+  texto &= "      .header = 3 \n"
+  texto &= "      .rows.count = 0 \n"
+  texto &= "      .columns.count = " & campo.count & " \n"
+
+  For a = 0 To campo.count - 1
+    texto &= "      .Columns[" & Str$(a) & "].title = (\"" & campo[a] & "\")\n"
+    texto &= "      .Columns[" & Str$(a) & "].width = -1'f.textwidth((\"" & campo[a] & "\")&\"m\")\n"
+    texto &= "       me.arrayAnchoColumnas.add(-1)\n"
+  Next
+
+  texto &= "      .font.name = \"Sans\"\n"
+  texto &= "      .font.size = me.sizefont \n"
+  texto &= "      .Background = 16777215 \n"
+  texto &= "      .Foreground = 0 \n"
+  texto &= "   END WITH\n"
+  texto &= " grid.Mode = Select.Single\n"
+  texto &= " Return grid \n"
+  texto &= "END\n\n"
+  codigo &= texto
+
+  texto = "PUBLIC FUNCTION gridFormatearFilas(grid AS GridView) AS gridview\n"
+  texto &= " dim titulolargo as string\n"
+  texto &= "Dim f As New Font\n"
+  texto &= "f.name = \"Sans\"\n"
+  texto &= "f.size = Me.sizefont\n"
+  texto &= "   WITH grid\n"
+  texto &= "      .header = 3 \n"
+  texto &= "      .rows.count =" & Str$(campo.count) & "\n"
+  texto &= "      .columns.count = 2\n"
+  texto &= "      .Columns[0].title = \"Campos\"\n"
+  texto &= "      .Columns[1].title = \"Registro\"\n"
+
+  texto &= "      .font.name = \"Sans\"\n"
+  texto &= "      .font.size = 10 \n"
+  texto &= "      .Background = 16777215\n"
+  texto &= "      .Foreground = 0 \n"
+  texto &= "   END WITH\n"
+  For a = 0 To campo.Count - 1
+    texto &= "      grid[" & Str$(a) & ",0].text = (\"" & campo[a] & "\")\n"
+    texto &= "      grid[" & Str$(a) & ",0].background = color.lightgray\n"
+    texto &= " If Len(titulolargo) < Len((\"" & campo[a] & "\")) Then \n"
+    texto &= " titulolargo =(\"" & campo[a] & "\")\n"
+    texto &= "endif\n"
+  Next
+  texto &= "  grid.Columns[0].width=F.textwidth(titulolargo & \"m\") \n" ''NOTE: RESOLVER ANCHO DE COLUMNA
+  texto &= " Return grid\n"
+  texto &= "END\n\n"
+  codigo &= texto
+
+  '--------------------------------------------------------------------
+  ' devolver conteneido de la tabla
+  '---------------------------------------------------------------------
+  texto = "PUBLIC SUB contenido() as result \n"
+  texto &= "     Dim conectar as new conexion\n"
+  texto &= "     Dim SQLString as string\n"
+  texto &= "     Dim mRs as result\n"
+  texto &= "     conectar.Conexion()\n"
+  texto &= "     SQLString  = \"SELECT * FROM " & nombretabla & "\" \n"
+  texto &= "     try mRs = conectar.hconn.Exec(SQLString) \n"
+  texto &= "If error then message.info(\"Consulta erronea, revisela\")\n"
+
+  texto &= "RETURN mRs \n"
+  texto &= "End\n\n"
+  codigo &= texto
+  'escribir un registro en una gridviews Horizontal:
+  texto = "PUBLIC FUNCTION mostrarRegistro(numero AS Integer, grid AS GridView, OPTIONAL sqlcadena AS String) AS Result\n"
+
+  texto &= "DIM resultado AS Result\n"
+  texto &= "IF sqlcadena = NULL THEN \n"
+  texto &= "resultado = contenido()\n"
+  texto &= "ELSE \n"
+  texto &= "resultado = sql(sqlcadena)\n"
+  texto &= "ENDIF \n"
+  texto &= "resultado.MoveTo(numero)\n"
+  For a = 0 To campo.count - 1
+    texto &= "TRY grid[" & a & ", 1].text = Str$(resultado!" & campo[a] & ")\n"
+  Next
+  texto &= "END\n\n"
+  codigo &= texto
+
+  'actualizar registro de gridview horizontal recibiendo datos de un  objeto VO ( 0.2.8 )
+  texto = "PUBLIC FUNCTION mostrarRegistroVO(objetoVO As " & nombretabla & "VO, grid AS GridView) AS Result\n"
+  For a = 0 To campo.count - 1
+    texto &= "TRY grid[" & a & ", 1].text = Str$(objetoVO." & campo[a] & ")\n"
+  Next
+  texto &= "END\n\n"
+  codigo &= texto
+
+  '--------------------------------------------------------------------
+  ' Formatear y rellenar una gridviews, con los datos de un resultado EN UNA SOLA TABLA
+  '---------------------------------------------------------------------
+  texto = "PUBLIC FUNCTION GridResultanteSQL(res AS result, grid AS GridView) AS gridview  \n"
+  texto &= "DIM columna AS Integer\n"
+  texto &= "DIM hField AS ResultField\n"
+  texto &= "'DIM a AS Integer\n"
+  texto &= "'DIM fila AS Integer\n"
+  texto &= "'defino la regilla\n"
+  texto &= "   WITH grid \n"
+  texto &= "      .header = 3 \n"
+  texto &= "      .rows.count = 0 \n"
+  texto &= " try     .columns.count = res.Fields.Count \n"
+  texto &= "      columna = -1\n"
+  texto &= "       FOR EACH hField IN res.Fields\n"
+  texto &= "      columna = columna + 1\n"
+  texto &= " try     .Columns[columna].title = Str$(hField.name)\n"
+  texto &= "       NEXT \n"
+  texto &= "       .font.name = \"Sans\"\n"
+  texto &= "      .font.size = 10\n"
+  texto &= "      .Background = 16777215 \n"
+  texto &= "      .Foreground = 0 \n"
+  texto &= "   END WITH\n"
+  texto &= " RETURN grid \n"
+  texto &= "END\n\n"
+
+  'añadir sistema para que simplemente pasandole el gridview, se actualizcendatos
+  texto &= actualizarDatosGridviewnReferenciado()
+
+  codigo &= texto
+
+  Return codigo
+
+End
+
+Public Function primeraMay(cadena As String) As String
+
+  Return Mid(Upper(cadena), 1, 1) & Mid(cadena, 2, Len(cadena))
+
+End
+'sobre sql:
+'http://sql.1keydata.com/es/sintaxis-sql.php
+
+Public Function anadirBDregistro(nombretabla As String, campo As String[]) As String
+
+  '  Dim a As Integer
+  Dim texto As String
+  Dim codigo As String
+
+  codigo &= texto
+  ' realizar una consulta sql
+
+  texto = "PUBLIC function sql( consulta AS string) As result\n"
+  texto &= "     Dim conectar as new conexion\n"
+  texto &= "     Dim mRs as result\n"
+  texto &= "     conectar.Conexion()\n"
+  texto &= "try mRs=conectar.hconn.Exec(consulta) \n"
+  texto &= "If error then \n"
+  texto &= "    message.info(\"Consulta erronea, revisela\")\n"
+  texto &= "else\n"
+  texto &= "    return mRs \n"
+  texto &= "endif\n"
+  texto &= "END\n\n"
+
+  codigo &= texto
+  '
+
+  Return codigo
+
+End
+
+'---------------------------------------- version 0.2.2 -----------------------
+Public Function actualizarDatosGridviewnReferenciado() As String
+
+  Return File.Load(".hidden/datacopy/autogridviewObservador")
+
+End
+
+'----------------------------- conversiones--------------------------
+
+Public Sub codigoConversionesResultGridDAO(nombretabla As String, campo As String[], campotipo As String[]) As String
+
+  Dim a As Integer
+  Dim texto As String
+  '---------------------------------------------
+  'conversion de Result a array ...VO[]
+  '---------------------------------------------
+  texto = Subst("\nPUBLIC FUNCTION ConvertirResult(hr as result) AS &1VO[]\n", nombretabla)
+  texto &= Subst("Dim datos as new &1VO[]\n", nombretabla)
+  texto &= Subst("Dim datotmp as &1VO\n", nombretabla)
+  texto &= "While hr.available\n"
+  texto &= Subst(" datotmp=new &1VO\n", nombretabla)
+
+  For a = 0 To campotipo.max
+    texto &= Subst("try datotmp.&1=hr[\"&1\"]\n", campo[a])
+  Next
+
+  texto &= "try datos.add(datotmp)\n"
+  texto &= "hr.movenext\n"
+  texto &= "wend\n"
+  texto &= "return datos\n"
+  texto &= "end\n"
+
+  'DAO.............................................
+  '---------------------------------------------
+  ' Devuelve objeto VO de la fila seleccionada del gridview
+  '---------------------------------------------
+
+  texto &= Subst("PUBLIC FUNCTION filaSeleccionadaVO() AS &1VO\n", nombretabla)
+  texto &= "'Dim colecciontmp as new Collection\n"
+  texto &= "Dim fila as integer\n"
+  texto &= "Dim idbuscado as integer\n"
+  texto &= Subst$("Dim objTempVO as new &1VO\n", nombretabla)
+  'por cada columna asignar a una coleccion
+
+  texto &= "try fila=gridviewPropio.row\n"
+  texto &= "if ERROR or if FILA=-1  then \n"
+  texto &= "message.info((\"No hay registro seleccionado\"))'no hay fila seleccionada\n"
+  texto &= "return null\n"
+  texto &= "endif\n"
+
+  '(dependiendo si hay datos en el tag. del gridview o no se usan los titulo)
+
+  texto &= " idbuscado = val(replace$(gridviewPropio[fila, 0].text,\".\",\",\"))\n"
+  texto &= " objTempVO = Me.ConvertirResult(Me.BuscarIgual(idbuscado, \"" & campo[0] & "\"))[0]\n"
+  texto &= "Return objTempVO\n"
+
+  texto &= "end\n"
+
+  texto &= Subst$("Public Function extraeColumnaArray(datos As &1VO[], nombrecampo As String) As String\n", nombretabla)
+  texto &= "Dim datotmp As Object\n"
+  texto &= "Dim lista As New String[]\n"
+  texto &= "For Each datotmp In datos\n"
+  texto &= "lista.Add(Object.GetProperty(datotmp, nombrecampo))\n"
+  texto &= "Next\n"
+  texto &= "Return lista.Join(\",\")\n"
+  texto &= "End\n"
+  texto &= funcionConstruirFormulario(nombretabla, campo, campotipo)
+
+  Return texto
+
+End
+
+'------------------------------ CONTRUIR FORMULARI AUTOMATIZADO ------------------------
+
+Public Function funcionConstruirFormulario(nombretabla As String, campo As String[], campotipo As String[]) As String
+
+  Dim a As Integer
+
+  Dim texto As String
+
+  texto = "Public FormularioTitulo as string\n"
+  texto &= "Public sub FormularioRegistrar(numeropaneles as integer)\n"
+  texto &= " Dim respuesta As Collection\n"
+  texto &= " Dim codigocampos As string\n"
+  texto &= Subst("Dim tmpVo as new &1VO\n", nombretabla)
+  texto &= "FormAutomaticoDinamico.titulo=me.FormularioTitulo\n"
+  texto &= "codigocampos = me.GeneradorCodigoFormulario(\"registrar\")'necesario Me por si uso herencia para adaptar el formulario\n"
+  texto &= " respuesta = FormAutomaticoDinamico.iniciar(codigocampos,\"Nuevo Registro\",numeroPaneles)\n"
+  texto &= "if not isnull(respuesta) then\n"
+  texto &= "tmpVo=tmpVo.ConvertirColeccionaVO(respuesta)\n"
+  texto &= "me.registrar(tmpVO)\n"
+  texto &= "else\n"
+  texto &= "return\n"
+  texto &= "endif\n"
+  texto &= "end\n"
+  '-------------------------------------------------- editar registro -------------------------------
+
+  For a = 0 To campo.Max
+    If Upper$(campotipo[a]) = Upper$("null") Then
+      texto &= Subst("Public function FormularioModificarRegistro&1(identificador as integer,datosEditar as &3VO, numeropaneles as integer) as boolean\n", primeraMay(campo[a]), campotipo[a], nombretabla)
+      texto &= " Dim respuesta As Collection\n"
+      texto &= " Dim codigocampos As string\n"
+      texto &= Subst("Dim tmpVo as new &1VO\n", nombretabla)
+      texto &= "codigocampos = me.GeneradorCodigoFormulario(\"editar\",datosEditar)'necesario Me por si uso herencia para adaptar el formulario\n"
+      texto &= "FormAutomaticoDinamico.titulo=me.FormularioTitulo\n"
+      texto &= " respuesta = FormAutomaticoDinamico.iniciar(codigocampos,\"Nuevo Registro\",numeroPaneles)\n"
+      texto &= "if not isnull(respuesta) then\n"
+      texto &= "tmpVo=tmpVo.ConvertirColeccionaVO(respuesta)\n"
+      texto &= Subst$("tmpVo.&1=identificador\n", campo[a])
+      texto &= Subst$("me.Modificar&1(tmpVo.&1,tmpVo)\n", primeraMay(campo[a]))
+      texto &= "return true\n"
+      texto &= "else\n"
+      texto &= "return false \n"
+      texto &= "endif\n"
+      texto &= "end\n"
+    Endif
+
+  Next
+
+  texto &= generaCodigoFormulario(campo, campotipo, nombretabla) & "\n"
+
+  Return texto
+
+End
+
+Public Function NombreCampos(c As String[]) As String
+
+  Dim cadena As String
+  Dim cadenaTraducida As String
+  Dim texto As String
+  Dim a As Integer
+
+  texto = "Public function NombreCampos() as Collection\n"
+  texto &= "dim codigocampos as new Collection\n"
+  texto &= "dim textocamposTraducidos as string\n"
+  texto &= "dim textocampos as string\n"
+
+  For a = 0 To c.Max - 1
+    cadena &= "\"" & c[a] & "\" & \"|\" & "
+  Next
+
+  For a = 0 To c.Max - 1
+    cadenaTraducida &= "(\"" & c[a] & "\") & \"|\" & "
+  Next
+  texto &= "textocamposTraducidos=" & cadenaTraducida & "(\"" & c[a] & "\")\n"
+  texto &= "textocampos=" & cadena & "\"" & c[a] & "\"\n"
+  texto &= "codigocampos.add(textocamposTraducidos,\"traducidos\")\n"
+  texto &= "codigocampos.add(textocampos,\"sintraducidos\")\n"
+  texto &= "RETURN codigocampos\n"
+  texto &= "end\n"
+  Return texto
+
+End
+
+Public Function generaCodigoFormulario(c As String[], tipo As String[], nombretabla As String) As String
+
+  Dim a As Integer
+
+  Dim texto As String
+
+  texto = Subst("Public function GeneradorCodigoFormulario(tipo as string,optional  datosEditar as &1VO) as string\n", nombretabla)
+  texto &= "dim codigocampos as string\n"
+  texto &= "If tipo=\"registrar\" then \n"
+
+  'añadir un nuevo registro........
+  For a = 0 To c.Max
+    If Upper$(tipo[a]) = Upper$("null") Then
+      texto &= "codigocampos &=\"null|" & c[a] & "|null;\"\n"
+    Else
+      Select Case Upper$(tipo[a])
+        Case "INTEGER", "FLOAT"
+          texto &= "codigocampos &=\"valuebox|" & c[a] & "|\" & (\"" & c[a] & "\") & \"|0;\"\n"
+        Case "TEXT", "STRING"
+          texto &= "codigocampos &=\"textbox|" & c[a] & "|\" & (\"" & c[a] & "\") & \"|;\"\n"
+        Case "DATE"
+          texto &= "codigocampos &=\"datebox|" & c[a] & "|\" & (\"" & c[a] & "\") & \"|\"&  Format$(Now,me.formatofecha) & \";\"\n"
+        Case "BOOLEAN"
+          texto &= "codigocampos &=\"checkbox|" & c[a] & "|\" & (\"" & c[a] & "\") & \"|False;\"\n"
+        Default
+          texto &= "''NOTE: error con el campo al intentar identificar tipo de campo: " & c[a] & " tipo: " & tipo[a] & "\n"
+      End Select
+
+    Endif
+
+  Next
+
+  texto &= "else\n"
+  'pasar valores al formulario
+
+  For a = 0 To c.Max
+
+    If Upper$(tipo[a]) = Upper$("null") Then
+      texto &= "codigocampos &=\"null|" & c[a] & "|null;\"\n"
+    Else
+      Select Case Upper$(tipo[a])
+        Case "INTEGER", "FLOAT"
+          texto &= "codigocampos &=\"valuebox|" & c[a] & "|\" & (\"" & c[a] & "\") & \"|\" & datosEditar." & c[a] & " & \";\"\n"
+
+        Case "TEXT", "STRING"
+          texto &= "codigocampos &=\"textbox|" & c[a] & "|\" & (\"" & c[a] & "\") & \"|\" & datosEditar." & c[a] & " & \";\"\n"
+        Case "DATE"
+          texto &= "codigocampos &=\"datebox|" & c[a] & "|\" & (\"" & c[a] & "\") & \"|\"&  Format$(datosEditar." & c[a] & ",me.formatofecha) & \";\"\n"
+        Case "BOOLEAN"
+          texto &= "codigocampos &=\"checkbox|" & c[a] & "|\" & (\"" & c[a] & "\") & \"|\" & str$(datosEditar." & c[a] & ") & \";\"\n"
+        Default
+          texto &= "''NOTE: error con el campo al intentar identificar tipo de campo: " & c[a] & " tipo: " & tipo[a] & " & \";\"\n"
+      End Select
+
+    Endif
+
+  Next
+
+  texto &= "endif\n"
+  texto &= "RETURN codigocampos\n"
+  texto &= "end\n"
+
+  texto &= NombreCampos(c)
+
+  ''TODO: EXTRAER DATO DE UN REGISTRO añado funcion para extraer un registro dado un id indicado de la TABLA
+  '
+  texto &= "Public function ExtraerRegistro(NombreCampo as string,id as integer) as " & nombretabla & "VO\n"
+  texto &= "Dim datosVO as " & nombretabla & "VO\n"
+  texto &= "try datosVO=me.ConvertirResult(me.BuscarIgual(id,NombreCampo))[0] 'busco en el id del campo indicado la tabla/vista\n"
+  texto &= "if error then \n"
+  texto &= "print \"warnning:\",error.text,nombrecampo,id \n"
+  texto &= "return null\n"
+  texto &= "else\n"
+  texto &= "RETURN datosVO\n"
+  texto &= "endif\n"
+  texto &= "end\n"
+
+  '' extrae el ultimo resultadointroducido
+  texto &= "Public function UltimoIntroducido() as " & nombretabla & "VO\n"
+  texto &= "Dim datosVO as " & nombretabla & "VO\n"
+  texto &= "Dim hresult as result\n"
+  texto &= "hresult=me.contenido()\n"
+  texto &= "hresult.movelast\n"
+  texto &= "datosVO=me.convertirResult(hresult)[0]\n"
+  texto &= "RETURN datosVO\n"
+  texto &= "end\n"
+
+  Return texto
+
+End
+'****************************************************************************************************
+'------------------------------------- IMPRESION RAPIDA Pasar Gridview a html ----------------------
+'****************************************************************************************************'
+
+Public Function generaGridaHTML() As String
+
+  Return File.Load(".hidden/datacopy/ImprimirRapido.txt")
+
+End

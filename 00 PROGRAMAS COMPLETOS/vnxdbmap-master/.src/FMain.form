@@ -1,0 +1,127 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,115,82)
+  Icon = Picture["iconobd.png"]
+  Arrangement = Arrange.Vertical
+  { Panel3 Panel
+    MoveScaled(-1,1,112,15)
+    { Labelversion Label
+      MoveScaled(13,5,19,4)
+      Text = ("Label4")
+      Alignment = Align.Center
+    }
+    { Label1 Label
+      MoveScaled(0,0,59,7)
+      Font = Font["+4"]
+      Text = ("FrameWork Map BD-Vistas")
+      Alignment = Align.Center
+    }
+    { TextLabel1 TextLabel
+      MoveScaled(47,1,60,7)
+      Text = ("Autor: Julio Sánchez Berro<br>\nLicencia: GPL 2.0<br>\n")
+      Alignment = Align.Center
+    }
+    { TextLabel2 TextLabel
+      MoveScaled(47,6,61,3)
+      Font = Font["Arial,Underline"]
+      Foreground = &H0000FF&
+      Text = (" http://mapbdvistas.blogspot.com.es/")
+      Alignment = Align.Center
+    }
+    { PictureBox1 PictureBox
+      MoveScaled(0,0,7,7)
+      Picture = Picture[".hidden/icons/mapvistas.png"]
+      Stretch = True
+    }
+    { ButtonAnalisisCompleto Button
+      MoveScaled(50,10,40,5)
+      Font = Font["-1"]
+      Expand = True
+      AutoResize = True
+      Text = ("Analisis Completo Varias Tablas y Vistas")
+      Picture = Picture["icon:/22/play"]
+    }
+    { ButtonBuscarBaseDeDatos Button
+      MoveScaled(3,10,46,5)
+      Text = ("Seleccione base de datos  .sqlite:")
+      Picture = Picture["icon:/22/directory"]
+    }
+    { ButtonInforme Button
+      MoveScaled(95,10,13,5)
+      Visible = False
+      Text = ("informe")
+      Picture = Picture["icon:/16/text"]
+    }
+    { PictureBoxUpdate PictureBox
+      MoveScaled(99,1,9,13)
+      ToolTip = ("Comprueba si existe una nueva version")
+      Picture = Picture[".hidden/images/gambas update version actualizacion .png"]
+      Stretch = True
+      Border = Border.Raised
+    }
+  }
+  { LabelNombreBaseDeDatos Label
+    MoveScaled(3,16,20,3)
+    Text = ("Base de datos .sqlite:")
+  }
+  { TextAreaCompleta TextArea
+    MoveScaled(2,19,93,19)
+    ToolTip = ("Introduzca aqui la definicion de la tabla") & "..."
+  }
+  { VSplit1 VSplit
+    MoveScaled(2,29,108,43)
+    Expand = True
+    { VBox1 VBox
+      MoveScaled(3,1,75,13)
+      { ButtonAnalizar Button
+        MoveScaled(0,0,36,6)
+        Visible = False
+        Text = ("(1) Analiza Vistas")
+      }
+      { TextAreaUnaVista TextArea
+        MoveScaled(14,7,35,5)
+        Background = &HBFFF7F&
+        Expand = True
+        Wrap = True
+      }
+    }
+    { Panel1 Panel
+      MoveScaled(3,12,108,24)
+      Expand = True
+      Arrangement = Arrange.Vertical
+      { Panel4 Panel
+        MoveScaled(1,1,106,6)
+        { Label4 Label
+          MoveScaled(1,0,40,4)
+          Text = ("Asignar tipos.") & "..."
+        }
+        { ButtonGenerarCodigo Button
+          MoveScaled(72,0,32,6)
+          Visible = False
+          Text = ("(2) y generar código")
+        }
+      }
+      { TextAreaTipos TextArea
+        MoveScaled(2,6,79,14)
+        Background = &HFFE7DF&
+        Expand = True
+      }
+      { ProgressBar1 ProgressBar
+        MoveScaled(2,22,74,2)
+      }
+    }
+  }
+  { Panel2 Panel
+    MoveScaled(2,74,106,7)
+    { Label3 Label
+      MoveScaled(1,2,44,4)
+      Text = ("Ruta donde se guarda el código fuente:")
+    }
+    { TextBoxRuta TextBox
+      MoveScaled(46,2,59,4)
+      Background = Color.LightBackground
+      ReadOnly = True
+    }
+  }
+}

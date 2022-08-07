@@ -1,0 +1,316 @@
+
+public hresultadoNuevo As Result
+Public gridviewPropio As GridView 'para tener acceso desde clases heredadas
+Public actualiza As Observer
+
+public iconoTrue as string= "icon:/16/apply"
+public iconoFalse as string="icon:/16/cancel"
+Public sizefont As Integer = 10
+
+Public formatoFecha as string
+
+Public Sub MostrarGridView(gridviewtrabajo As GridView, Optional cadenaSQL As String, optional resultado as result)
+  
+  gridFormatearColumnas(gridviewtrabajo)
+  gridviewPropio = gridviewtrabajo
+  
+  if not isnull(resultado) then 
+    hresultadoNuevo=resultado
+   else
+   'no ha habido resultado
+    If cadenaSQL = "" Then 
+      hresultadoNuevo = contenido()
+    Else
+      hresultadoNuevo = sql(cadenaSQL)
+    Endif
+  endif
+   
+   actualiza = New Observer(gridviewPropio) As "Observar"
+  gridviewPropio.tag = Split(NombreCampos()["sintraducidos"], "|")
+  gridviewPropio.clear()
+  gridviewPropio.rows.count = hresultadoNuevo.count
+  AsignaAnchoGrid()
+End
+
+
+PROPERTY ColorFilaPar AS integer 
+PRIVATE hColorFilaPar AS  integer = color.white
+
+PRIVATE FUNCTION ColorFilaPar_read() AS integer 
+  RETURN hColorFilaPar 
+END  
+
+PRIVATE SUB ColorFilaPar_write(Valor AS integer)
+  hColorFilaPar = Valor 
+END
+PROPERTY ColorFilaImPar AS integer 
+PRIVATE hColorFilaImPar AS  integer = color.cyan
+
+PRIVATE FUNCTION ColorFilaImPar_read() AS integer 
+  RETURN hColorFilaImPar 
+END  
+
+PRIVATE SUB ColorFilaImPar_write(Valor AS integer)
+  hColorFilaImPar = Valor 
+END
+
+
+
+Public Sub Observar_Data(row As Integer, column As Integer)
+    Dim f As New Font
+    dim datocontenido as variant
+  
+    f.name = "Sans"
+    f.size = me.sizefont
+  
+   '-------------------------------------------
+  'colores....filas impar / par ge regillas
+  '-------------------------------------------
+  If row Mod 2 = 0 Then
+     me.gridviewPropio.Data.Background = me.ColorFilaImPar
+   else
+     me.gridviewPropio.Data.Background =me.ColorFilaPar
+   Endif
+  
+  
+  me.hresultadoNuevo.MoveTo(row)
+  'comprobar si hay datos en TAG
+  If IsNull(me.gridviewPropio.tag) Then 
+ try datocontenido=me.hresultadoNuevo[replace(me.gridviewPropio.columns[column].text,"_",".")]
+ if error then 
+ print "warning !!: nombre de campo que no encuentro "& me.GridViewPropio.tag[column]  & " en la tabla/vista"
+  endif
+ 
+ 
+    if isdate(str$( datocontenido)) then
+    TRY  me.gridviewPropio.Data.text = format(date(datocontenido),me.formatofecha)
+    IF ERROR THEN me.gridviewPropio.Data.text = format(Date(VAL(datocontenido)),me.formatofecha)
+    else
+     if isboolean( str$(datocontenido)) then 
+        if datocontenido then 
+          me.gridviewPropio.data.picture=picture[me.iconoTrue]
+        else
+          me.gridviewPropio.data.picture=picture[me.iconoFalse]
+        endif
+      else
+          'añadido para escribir las columnas que contengan números y que no sea tipo Id el campo
+        If IsNumber(str$(datocontenido))  and me.NoesTipoId(me.gridviewPropio.columns[column].text) Then
+          TRY Me.gridviewPropio.Data.text = Format$(datocontenido, ",#.#0")
+          IF ERROR THEN Me.gridviewPropio.Data.text = Format$(VAL(datocontenido), ",#.#0")
+          me.gridviewPropio.Data.Alignment = Align.Right
+        Else
+          Me.gridviewPropio.Data.text = datocontenido
+        Endif
+      endif
+    endif
+  ''hay datos en  TAG  
+  Else
+ try   datocontenido=me.hresultadoNuevo[replace(me.GridViewPropio.tag[column],"_",".")]
+ if error then 
+ print "warning !!: nombre de campo que no encuentro "& me.GridViewPropio.tag[column]  & " en la tabla/vista"
+  endif
+  
+    if isdate(str$(datocontenido)) then
+      TRY me.gridviewPropio.Data.text = format(date(datocontenido),me.formatofecha)
+      IF ERROR THEN me.gridviewPropio.Data.text = format(date(VAL(datocontenido)),me.formatofecha)
+    else
+      if isboolean(str$(datocontenido)) then 
+          if datocontenido then 
+            me.gridviewPropio.data.picture=picture[me.iconoTrue]
+          else
+           me.gridviewPropio.data.picture=picture[me.iconoFalse]
+          endif
+        else
+        
+         'añadido para escribir las columnas que contengan números  y que no sea tipo Id el campo
+        If IsNumber(str$(datocontenido))  and me.NoesTipoId(me.GridViewPropio.tag[column]) Then
+          TRY Me.gridviewPropio.Data.text = Format$(datocontenido, ",#.#0")
+          IF ERROR THEN Me.gridviewPropio.Data.text = Format$(VAL(datocontenido), ",#.#0")
+          me.gridviewPropio.Data.Alignment = Align.Right
+        Else
+          Me.gridviewPropio.Data.text = datocontenido
+        Endif
+       
+        
+      
+      endif
+    endif
+  Endif
+  
+
+  '-----------------------------------------------
+  ' columna con id, con ancho 0, para que no se vea
+  '-----------------------------------------------
+ ' If Upper$(Me.gridviewPropio.Columns[column].title) = Upper$("id") Then
+  '   me.arrayAnchoColumnas[column] = 0
+  '   return 'salgo de la funcion
+ ' Endif
+
+
+'Compruebo ancho y amplio si es necesario.
+  ' If me.arrayAnchoColumnas[column]< F.textwidth(me.gridviewPropio.Data.text) Then 
+  ' me.arrayAnchoColumnas[column] = F.textwidth(me.gridviewPropio.Data.text & "m") 
+ ' Endif
+ 
+
+
+End
+
+
+public function NoesTipoId(nombre as string) as boolean
+
+if upper$(mid$(nombre,1,2))="ID" then 
+return false
+else
+return true
+endif 
+
+end
+
+
+
+
+
+
+'Array que contiene los valores del ancho de las columnas.
+public arrayAnchoColumnas as new integer[]
+Public ocultaId As String ''sirve para ocultar una columna por su nombre: "id" o "", oculta si su nombre es "id"; "id*": oculta columna si su nmbre empieza por idxxxx
+'AsignaAnchoGrid
+
+Public Sub AsignaAnchoGrid()
+
+  Dim a As Integer
+
+  For a = 0 To Me.arrayAnchoColumnas.max
+    Select Case Upper$(Me.ocultaId)
+      Case Upper$("id"), "" 'para mantener retrocompatibilidad, se admite valor vacio.
+        If Upper$(Me.gridviewPropio.tag[a]) = "ID" Then
+          'oculto columna cuyo nombre es "ID"
+          Me.gridviewPropio.Columns[a].width = 0
+        Else
+          Me.gridviewPropio.Columns[a].width = Me.arrayAnchoColumnas[a]
+        Endif
+
+      Case Upper$("id*")
+        'se oculta si contiene ID al principio
+        If Mid$(Upper$(Me.gridviewPropio.tag[a]), 1, 2) = "ID" Then
+        'oculto columna cuyo nombre empieza por id, por ejemplo idcategoria
+          Me.gridviewPropio.Columns[a].width = 0
+        Else
+          Me.gridviewPropio.Columns[a].width = Me.arrayAnchoColumnas[a]
+        Endif
+      Default
+        Me.gridviewPropio.Columns[a].width = Me.arrayAnchoColumnas[a]
+
+    End Select
+
+  Next
+
+'nota:
+'esta regla no se aplica si es la última columna, ya que simpre se mostrara si existe ancho del gridview.
+
+End
+
+
+public sub formatearFechaIdioma()
+ 
+ If System.Language = "en_US.UTF-8" Then
+      me.formatofecha = "mm/dd/yyyy" 'usa
+    Else
+     me.formatofecha = "dd/mm/yyyy" 'esp
+    Endif
+    
+end
+
+'-----------------------------------------------------
+'añadido ordenar por columnas haciendo click...
+'-----------------------------------------------------
+PUBLIC ordenlistado AS Integer
+
+'PUBLIC SUB Observar_ColumnClick(Column AS Integer)
+'IF me.ordenlistado = 0 THEN
+'me.ord_AZ(Me.gridviewPropio, Column)
+'me.ordenlistado = 1
+'ELSE
+'me.ordenlistado = 0
+'ord_ZA(Me.gridviewPropio, Column)
+'ENDIF
+'END
+
+PUBLIC SUB ord_AZ(grid AS GridView, a AS Integer)
+'a: indica la columna a la que ordenamos
+'grid: es la rejilla que ordenamos
+DIM limite AS Integer
+DIM cambio1 AS String
+DIM i AS Integer
+DIM j AS Integer
+DIM col AS Integer
+
+limite = grid.Rows.COUNT
+IF (grid.Columns.COUNT < a + 1) OR a < 0 THEN
+Message.Error("Error en la columna introducida para ordenar")
+grid.visible = TRUE
+return
+
+ENDIF
+FOR i = 0 TO limite - 1
+FOR j = 0 TO limite - 2
+IF UCase$(Grid[j, a].Text) > UCase$(Grid[j + 1, a].Text) THEN
+
+
+FOR col = 0 TO grid.Columns.COUNT - 1
+cambio1 = Grid[j, col].Text
+Grid[j, col].text = Grid[j + 1, col].Text
+Grid[j + 1, col].text = cambio1
+  
+NEXT
+
+
+ENDIF
+NEXT
+NEXT
+
+
+
+
+END
+
+
+'------------------------------------------------------------------------
+PUBLIC SUB ord_ZA(grid AS GridView, a AS Integer)
+'a: indica la columna a la que ordenamos
+'grid: es la rejilla que ordenamos
+DIM limite AS Integer
+DIM cambio1 AS String
+DIM i AS Integer
+DIM j AS Integer
+DIM col AS Integer
+
+limite = grid.Rows.COUNT
+IF (grid.Columns.COUNT < a + 1) OR a < 0 THEN
+Message.Error("Error en la columna introducida para ordenar")
+grid.visible = TRUE
+return
+
+ENDIF
+FOR i = 0 TO limite - 2
+
+
+FOR j = i TO limite - 1
+IF UCase$(Grid[i, a].Text) <= UCase$(Grid[j, a].Text) THEN
+FOR col = 0 TO grid.Columns.COUNT - 1
+cambio1 = Grid[j, col].Text
+Grid[j, col].text = Grid[i, col].Text
+Grid[i, col].text = cambio1
+NEXT
+ENDIF
+NEXT
+NEXT
+
+
+
+
+
+END
+
+

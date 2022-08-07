@@ -1,0 +1,44 @@
+' Gambas class file
+
+''' formInforme.xxx:<br>
+''' pantalla de aviso del resultado de la creacion de el nuevo proyecto
+' ##
+'   This program its under a license that required the CC-BY-SA rules.
+'   Cant be used commercialy unless permision of Julio Sanchez B jusabejusabe@gmail.com
+' ##
+'   This program Is Distributed In the hope that it will be useful,
+'   but WITHOUT ANY WARRANTY; without even the implied warranty Of
+'   MERCHANTABILITY Or FITNESS For A PARTICULAR PURPOSE. If you want
+'   some kind of support please comunicate in https://gitlab.com/venenux/vnxdbmap
+'   and provide some contribution to the project
+' ##
+
+Private rutaproject As String = User.home & "/Devel/newproject"
+
+Public Sub Button1_Click()
+
+  Me.Close
+
+End
+
+Public Sub Form_Open()
+
+  Dim lineas As String[]
+  Dim contenido As String
+
+  Shell "find " & rutaproject & " -name '*.class' -o -name '*.module' | xargs wc -l" To contenido
+
+  TextAreaInforme.text = contenido
+  lineas = Split(contenido, "\n")
+  LabelTOTAL.text = "Número de lineas de código generadas: " & lineas[lineas.max - 1]
+  LabelTOTALarchivos.text = "Número de clases y módulos creados: " & Str$(lineas.max - 1)
+
+  If lineas[lineas.max - 1] = 0 Or lineas.max - 1 = 0 Then
+    LabelConclusion.text = "Se han producido errores en la creación de las clases"
+    LabelConclusion.Foreground = Color.red
+    LabelConclusion.Background = Color.White
+  Endif
+
+  Me.center
+
+End

@@ -1,0 +1,34 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,87,64)
+  Arrangement = Arrange.Vertical
+  { Label1 Label
+    MoveScaled(14,2,31,6)
+    Font = Font["Arial,Bold,Italic,+4"]
+    Text = ("INFORME ")
+    Alignment = Align.Center
+  }
+  { LabelConclusion Label
+    MoveScaled(4,8,54,5)
+    Text = ("La creación de clases y módulos ha ido BIEN!!")
+    Alignment = Align.Center
+  }
+  { LabelTOTAL Label
+    MoveScaled(2,15,33,3)
+    Text = ("Total de lineas Generadas:")
+  }
+  { LabelTOTALarchivos Label
+    MoveScaled(3,19,33,3)
+    Text = ("Número de ficheros: ")
+  }
+  { TextAreaInforme TextArea
+    MoveScaled(9,23,47,32)
+    Expand = True
+    Text = ("TextArea1")
+  }
+  { Button1 Button
+    MoveScaled(20,59,24,4)
+    Text = ("Salir")
+  }
+}

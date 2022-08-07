@@ -1,0 +1,360 @@
+' Gambas class file
+
+
+''' GenerarDiagramaSVG.class:<br>
+''' en estado preliminar, crea imagen escalr de los objetos tablas/vistas
+' ##
+'   This program its under a license that required the CC-BY-SA rules.
+'   Cant be used commercialy unless permision of Julio Sanchez B jusabejusabe@gmail.com
+' ##
+'   This program Is Distributed In the hope that it will be useful,
+'   but WITHOUT ANY WARRANTY; without even the implied warranty Of
+'   MERCHANTABILITY Or FITNESS For A PARTICULAR PURPOSE. If you want 
+'   some kind of support please comunicate in https://gitlab.com/venenux/vnxdbmap 
+'   and provide some contribution to the project
+' ##
+
+
+Private cuerpo As String
+
+Private incrementoX As Integer
+
+Private activadoVista As Boolean = False
+
+Private contadorEtiquetaRectangulo As Integer 'contador de tablas y vistas que se van creando
+
+Private ContadorConector As Integer
+
+Private rutaproject As String = User.home & "/Devel/newproject"
+
+Public Struct Par
+  x As String
+  y As String
+End Struct
+
+'-------------------------------------------
+'solo hay conexiones ID entre Tablas!!!!
+'-------------------------------------------
+Private ArrayConexiones As New Par[]
+
+Public Struct etiquetaId
+  campo As String
+  idrectangulo As String
+  x As Integer
+  y As Integer
+End Struct
+
+Public ArrayEtiquetaId As New EtiquetaId[]
+
+'-------------------------------------------
+'las conexiones entre las vistas y tablas se tratan de distinta manera que las conexiones entre ID entre tablas
+'-------------------------------------------
+
+Public Struct ConexionVistas
+  nombreVista As String
+  x As Integer
+  y As Integer
+  tablas As String[] 'tambien pueden ser conexiones a otas vistas
+  id As String 'id de identificacion interna de la vista en el svg
+End Struct
+
+Public Struct DatosTablasVistas
+  nombre As String
+  x As Integer
+  y As Integer
+  id As String
+End Struct
+
+Public ArrayConexionVistas As New ConexionVistas[]
+Public arrayDatosTablasVistas As New DatosTablasVistas[]
+
+Public Sub addTabla(nombreTabla As String, nombreCampo As String[], tipoCampo As String[], tablavista As String, Optional sql As String)
+
+  Dim codigoNombreTabla As String
+  Dim codigocampo As String
+  Dim a As Integer
+  Dim codigocampotmp As String
+  Dim rectangulo As String
+  Dim alto As Integer
+  Dim rectangulo2 As String 'rectangulo verde, para el nombre de la tabla
+  Dim rectangulo3 As String 'rectangulo amarillo para los campo ID
+
+  Dim valor113 As Integer = 113
+  Dim valor136 As Integer = 136
+  Dim tmpEtiquetaId As New EtiquetaId
+  Dim anchoRecuadro As Integer = 250
+
+  Dim DatosTablasVistasTmp As New DatosTablasVistas
+  Dim DatosConexionVistasTmp As New ConexionVistas
+
+  contadorEtiquetaRectangulo += 1
+
+  If tablavista = "vista" And activadoVista = False Then
+    incrementoX = 0
+    activadoVista = True
+  Endif
+
+  If tablavista = "vista" Then
+    valor113 = 450
+    valor136 = valor113 + 23
+    DatosConexionVistasTmp.nombreVista = Upper$(nombreTabla)
+    DatosConexionVistasTmp.tablas = extraetablas(sql)
+    DatosConexionVistasTmp.x = incrementoX + 90 - 10
+    DatosConexionVistasTmp.y = valor136 + 4 + 20 * (a - 1)
+    DatosConexionVistasTmp.id = "g" & Str(contadorEtiquetaRectangulo)
+
+    ArrayConexionVistas.add(DatosConexionVistasTmp)
+  Endif
+
+  'tabla o vista que puede ser conectada a otra vista
+  DatosTablasVistasTmp.nombre = Upper$(nombreTabla) 'añado el nombre de tabla, para saber coordenadas en el caso que este conectado a una vista
+  DatosTablasVistasTmp.x = incrementoX + 90 - 10
+  DatosTablasVistasTmp.y = valor136 + 4 + 20 * (a - 1)
+  DatosTablasVistasTmp.id = "g" & Str(contadorEtiquetaRectangulo)
+
+  arrayDatosTablasVistas.add(DatosTablasVistasTmp)
+
+  'nombre de la tabla: #PruebaNombreTabla#
+  'coordenada x: #X#
+  'coordenada y:#Y#
+
+  codigoNombreTabla &= "<text font-size=\"16\" style=\"fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:700\" x=\"#X#\" y=\"#Y#\">#PruebaNombreTabla#</text>/n"
+
+  'sustituir nombre de la tabla
+  codigoNombreTabla = Replace$(codigoNombreTabla, "#PruebaNombreTabla#", nombreTabla)
+  codigoNombreTabla = Replace$(codigoNombreTabla, "#Y#", Str(valor113))
+  codigoNombreTabla = Replace$(codigoNombreTabla, "#X#", Str(incrementoX + 90))
+
+  codigocampo &= codigoNombreTabla & "/n"
+  'por cada campos añado una nueva fila...
+
+  For a = 0 To nombreCampo.Max
+
+    rectangulo3 = ""
+    If Upper$(Mid$(nombreCampo[a], 1, 2)) = "ID" Then
+      'añado un rectangulo
+
+      rectangulo3 = "<rect style=\"fill: #ffffff\" x=\"#x#\" y=\"#y#\" width=\"#ancho#\" height=\"#alto#\"/>/n<rect style=\"fill:#FFFF00; fill-opacity:1; stroke-width: 2; stroke: #000000\" x=\"#x#\" y=\"#y#\" width=\"#ancho#\" height=\"#alto#\"/>\n"
+      rectangulo3 = Replace(rectangulo3, "#x#", Str$(incrementoX + 90 - 10))
+      rectangulo3 = Replace(rectangulo3, "#y#", Str$(valor136 + 4 + 20 * (a - 1)))
+      rectangulo3 = Replace(rectangulo3, "#ancho#", Str$(anchoRecuadro))
+      rectangulo3 = Replace(rectangulo3, "#alto#", Str$(20))
+
+      If tablavista <> "vista" Then
+        'si no es una vista, añadir etiqueta de ID
+        tmpEtiquetaId = New EtiquetaId
+        tmpEtiquetaId.campo = Upper$(nombreCampo[a])
+        tmpEtiquetaId.idrectangulo = contadorEtiquetaRectangulo
+        tmpEtiquetaId.x = incrementoX + 90 - 10
+        tmpEtiquetaId.y = valor136 + 4 + 20 * (a - 1)
+
+        ArrayEtiquetaId.Add(tmpEtiquetaId)
+      Endif
+    Endif
+
+    'coordenada x: #X#
+    'coordenada y:#Y#
+    ' nombre campo: #campo#
+    ' nombre tipo: #tipo#
+
+    codigocampotmp = rectangulo3 & "<text font-size=\"12.8\" style=\"fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal\" x=\"#X#\" y=\"#Y#\">#campo#: #tipo#</text>\n"
+    codigocampotmp = Replace$(codigocampotmp, "#campo#", nombreCampo[a])
+    codigocampotmp = Replace$(codigocampotmp, "#tipo#", tipoCampo[a])
+
+    codigocampotmp = Replace$(codigocampotmp, "#Y#", Str$(valor136 + 20 * (a)))
+    codigocampo &= Replace$(codigocampotmp, "#X#", Str(incrementoX + 90))
+
+  Next
+
+  alto = nombreCampo.Count * 20
+
+  '#x# incrementoX + 90-10
+  '#y# =136 -10
+  '#ancho# = 100
+  '#alto# = hmax
+
+  rectangulo = "<rect style=\"fill: #ffffff\" x=\"#x#\" y=\"#y#\" width=\"#ancho#\" height=\"#alto#\"/>/n<rect style=\"fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000\" x=\"#x#\" y=\"#y#\" width=\"#ancho#\" height=\"#alto#\"/>\n"
+  rectangulo = Replace(rectangulo, "#x#", Str$(incrementoX + 90 - 10))
+  rectangulo = Replace(rectangulo, "#y#", Str$(valor113 - 25))
+  rectangulo = Replace(rectangulo, "#ancho#", Str$(anchoRecuadro))
+  rectangulo = Replace(rectangulo, "#alto#", Str$(alto + 20 + 20))
+
+  If tablavista = "tabla" Then
+    'poner color verde al nombre de la tabla
+    rectangulo2 = "<rect style=\"fill: #ffffff\" x=\"#x#\" y=\"#y#\" width=\"#ancho#\" height=\"#alto#\"/>/n<rect style=\"fill:#BFFF7F; fill-opacity:1; stroke-width: 2; stroke: #000000\" x=\"#x#\" y=\"#y#\" width=\"#ancho#\" height=\"#alto#\"/>\n"
+  Else
+    'poner color cyan al nombre de la vista
+    rectangulo2 = "<rect style=\"fill: #ffffff\" x=\"#x#\" y=\"#y#\" width=\"#ancho#\" height=\"#alto#\"/>/n<rect style=\"fill:#00FFFF; fill-opacity:1; stroke-width: 2; stroke: #000000\" x=\"#x#\" y=\"#y#\" width=\"#ancho#\" height=\"#alto#\"/>\n"
+
+  Endif
+
+  rectangulo2 = Replace(rectangulo2, "#x#", Str$(incrementoX + 90 - 10))
+  rectangulo2 = Replace(rectangulo2, "#y#", Str$(valor113 - 25))
+  rectangulo2 = Replace(rectangulo2, "#ancho#", Str$(anchoRecuadro))
+  rectangulo2 = Replace(rectangulo2, "#alto#", Str$(30))
+
+  cuerpo &= "<g id=\"g" & Str(contadorEtiquetaRectangulo) & "\"> \n " & rectangulo & rectangulo2 & codigocampo & "\n </g>\n"
+  incrementoX += anchoRecuadro + 10
+
+End
+
+Public Sub Generar()
+
+  Dim contenido As String
+  Dim conectores As String
+
+  contenido = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?> <!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.0//EN\" \"http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd\"><svg width=\"10cm\" height=\"4cm\" viewBox=\"86 92 1950 750\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n"
+
+  conectores = generarConectores()
+
+  contenido &= cuerpo & conectores & "</svg>"
+
+  File.Save(rutaproject & "/diagrama.svg", contenido)
+
+End
+
+Private Function generarConectores() As String
+
+  Dim tmpEtiquetaIda As New EtiquetaId
+  Dim tmpEtiquetaIdb As New EtiquetaId
+  Dim a As Integer, b As Integer
+
+  Dim tmpConexionVistas As ConexionVistas
+
+  Dim codigo As String
+
+  For a = 0 To ArrayEtiquetaId.Max
+    tmpEtiquetaIda.campo = ArrayEtiquetaId[a].campo
+    tmpEtiquetaIda.idrectangulo = ArrayEtiquetaId[a].idrectangulo
+    tmpEtiquetaIda.x = ArrayEtiquetaId[a].x
+    tmpEtiquetaIda.y = ArrayEtiquetaId[a].y
+
+    For b = 0 To ArrayEtiquetaId.Max
+
+      tmpEtiquetaIdb.campo = ArrayEtiquetaId[b].campo
+      tmpEtiquetaIdb.idrectangulo = ArrayEtiquetaId[b].idrectangulo
+      tmpEtiquetaIdb.x = ArrayEtiquetaId[b].x
+      tmpEtiquetaIdb.y = ArrayEtiquetaId[b].y
+      '   Print tmpEtiquetaIdb.campo, tmpEtiquetaIda.campo,
+
+      If tmpEtiquetaIdb.campo = tmpEtiquetaIda.campo Then
+        'genero conexion
+        codigo &= conector("g" & Str$(tmpEtiquetaIdb.idrectangulo), "g" & Str$(tmpEtiquetaIda.idrectangulo), tmpEtiquetaIdb.x, tmpEtiquetaIdb.y, tmpEtiquetaIda.x, tmpEtiquetaIda.y)
+
+      Else
+        ' Print ""
+      Endif
+    Next
+  Next
+
+  'generar conexion entre Tablas y Vistas
+
+  'recorer todas las vistas existente, y crear enlace a las distintas tablas que este enlazado.
+  For Each tmpConexionVistas In ArrayConexionVistas
+    'procesamos vista por vista...
+    codigo &= ConcectoresVista(tmpConexionVistas)
+  Next
+
+  Return codigo
+
+End
+
+Private Function conector(g1 As String, g2 As String, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer) As String
+
+  Dim contenido As String
+  Dim p As New Par
+
+  If existeconexion(g1, g2) Then
+    Return ""
+  Endif
+
+  ContadorConector += 1
+  '   Print ContadorConector
+  contenido = "<path\n id=\"path" & ContadorConector & "\"\n   style=\"fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1\"\n    d=\"M #x1#,#y1# #x2#,#y2#\" inkscape:connector-type=\"polyline\"\n    inkscape:connector-curvature=\"0\"\n    inkscape:connection-start=\"##g1#\"\n    inkscape:connection-start-point=\"d4\"\n    inkscape:connection-end=\"##g2#\"\n    inkscape:connection-end-point=\"d4\"\n    transform=\"matrix(5.5033332,0,0,5.5033332,86,77.000008)\" />\n"
+  contenido = Replace$(contenido, "#x1#", Str(x1))
+  contenido = Replace$(contenido, "#y1#", Str(y1))
+  contenido = Replace$(contenido, "#x2#", Str(x2))
+  contenido = Replace$(contenido, "#y2#", Str(y2))
+
+  contenido = Replace$(contenido, "#g1#", g1)
+  contenido = Replace$(contenido, "#g2#", g2)
+
+  p.x = g1
+  p.y = g2
+
+  ArrayConexiones.add(p)
+
+  Return contenido
+
+End
+
+Private Function existeconexion(p1 As String, p2 As String) As Boolean
+
+  Dim p As Par
+
+  For Each p In ArrayConexiones
+    If (p.x = p1 And p.y = p2) Or (p.x = p2 And p.y = p1) Then Return True
+  Next
+
+  Return False
+
+End
+
+Private Function extraetablas(sql As String) As String[]
+
+  Dim a As Integer
+  Dim lista As String[]
+  Dim tablas As String[]
+
+  lista = Scan(Upper$(sql), Upper$("*from*where*"))
+
+  If lista.count = 0 Then
+
+    lista = Scan(Upper$(sql), Upper$("*from*"))
+    tablas = Split(lista[1], ",")
+  Else
+    tablas = Split(lista[1], ",")
+  Endif
+
+  For a = 0 To tablas.count - 1
+    tablas[a] = Replace$(tablas[a], " ", "")
+
+  Next
+
+  Return tablas 'devuelvo array de tablas detectadas en la expresion SQL que define la vista.
+
+End
+
+'-------------------------------------------------------
+Private Function ConcectoresVista(nombrevista As ConexionVistas) As String
+  'por cada tabla a la que este conectada se crea un enlace
+
+  Dim a As Integer
+  Dim conectorestext As String
+  Dim DatosTablasVistasTmp As DatosTablasVistas
+
+  For a = 0 To nombreVista.tablas.count - 1
+    'dada una tabla, devolver los datos de la tabla...
+    DatosTablasVistasTmp = buscar(nombreVista.tablas[a])
+    If IsNull(DatosTablasVistasTmp) Then
+      Print "warnning: problema con esta tabla: " & nombrevista.tablas[a]
+    Else
+      conectorestext &= conector(nombreVista.id, DatosTablasVistasTmp.id, nombreVista.x, nombreVista.y, DatosTablasVistasTmp.x, DatosTablasVistasTmp.y)
+    Endif
+  Next
+
+  Return conectorestext
+
+End
+
+Private Function buscar(nombretabla As String) As DatosTablasVistas
+
+  Dim a As Integer
+
+  For a = 0 To arrayDatosTablasVistas.count - 1
+    If Upper$(nombretabla) = Upper$(arrayDatosTablasVistas[a].nombre) Then
+      Return arrayDatosTablasVistas[a]
+    Endif
+  Next
+
+End

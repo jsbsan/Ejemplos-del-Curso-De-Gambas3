@@ -1,0 +1,11 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,17)
+  Border = False
+  Arrangement = Arrange.Vertical
+  { Label1 Label
+    MoveScaled(18,4,30,8)
+    Text = ("Hello")
+  }
+}

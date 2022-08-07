@@ -1,0 +1,19 @@
+# Gambas Project File 3.0
+Title=Drag&Drop2
+Startup=FMain
+Icon=logo.png
+Version=1.0.0
+Component=gb.image
+Component=gb.gui
+Component=gb.form
+Component=gb.eval
+Component=gb.settings
+Description="Drag and drop example"
+Authors="Charlie Ogier 2022"
+TabSize=2
+Language=en_US
+CreateShortcut=1
+SourcePath=/home/charlie/Downloads/gambas
+Vendor=cogier
+Packager=1
+Tags=Example

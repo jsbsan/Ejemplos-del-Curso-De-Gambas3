@@ -1,0 +1,318 @@
+' Gambas module file
+
+''' analizar.module:<br>
+''' obtiene un bufer scrip sql del esquema y convierte cada estructura tabla/vista en una sola linea
+''' con lo que cada linea es una tabla o vista, si son 30 lineas son 30 tablas o vistas o ambas
+' ##
+'   This program Is Free software; you can redistribute it And / Or modify
+'   it under the terms Of the GNU General Public License As Published by
+'   the Free Software Foundation; either version 1, Or (at your option)
+'   any later version.
+' ##
+'   This program Is Distributed In the hope that it will be useful,
+'   but WITHOUT ANY WARRANTY; without even the implied warranty Of
+'   MERCHANTABILITY Or FITNESS For A PARTICULAR PURPOSE.See the
+'   GNU General Public License For more details.
+' ##
+'   You should have received a Copy Of the GNU General Public License
+'   along With this program; If Not, Write To the Free Software
+'   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+' 	MA 02110 - 1301, USA.
+' ##
+
+Private datos As New Collection
+Public listaVistas As New String[]
+Public listaCampos As New String[]
+Public listaCamposTipo As New String[]
+
+Public Function tarea(codigo As String) As Collection
+
+  Dim linea As String[]
+  Dim a As Integer
+  ' Dim campoNuevo As String
+  '1º extrae las lineas
+  linea = Split(codigo, gb.NewLine)
+  listaVistas.Clear()
+  listaCampos.Clear()
+  listaCamposTipo.Clear()
+
+  '  Print "Linea ("; a; "): ", linea[a]
+
+  If linea[a] <> "" And InStr(linea[a], "CREATE VIEW") <> 0 Then
+    'es una vista y la linea no esta vacia...
+    'analisis linea
+    analisisLinea(linea[a])
+    Datos.Add(listaVistas, "vistas")
+  Else
+
+    Datos.Add("", "vista")
+
+  Endif
+
+  Return Datos
+
+End
+
+Public Function tareaTabla(codigo As String) As Collection
+
+  Dim linea As String[]
+  Dim a, lenpos As Integer
+  '  Dim campoNuevo As String
+  ' Dim nombretmp As String[]
+  Dim nombreTabla As String
+  '  Dim campostmp As String[]
+  Dim definicion As String[]
+  Dim expresion As String
+  Dim camposEnbruto As String
+  Dim texto As String
+  Dim nombrecampo As String
+  Dim tipo As String
+  '1º extrae las lineas
+  linea = Split(codigo, gb.NewLine)
+
+  ' bug #15 no permitir ` en los nombres de clases
+  linea[a] = Replace(linea[a], "`", "", gb.IgnoreCase)
+  linea[a] = Replace(linea[a], "\"", "", gb.IgnoreCase)
+
+  listaVistas.Clear() 'reuso aunque sea para tabla...
+  listaCampos.Clear()
+  listaCamposTipo.Clear()
+
+  '  Print "Linea ("; a; "): ", linea[a]
+
+  If linea[a] <> "" And InStr(linea[a], "CREATE TABLE") <> 0 Then
+    'es una tabla y la linea no esta vacia...
+    'analisis linea
+    expresion = linea[a]
+    nombreTabla = Replace$(nombreTabla, "'", "")
+    nombreTabla = comun.primeraMay(Between(expresion, "CREATE TABLE ", "\""))
+
+    If InStr(nombreTabla, " (") <> 0 Then
+      nombreTabla = Mid$(nombreTabla, 1, InStr(nombreTabla, "(") - 2)
+      nombreTabla = Replace$(nombreTabla, " ", "")
+      nombreTabla = Replace$(nombreTabla, "\"", "")
+      nombreTabla = Replace$(nombreTabla, "'", "")
+    Endif
+    '   Print "Tabla analisis....", nombreTabla
+    If nombretabla = "Sqlite_sequ" Then
+      Datos.Add("", "tabla") ' tabla que no se analiza
+
+      Return datos
+    Endif
+
+    ' camposEnbruto = Replace(Between(expresion, "(", ")"), "'", "") '  bug #12 https://gitlab.com/venenux/vnxdbmap/issues/12
+    expresion = Replace(expresion, "CREATE TABLE ", "")
+
+    camposEnbruto = expresion
+    expresion = Mid(camposEnbruto, InStr(expresion, "(", 0) + 1)
+    camposEnbruto = expresion
+    lenpos = InStr(expresion, ")", -1) - 1
+    camposEnbruto = Mid(camposEnbruto, 1, InStr(expresion, ")", -1) - 1)
+    camposEnbruto = expresion
+    camposEnbruto = Replace(expresion, "'", "") ' soporta
+    'camposEnbruto = comun.removerparte(camposEnbruto, "/*", "*/") ' por ahora se remueven,  mucho trabajo conservarlos si no esta bien definido respecto la comma
+    ' TODO: procesar aqui el bug #13, si se sigue haciendo en comun.module no soportara singlelines multicolumns definition
+    definicion = Split(camposEnBruto, ",") '  esto esta malo, no soporta VARCHAR () ni DECIMAL() ni comments, pero pro ahora se deja
+    ' comentar el codigo, si se hace esto aqui, no soportaria multicampos en lineas simples o en una sola linea, hacer en analisis
+    ' Else
+    '   tempsc = Scan(comentarioremovertemp, "* * *")
+    '   comentarioremovertemp = tempsc[0] & " " & tempsc[1] ' asi que simplemente los eliminamos los valores por defecto o los null
+    '   lineas[a] = comentarioremovertemp
+    For Each texto In definicion
+      texto = LTrim$(RTrim$(texto))
+      If InStr(texto, " ") > 0 Then
+        nombrecampo = Scan(texto, "* *")[0] ' Between(texto, "\"", "\"") 'extrae el nombre del campo
+      Else
+        nombrecampo = texto  ' hack temporal para cuadno venga mal parseado por tener un valor por defecto
+      Endif
+      'elimino el nombre del campo y las comillas'
+      tipo = Replace(texto, "\"" & nombrecampo & "\"", "")
+      tipo = Replace(texto, nombrecampo & " ", "")
+      'elimino espacios iniciales y finales...'
+      tipo = RTrim(LTrim(tipo))
+      tipo = comprobartipo(tipo) 'en las tablas, si es necesario especificar el tipo de campo que es...
+
+      nombrecampo = Replace(nombrecampo, "\"", "")
+      nombrecampo = Replace(nombrecampo, "'", "") 'añdido en version 0.2.92
+      If nombrecampo = "PRIMARY" Then
+        texto = Replace(texto, "PRIMARY KEY(", "")
+        Print "\nEncuentro clave primaria..."
+        Print "Clave primaria es: ", texto
+        'las bases de datos que trabajo, las claves primarias, son autonumericas y integer
+        'no hago nada en el caso que este definida como PRIMARY KEY
+        Continue
+      Endif
+
+      listaCampos.Add(Trim(nombrecampo))
+      listaCamposTipo.Add(tipo)
+    Next
+
+  Endif
+
+  listaVistas.Add(comun.primeraMay(nombreTabla))
+
+  Datos.Add(listaVistas, "tabla")
+  Datos.Add(listaCampos, "campos" & comun.primeraMay(nombreTabla))
+  Datos.Add(listaCamposTipo, "campostipo" & comun.primeraMay(nombreTabla))
+
+  Return Datos 'coleccion que contiene, el nombre de la tabla, un array con los nombres de los campos y un array con los tipos de los campos....
+
+End
+
+Public Sub analisisLinea(cadena As String)
+
+  Dim campoNuevo As String
+  Dim nombreVista As String
+  Dim camposVarios As String
+  Dim campos As String[]
+  Dim b As Integer
+  ' Dim a As Integer
+  Dim ASminiscula As String
+  'Dim ASmayuscula As String
+  'extraer nombre de la vista
+  '
+  cadena = Replace(cadena, " as ", " AS ") '0.2.9
+  '
+  nombreVista = Replace(comun.Between(cadena, "VIEW", "AS"), "\"", "")
+  'quito espacios vacios y comilla
+  nombreVista = Replace$(nombreVista, Chr$(34), "") 'quito comilla
+  nombreVista = Replace$(nombreVista, " ", "") 'quito espacios vacios
+  nombreVista = Replace$(nombreVista, " ", "") 'quito espacios vacios
+  listaVistas.Add(comun.primeraMay(nombreVista))
+
+  '*****************************************************************************
+  'extraer campos o nombre de los campos....
+  '*****************************************************************************
+  'select idvivienda,'nº '||numero||' ('||archivo||') '||denominacioncorta as "corta" from
+  camposVarios = comun.BetweenMays(cadena, "select", "from") 'independientemente del la palabra buscarda este en mayusculas o minusculas
+
+  'separo por comas...
+  campos = Split(camposVarios, ",")
+  If campos.count = 1 Then
+    If Trim(campos[0]) = "*" Then
+      'es una vista que carga todos los campos de la tabla. NO es valida para mapdbvista
+      campos.Clear()
+      '   Message.Info(("Vista no valida para mapbdvista: ") & nombreVista)
+      Print "---------------------------------"
+      Print "Cuidado !!!!: "
+      Print ("Vista no valida para mapbdvista: ") & nombreVista
+      Print "---------------------------------"
+      Return
+    Else
+      Message.Info(("Posible error detectado en Vista ") & nombreVista & (", ¿solo un campo? revise definicion y que no hay retornos de carros"))
+      Return
+    Endif
+
+  Endif
+
+  'Tabla aceptada....
+  '  Print "Vista es.... ", nombreVista
+  datos.Add(nombreVista, "vista")
+
+  listaCampos.Clear()
+
+  For b = 0 To campos.max
+    'analizo cada campo
+    'si no hay " AS ", entonces en nombre es el texto
+    ASminiscula = InStr(Upper$(campos[b]), Upper$(" as "))
+    ' Print campos[b]
+    If ASminiscula <> 0 Then
+      'parada
+      campoNuevo = Mid$(campos[b], ASminiscula + 4)
+      campoNuevo = Replace$(campoNuevo, Chr$(34), "") 'quito comilla
+      campoNuevo = Replace$(campoNuevo, " ", "") 'quito espacios vacios
+      campoNuevo = Replace$(campoNuevo, " ", "") 'quito espacios vacios
+      campoNuevo = Replace$(campoNuevo, ".", "_") 'quito punto y cambio por _
+      campoNuevo = Replace$(campoNuevo, "'", "") 'quito ' y no pongo nada. Version 0.2.92
+      listaCampos.Add(Trim(campoNuevo))
+      listaCamposTipo.Add("string")
+    Else
+      'el nombre es el de un campo
+      campoNuevo = campos[b]
+      campoNuevo = Replace$(campoNuevo, " ", "") 'quito espacios vacios
+      campoNuevo = Replace$(campoNuevo, " ", "") 'quito espacios vacios
+      campoNuevo = Replace$(campoNuevo, ".", "_") 'quito punto y cambio por _
+      listaCampos.Add(Trim(campoNuevo))
+      listaCamposTipo.Add("string")
+    Endif
+
+  Next
+
+  Datos.Add(listaCampos, "campos" & comun.primeraMay(nombreVista))
+  Datos.Add(listaCamposTipo, "campostipo" & comun.primeraMay(nombreVista))
+
+End
+
+'funciones generales
+
+Public Function Between(Datos As String, Cadena1 As String, Cadena2 As String) As String
+
+  Dim iinf As Integer
+  Dim isup As Integer
+
+  iinf = InStr(Datos, Cadena1) + Len(Cadena1)
+  isup = InStr(Datos, Cadena2, iinf)
+  Return Mid(Datos, iinf, isup - iinf)
+
+End
+'****
+'--------------------------------------------
+'CORPOBAR TIPO PARA LAS TABLAS...
+'--------------------------------------------
+
+Public Function comprobartipo(tipo As String) As String
+  'comprobacion de tipos....'
+
+  Dim resultado As String
+  'si contine Primary key' , es un campo NULL para ser serial
+  resultado = InStr(tipo, " KEY") '¿contiene la palabra key???
+  If resultado <> 0 Then
+    'se trata de un tipo normal'
+    Return "Null"
+
+  Else
+    Select Case Upper$(tipo)
+      Case "DATETIME"
+        Return "Date"
+      Case "BOOL"
+        Return "Boolean"
+      Case "TEXT"
+        Return "String"
+      Case "INTEGER PRIMARY KEY"
+        Return "Null"
+      Case "INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL"
+        Return "Null"
+      Case "INT4 NOT NULL"
+        Return "Null"
+      Case "INTEGER PRIMARY KEY  AUTOINCREMENT  NULL"
+        Return "Null"
+      Case "INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL  UNIQUE"
+        Return "Null"
+      Case "NUMERIC"
+        Return "float"
+      Case "INT4"
+        Return "INTEGER"
+      Case "REAL"
+        Return "INTEGER"
+      Case "INTEGER"
+        Return "INTEGER"
+      Case "FLOAT8"
+        Return "float"
+      Case "VARCHAR"
+        Return "String"
+      Default
+        ' falta todo tipo de dato numerico que se pueda definir como intervalo
+        If InStr(tipo, "NUMERIC", 0, gb.IgnoreCase) > 0 Or InStr(tipo, "DECIMAL", 0, gb.IgnoreCase) > 0 Then
+          ' http://gambaswiki.org/wiki/doc/db-type-mapping
+          Return "Float"
+        Else
+          Return "String"
+        Endif
+        ' Return comun.primeraMay(tipo) ' que? una calse de este tipo de dato desconocido, devuelve VARCHAR O NUMERIC y listo!
+
+    End Select
+    'se trata de un tipo que contiene una llave... devolver null'
+    Return "Null"
+  Endif
+
+End

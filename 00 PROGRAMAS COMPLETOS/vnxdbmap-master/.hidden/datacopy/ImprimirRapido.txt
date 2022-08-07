@@ -1,0 +1,71 @@
+
+Public Sub ImprimirRapidoTablaHorizontal()
+    dim contenidofichero as string
+  Dim codigo As String
+  Dim a As Integer
+  dim fila As Integer, columna As Integer
+  
+  Application.busy = 1
+ 
+  codigo = "<table border=\"1\" style=\"width:100%\">\n"
+  'imprimo titulos
+  codigo &= "<tr>\n" ""
+  For a = 0 To gridviewPropio.columns.Max
+    codigo &= "<td><b>" & gridviewPropio.Columns[a].title & "</b></td>"
+  Next
+  codigo &= "</tr>\n" ""
+  
+  For fila = 0 To gridviewPropio.Rows.Max
+    
+    codigo &= "<tr>\n" ""
+    For columna = 0 To gridviewPropio.columns.Max
+      codigo &= "<td>" & gridviewPropio[fila, columna].text & "</td>"
+    Next
+    codigo &= "</tr>\n" ""
+    
+  Next
+  
+  codigo &= "</table>\n"
+  
+  contenidofichero = File.Load("estructura.html")
+  contenidofichero = Replace$(contenidofichero, "TITULO", ("INFORME"))
+  contenidofichero = Replace$(contenidofichero, "CONTENIDO", codigo)
+  file.Save("/tmp/informe.html", contenidofichero)
+  Desktop.Open("/tmp/informe.html")
+   Application.Busy = 0
+End
+
+Public Sub ImprimirRapidoTablaVertical()
+  dim contenidofichero as string
+  Dim codigo As String
+  Dim a As Integer, fila As Integer, columna As Integer
+  
+  Application.busy = 1
+
+  Try fila = gridviewPropio.Row
+  If fila = -1 Or If Error Then 
+    Application.Busy = 0
+    Message.Info(("Seleccione un registro"))
+    Return
+  Endif
+  
+  codigo &= "<table border=\"1\" >\n"
+  For columna = 0 To gridviewPropio.columns.Max
+    codigo &= "<tr>\n" ""
+    
+    codigo &= "<td><b>" & gridviewPropio.Columns[columna].title & "</b></td>"
+    
+    codigo &= "<td style=\"width:100%\">" & gridviewPropio[fila, columna].text & "</td>"
+    codigo &= "</tr>\n" ""
+    
+  Next
+  codigo &= "</table>\n"  
+  CODIGO &= "<BR><BR>"
+  
+  contenidofichero = File.Load("estructura.html")
+  contenidofichero = Replace$(contenidofichero, "TITULO", ("INFORME"))
+  contenidofichero = Replace$(contenidofichero, "CONTENIDO", codigo)
+  file.Save("/tmp/informe.html", contenidofichero)
+  Desktop.Open("/tmp/informe.html")
+  Application.Busy = 0
+End

@@ -1,0 +1,81 @@
+' Gambas module file
+
+''' analizar.module:<br>
+''' obtiene un bufer scrip sql del esquema y convierte cada estructura tabla/vista en una sola linea
+''' con lo que cada linea es una tabla o vista, si son 30 lineas son 30 tablas o vistas o ambas
+' ##
+'   This program its under a license that required the CC-BY-SA rules.
+'   Cant be used commercialy unless permision of Julio Sanchez B jusabejusabe@gmail.com
+' ##
+'   This program Is Distributed In the hope that it will be useful,
+'   but WITHOUT ANY WARRANTY; without even the implied warranty Of
+'   MERCHANTABILITY Or FITNESS For A PARTICULAR PURPOSE. If you want
+'   some kind of support please comunicate in https://gitlab.com/venenux/vnxdbmap
+'   and provide some contribution to the project
+' ##
+
+Private MiHttp As New HttpClient
+
+Public Sub comprobar(nombreprograma As String, actualversion As String, rutaUrl As String, Optional texto As String) '' NombrePrograma: nombre del programa, ActualVersion= es la version del programa actual, rutaUrL= es url donde tengo que leer el archivo update,label etiqueta para que aparezca texto de espere...
+
+  Dim a As Integer
+  Dim Buffer, programa, VersionEnInternet, mensaje, mejoras, direccion As String
+  Dim res As Integer
+
+  MiHttp.url = rutaUrl
+  MiHttp.Get()
+
+  While (Lof(MiHttp) = False And a < 10)
+    'espero 1 segundo o que llegue a>10
+    a = a + 1
+    Try Wait 1
+  Wend
+  If a = 10 Or Lof(MiHttp) = False Then
+    If texto = "" Then message(("No ha sido posible conectarse al servidor") & "\n" & ("No puedo comprobar si hay nueva versión"))
+    Return
+  Endif
+  If Lof(MiHttp) Then
+    Read #MiHttp, Buffer, Lof(MiHttp)
+  End If
+  buffer = Replace$(buffer, "<br>", "") 'eliminos la cadena <br>
+  buffer = Replace$(buffer, "<br />", "")
+  programa = eliminar(Between(Buffer, "[programa]", "[/programa]"), "\n") ' no debe traducirse
+  VersionEnInternet = eliminar(Between(buffer, "[version]", "[/version]"), "\n") ' no debe traducirse
+  mejoras = Between(buffer, "[mejoras]", "[/mejoras]") ' no debe traducirse
+  direccion = eliminar(Between(buffer, "[direccion]", "[/direccion]"), "\n") ' no debe traducirse
+  If Upper$(programa) <> Upper$(nombreprograma) Then
+    If texto = "" Then message.Error(("El archivo de versión no es para este programa"))
+  Else
+    If actualversion < VersionEnInternet Then
+      mensaje = ("Existe una nueva versión") & "\n" & ("Programa:") & " " & programa & "\n " & ("Versión encontrada:") & VersionEnInternet & "\n" & ("Mejoras:") & "\n" & mejoras & " \n " & ("Dirección Url de descarga:") & "\n" & direccion
+      res = Message.Question(Mensaje, ("Ir a la página de descarga"), ("No actualización"))
+      If res = 1 Then
+
+        Desktop.Open(direccion)
+      Endif
+    Else
+      If texto = "" Then
+        mensaje = ("La versión actual:") & " " & actualversion & " \n " & ("es igual o superior que la que hay en el servidor") & " (" & VersionEnInternet & ")\n" & ("No necesita actualizarla")
+        message.info(mensaje)
+      Endif
+    Endif
+  Endif
+
+End
+
+Private Function eliminar(cadena As String, caracter As String) As String
+
+  Return Replace$(cadena, caracter, "")
+
+End
+
+Private Function Between(Datos As String, Cadena1 As String, Cadena2 As String) As String
+
+  Dim iinf As Integer
+  Dim isup As Integer
+
+  iinf = InStr(Datos, Cadena1) + Len(Cadena1)
+  isup = InStr(Datos, Cadena2, iinf)
+  Return Mid(Datos, iinf, isup - iinf)
+
+End

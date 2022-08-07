@@ -1,0 +1,63 @@
+' Gambas class file
+
+oObj As Object
+sText As String
+hTextLabel As TextLabel
+
+Public Sub Form_Open()
+
+  Dim siCount As Short
+
+  For siCount = 0 To 5
+    hTextLabel = New TextLabel(Panel2) As "Dragit"
+    With hTextLabel
+      .x = 115 * siCount
+      .Text = Str(siCount)
+      .Font.Bold = True
+      .Font.Size = 60
+      .Alignment = Align.Center
+      .Width = 115
+      .Height = 115
+      .Padding = 5
+      .Border = Border.Plain
+      .Background = Color.Cyan
+    End With
+  Next
+
+End
+
+Public Sub Dragit_Enter()
+
+  oObj = Last
+  sText = Last.Text
+
+End
+
+Public Sub Dragit_MouseDrag()
+
+  If Mouse.Left Then
+    Last.Visible = False
+    Drag.Icon = Picture[Application.Path &/ Last.Text & ".png"]
+    Last.Drag(Last.Text)
+    Last.Delete
+  End If
+
+End
+
+Public Sub Panels_Drop()
+
+  hTextLabel = New TextLabel(Last) As "Dragit"
+  With hTextLabel
+    .x = Mouse.ScreenX - Panel1.screenX
+    .Text = sText
+    .Font.Bold = True
+    .Font.Size = 60
+    .Alignment = Align.Center
+    .Width = 115
+    .Height = 115
+    .Padding = 5
+    .Border = Border.Plain
+    .Background = Color.Cyan
+  End With
+
+End
