@@ -1,0 +1,180 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(22.2222,0,49,57)
+  Background = &H373737&
+  Icon = Picture["logo pi client  MR.png"]
+  Resizable = False
+  { Label5 Label
+    MoveScaled(0,1,60,2.4444)
+    Background = &H3F3F3F&
+  }
+  { Label1 Label
+    MoveScaled(2,6,14,4)
+    Font = Font["Bold"]
+    Foreground = Color.ButtonBackground
+    Text = ("Usuario:")
+    Alignment = Align.Left
+  }
+  { Label2 Label
+    MoveScaled(8,1,33,2.4444)
+    Font = Font["Bold"]
+    Background = &HFF0000&
+    Foreground = &HFFFFFF&
+    Text = ("Configuración acceso remoto")
+    Alignment = Align.Center
+  }
+  { TextBoxUsuario TextBox
+    MoveScaled(17,6,22,3.4444)
+  }
+  { Separator1 Separator
+    MoveScaled(-1,23,83,2)
+  }
+  { Label3 Label
+    MoveScaled(0,24,60,2.4444)
+    Background = &H3F3F3F&
+  }
+  { Label4 Label
+    MoveScaled(8,24,32.4444,2.4444)
+    Font = Font["Bold"]
+    Background = &HFF0000&
+    Foreground = &HFFFFFF&
+    Text = ("Configuración de terminal local")
+    Alignment = Align.Center
+  }
+  { TextBoxContrasena TextBox
+    MoveScaled(17,11,22,3.4444)
+  }
+  { Label6 Label
+    MoveScaled(2,11,14,4)
+    Font = Font["Bold"]
+    Foreground = Color.ButtonBackground
+    Text = ("Contraseña:")
+    Alignment = Align.Left
+  }
+  { Label7 Label
+    MoveScaled(2,16,14,4)
+    Font = Font["Bold"]
+    Foreground = Color.ButtonBackground
+    Text = ("IP Servidor:")
+    Alignment = Align.Left
+  }
+  { ButtonAplicar Button
+    MoveScaled(3,52,12,3)
+    Font = Font["Bold"]
+    Background = &H9F9F9F&
+    ToolTip = ("Aplicar cambios a los archivos")
+    Text = ("aplicar")
+  }
+  { ButtonCerrar Button
+    MoveScaled(60,56,16,5)
+    Background = &H9F9F9F&
+    ToolTip = ("Cerrar aplicación sin hacer cambios")
+    Text = ("cerrar")
+  }
+  { Label8 Label
+    MoveScaled(2,31,14,4)
+    Font = Font["Bold"]
+    Foreground = Color.ButtonBackground
+    Text = ("IP Terminal:")
+    Alignment = Align.Left
+  }
+  { Label9 Label
+    MoveScaled(2,36,20,4)
+    Font = Font["Bold"]
+    Foreground = Color.ButtonBackground
+    Text = ("Máscara de Red:")
+    Alignment = Align.Left
+  }
+  { Label10 Label
+    MoveScaled(2,41,21,4)
+    Font = Font["Bold"]
+    Foreground = Color.ButtonBackground
+    Text = ("Puerta de Enlace:")
+    Alignment = Align.Left
+  }
+  { CheckBoxDHCP CheckBox
+    MoveScaled(4,45,3,5)
+    Font = Font["Bold"]
+    Background = Color.Background
+    Foreground = Color.ButtonBackground
+    Text = ("Habilitar / Deshabilitar DHCP")
+  }
+  { ButtonConfigAcceRemoto Button
+    MoveScaled(41,11,4,4)
+    Background = &H9F9F9F&
+    Picture = Picture["icon:/32/tools"]
+  }
+  { TextBoxip MaskBox
+    MoveScaled(17,16,22,3.4444)
+    Mask = "##0<.##0<.##0<.##0<"
+  }
+  { TextBoxIPTerminal MaskBox
+    MoveScaled(17,31,22,3.4444)
+    Mask = "##0<.##0<.##0<.##0<"
+  }
+  { TextBoxMascara MaskBox
+    MoveScaled(17,36,22,3.4444)
+    Mask = "##0<.##0<.##0<.##0<"
+  }
+  { TextBoxPuertaEnlace MaskBox
+    MoveScaled(17,41,22,3.4444)
+    Mask = "##0<.##0<.##0<.##0<"
+  }
+  { ButtonAplicar2 Button
+    MoveScaled(17,52,15,3.4444)
+    Font = Font["Bold,-1"]
+    Background = &H9F9F9F&
+    ToolTip = ("Aplicar cambios y Reiniciar Equipo")
+    Text = ("aplicar y reiniciar")
+  }
+  { Label1version Label
+    MoveScaled(38,3,11,3)
+    Font = Font["-2"]
+    Foreground = Color.SelectedBackground
+    Text = ("Label11")
+    Alignment = Align.Center
+  }
+  { TextBoxContra TextBox
+    MoveScaled(5,52,10,3)
+    Password = True
+  }
+  { Label11 Label
+    MoveScaled(0,52,17,2)
+    Font = Font["-2"]
+    Text = ("Contraseña Sistema:")
+  }
+  { ButtonConfigTerminalLocal Button
+    MoveScaled(41,36,4,4)
+    Background = &H9F9F9F&
+    Picture = Picture["icon:/32/tools"]
+  }
+  { PictureBox1 PictureBox
+    MoveScaled(0,49,16,9)
+    Picture = Picture["logo pi client  MR.png"]
+    Stretch = True
+  }
+  { Label13 Label
+    MoveScaled(40,15,6,3)
+    Foreground = Color.ButtonBackground
+    Text = ("aplicar")
+    Alignment = Align.Left
+  }
+  { Label14 Label
+    MoveScaled(40,40,6,3)
+    Foreground = Color.ButtonBackground
+    Text = ("aplicar")
+    Alignment = Align.Left
+  }
+  { Label12 Label
+    MoveScaled(8,46,13,3)
+    Foreground = Color.ButtonBackground
+    Text = ("activar DHCP")
+    Alignment = Align.Left
+  }
+  { ButtonConfigurar Button
+    MoveScaled(33,52,15,3.4444)
+    Font = Font["Bold,-1"]
+    Text = ("ver configuración")
+  }
+}

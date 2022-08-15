@@ -1,0 +1,29 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,61,44)
+  { TextLabelContenido TextLabel
+    MoveScaled(1,7,59,29)
+    Text = ("TextLabel1")
+    Alignment = Align.Center
+    Border = Border.Plain
+  }
+  { ButtonSalir Button
+    MoveScaled(34,37,25,6)
+    Text = ("Salir")
+    Picture = Picture["icon:/32/quit"]
+  }
+  { Label1 Label
+    MoveScaled(2,2,21,3)
+    Text = ("Ruta fichero script.sh:")
+    Alignment = Align.Right
+  }
+  { TextBoxRuta TextBox
+    MoveScaled(24,1,26,5)
+    Text = ("TextBox1")
+  }
+  { ButtonGuardarRuta Button
+    MoveScaled(53,1,6,5)
+    Picture = Picture["icon:/16/save"]
+  }
+}

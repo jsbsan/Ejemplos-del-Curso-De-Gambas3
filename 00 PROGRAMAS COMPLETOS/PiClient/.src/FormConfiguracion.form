@@ -1,0 +1,86 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(102.2222,19.4444,39,49)
+  Background = &H5F5F5F&
+  Foreground = &HFFFFFF&
+  Resizable = False
+  { VSplit1 VSplit
+    MoveScaled(0,2,50,42)
+    Expand = True
+    { Frame1 Frame
+      MoveScaled(0,4,43,23)
+      Foreground = &HFFFFFF&
+      Expand = True
+      Text = ("            configuración acceso remoto")
+      { TextAreaScript TextArea
+        MoveScaled(32,6,10,18)
+        Visible = False
+        Expand = True
+      }
+      { Label1 Label
+        MoveScaled(2,5,11,4)
+        Font = Font["Bold"]
+        Foreground = &HFFFFFF&
+        Text = ("Usuario:")
+      }
+      { Label2 Label
+        MoveScaled(2,10,18,4)
+        Font = Font["Bold"]
+        Foreground = &HFFFFFF&
+        Text = ("Contraseña:")
+      }
+      { Label3 Label
+        MoveScaled(2,15,16,3)
+        Font = Font["Bold"]
+        Foreground = &HFFFFFF&
+        Text = ("IP Servidor:")
+      }
+      { TextBox1 TextBox
+        MoveScaled(15,5,14,3.4444)
+      }
+      { TextBox2 TextBox
+        MoveScaled(15,10,14,3.4444)
+      }
+      { TextBox3 TextBox
+        MoveScaled(15,15,14,3.4444)
+      }
+    }
+    { Frame2 Frame
+      MoveScaled(-3,23,39,25)
+      Expand = True
+      Text = ("                   configuración IP local")
+      { TextAreaInterface TextArea
+        MoveScaled(2,4,35,17)
+        Expand = True
+        ReadOnly = True
+      }
+    }
+  }
+  { Panel1 Panel
+    MoveScaled(1,44,57,11)
+    { ButtonCancelar Button
+      MoveScaled(14,1,9,3)
+      Font = Font["Bold,-2"]
+      Text = ("cerrar")
+      Picture = Picture["icon:/16/cancel"]
+    }
+    { ButtonGuardar Button
+      MoveScaled(36,1,13,4)
+      Visible = False
+      Text = ("Guardar")
+      Picture = Picture["icon:/22/save"]
+    }
+    { Spring1 DrawingArea
+      MoveScaled(2,1,11,3)
+      Visible = False
+    }
+    { Spring2 DrawingArea
+      MoveScaled(24,1,5,3)
+      Visible = False
+    }
+    { Spring3 DrawingArea
+      MoveScaled(53,2,5,2)
+    }
+  }
+}

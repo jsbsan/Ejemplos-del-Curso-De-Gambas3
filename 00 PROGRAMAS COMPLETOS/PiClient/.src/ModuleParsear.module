@@ -1,0 +1,38 @@
+' Gambas module file
+
+Public palabra1 As String
+Public palabra2 As String
+Public palabra3 As String
+
+Public Sub parsear(ruta As String)
+
+  Dim contenido As String
+  Dim lineas As String[]
+  Dim ltmp As String
+  Dim PALABRAS As String[]
+
+  contenido = File.Load("/home/pi/bin/script.sh")
+
+  lineas = Split(contenido, "\n")
+
+  For Each ltmp In lineas
+    If InStr(ltmp, "#") <> 0 Then
+      Continue '"     # ,,,,, "
+    Endif
+
+    If Mid$(ltmp, 1, 1) = "#" Then
+      'comentario '#
+      Continue
+    Endif
+
+    If InStr(ltmp, "rdesktop") <> 0 Then
+      'ANALIZAR LA FRASE....
+      PALABRAS = Split(ltmp, " ")
+      palabra1 = PALABRAS[3]
+      palabra2 = PALABRAS[5]
+      palabra3 = PALABRAS[6]
+    Endif
+
+  Next
+
+End

@@ -1,0 +1,55 @@
+' Gambas class file
+
+Private previa As String = Settings["rutaScript", User.home & "/bin"]
+
+Private contenido As String[]
+Private comando As String[]
+Private UsuarioLInea As String
+Private ContrasenaLInea As String
+Private IpLinea As String
+
+Public Sub ButtonSalir_Click()
+  
+  ButtonGuardarRuta_Click()
+  
+  Me.Close
+  
+End
+
+Public Sub Form_Open()
+  
+  Me.Title = "Datos de Configuración de Acceso Remoto"
+  
+  TextBoxRuta.text = previa
+  
+  contenido = Split(File.Load(previa & "/" & "script.sh"), "\n")
+  
+  comando = Split(contenido[1], " ")
+  
+  Try UsuarioLInea = comando[3]
+  Try ContrasenaLInea = comando[5]
+  Try IpLinea = comando[7]
+  
+  TextLabelContenido.text = "<br>"
+  TextLabelContenido.text &= "<b>Usuario:</b>" & UsuarioLInea & "<br>"
+  
+  TextLabelContenido.text &= "<br>"
+  TextLabelContenido.text &= "<b>Contraseña:  </b>" & ContrasenaLInea & "<br>"
+  TextLabelContenido.text &= "<br>"
+  TextLabelContenido.text &= "<b>IP Servidor:  </b>" & IpLinea & "<br>"
+  
+  TextLabelContenido.text &= "<br>"
+  
+  Me.Center()
+  
+End
+
+Public Sub ButtonGuardarRuta_Click()
+  
+  If TextBoxRuta.text <> "" Then 
+    Settings["rutaScript"] = TextBoxRuta.text 
+    Settings.Save()
+    
+  Endif
+  
+End

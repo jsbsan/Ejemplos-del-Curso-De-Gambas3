@@ -1,0 +1,241 @@
+' Gambas class file
+
+Private rutaScript As String
+Private estado As Integer = 0
+
+Public Sub _new()
+
+End
+
+Public Sub Form_Open()
+
+  Label1version.text = "Version: " & Application.Version
+  rutaScript = Settings["rutaScript", User.home & "/bin"]
+  ButtonConfigAcceRemoto.Tooltip = rutaScript
+  Me.Center()
+
+End
+
+Public Sub ButtonCerrar_Click()
+
+  Me.Close()
+
+End
+
+Public Sub ButtonAplicar_Click()
+
+  Dim nueva As String
+
+  'modificar datos del script.sh, solo cuando el textboxUsuario sea distinto a vacio
+  If TextBoxUsuario.text <> "" Then
+    nueva = "#!/bin/bash" & "\n"
+    nueva &= "#-*-ENCODING: UTF-*- " "\n"
+    nueva &= "rdesktop -f -u " & TextBoxUsuario.Text & " -p " & TextBoxContrasena.Text & " " & Replace(TextBoxip.text, " ", "") & " -a32 -x l -r sound:local &" "\n"
+
+    If Exist(File.Dir(rutaScript & "/" & "script.sh")) = False Then
+      Message.Error("Atención!! no existe el directorio:" & "\n" & file.dir(rutascript & "/" & "script.sh"))
+
+    Else
+      Try File.Save(rutaScript & "/" & "script.sh", nueva)
+      If Error Then
+        Message.error("Se ha producido un error al intentar escribir el nuevo archivo en\n" & rutaScript & "/" & "script.sh")
+      Else
+        estado = 1
+      Endif
+
+    Endif
+
+  Endif
+
+  'modificar datos del fichero dhcpcd.conf para definir IP estatica
+  'If TextBoxIPTerminal.text <> "" Then
+  ' nueva = "auto lo" & "\n"
+  'nueva &= "iface lo inet loopback" "\n"
+  'nueva &= "\n"
+  'nueva &= "\n"
+  'nueva &= "auto eth0" "\n"
+  'nueva &= If(CheckBoxDHCP.value = True, "#", "") & "iface eth0 inet static" & "\n"
+  'nueva &= "address " & Replace(TextBoxIPTerminal.text, " ", "") & "\n"
+  'nueva &= "netmask " & Replace(TextBoxMascara.Text, " ", "") & "\n"
+  'nueva &= "gateway " & Replace(TextBoxPuertaEnlace.text, " ", "") & "\n"
+  'nueva &= "\n"
+  'nueva &= "auto eth0" & "\n"
+  'nueva &= If(CheckBoxDHCP.value = True, "", "#") & "iface eth0 inet dhcp" & "\n"
+
+  'Try File.Save("/etc/network/interfaces", nueva)
+  '
+  'aplicar cambios en fichero /etc/network/interfaces al seleccionar dhcp
+  If (CheckBoxDHCP.value) = True Then
+    nueva = "source-directory /etc/network/interfaces.d" & "\n"
+    nueva &= "\n"
+    nueva &= "auto lo" & "\n"
+    nueva &= "iface lo inet loopback" & "\n"
+    nueva &= "\n"
+    nueva &= "auto eth0" & "\n"
+    nueva &= "iface eth0 inet dhcp" & "\n"
+    nueva &= "\n"
+    nueva &= "\n"
+    nueva &= "allow-hotplug wlan0" & "\n"
+    nueva &= "iface wlan0 inet manual" & "\n"
+    nueva &= "wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf" & "\n"
+
+    Try File.Save("/etc/network/interfaces", nueva)
+
+    'If (CheckBoxDHCP.value) = True Then
+    'nueva = "hostname" & "\n"
+    nueva &= "\n"
+    nueva &= "clientid" "\n"
+    nueva &= "\n"
+    nueva &= "persistent" "\n"
+    nueva &= "\n"
+    nueva &= "option rapid_commit" "\n"
+    nueva &= "\n"
+    nueva &= "option domain_name_servers, domain_name, domain_search, host_name" "\n "
+    nueva &= "option classless_static_routes" "\n"
+    nueva &= "\n"
+    nueva &= "option ntp_servers" "\n"
+    nueva &= "\n"
+    nueva &= "require dhcp_server_identifier" "\n"
+    nueva &= "\n"
+    nueva &= "slaac private" "\n"
+    nueva &= "\n"
+    nueva &= "nohook lookup-hostmane" "\n"
+    'nueva &= If(CheckBoxDHCP.value = True, "#", "") & "iface eth0 inet static" & "\n"
+    nueva &= "\n"
+    nueva &= "#interface eth0" "\n"
+    nueva &= "#static ip_address=" & Replace(TextBoxIPTerminal.text, " ", "") & "\n"
+    nueva &= "#static netmask=" & Replace(TextBoxMascara.Text, " ", "") & "\n"
+    nueva &= "#static routers=" & Replace(TextBoxPuertaEnlace.text, " ", "") & "\n"
+    nueva &= "\n"
+    'nueva &= "auto eth0" & "\n"
+    'nueva &= If(CheckBoxDHCP.value = True, "", "#") & "iface eth0 inet dhcp" & "\n"
+
+    Try File.Save("/etc/dhcpcd.conf", nueva)
+
+  Else
+    nueva = "source-directory /etc/network/interfaces.d" & "\n"
+    nueva &= "\n"
+    nueva &= "auto lo" & "\n"
+    nueva &= "iface lo inet loopback" & "\n"
+    nueva &= "\n"
+    nueva &= "auto eth0" & "\n"
+    nueva &= "iface eth0 inet manual" & "\n"
+
+    Try File.Save("/etc/network/interfaces", nueva)
+
+    If Error Then
+      Message.Error("Se ha producido un error al intentar guardar la configuración del terminal local\nRevise los permisos de la carpeta y fichero\n /etc/network/interfaces")
+    Else
+      estado += 4
+      'Endif
+
+    Endif
+
+    'modificar datos del fichero dhcpcd.conf para definir IP estatica
+    If TextBoxIPTerminal.text <> "" Then
+      nueva = "hostname" & "\n"
+      nueva &= "\n"
+      nueva &= "clientid" "\n"
+      nueva &= "\n"
+      nueva &= "persistent" "\n"
+      nueva &= "\n"
+      nueva &= "option rapid_commit" "\n"
+      nueva &= "\n"
+      nueva &= "option domain_name_servers, domain_name, domain_search, host_name" "\n "
+      nueva &= "option classless_static_routes" "\n"
+      nueva &= "\n"
+      nueva &= "option ntp_servers" "\n"
+      nueva &= "\n"
+      nueva &= "require dhcp_server_identifier" "\n"
+      nueva &= "\n"
+      nueva &= "slaac private" "\n"
+      nueva &= "\n"
+      nueva &= "nohook lookup-hostmane" "\n"
+      'nueva &= If(CheckBoxDHCP.value = True, "#", "") & "iface eth0 inet static" & "\n"
+      nueva &= "\n"
+      nueva &= "interface eth0" "\n"
+      nueva &= "static ip_address=" & Replace(TextBoxIPTerminal.text, " ", "") & "\n"
+      nueva &= "static netmask=" & Replace(TextBoxMascara.Text, " ", "") & "\n"
+      nueva &= "static routers=" & Replace(TextBoxPuertaEnlace.text, " ", "") & "\n"
+      nueva &= "\n"
+      'nueva &= "auto eth0" & "\n"
+      'nueva &= If(CheckBoxDHCP.value = True, "", "#") & "iface eth0 inet dhcp" & "\n"
+
+      Try File.Save("/etc/dhcpcd.conf", nueva)
+
+    Endif
+
+    If Error Then
+      Message.Error("Se ha producido un error al intengar guardar la configuración del terminal local\nRevise los permisos de la carpeta y fichero\n /etc/network/interfaces")
+    Else
+      estado += 2
+    Endif
+  Endif
+
+  Select Case estado
+    Case 1
+      Message.Info("Modificado Configuracion \n-Acceso remoto")
+    Case 2
+      Message.Info("Modificado Configuracion \n-Terminal local")
+    Case 3
+      Message.Info("Modificado Configuracion \n-Acceso remoto \n-Terminal local")
+    Case 4
+      Message.Info("Modificado Configuracion DHCP \n-Acceso remoto \n-Terminal local")
+
+  End Select
+
+  estado = 0
+
+End
+
+Public Sub ButtonConfigAcceRemoto_Click()
+
+  Dim ruta As String
+  Dim previa As String
+
+  If Not Exist(rutaScript & "/" & "script.sh") Then
+    Message.Info("No existe fichero de configuracion")
+    'Else
+    'FormConfiguracionAccesoRemoto.ShowModal()
+    'ButtonConfig.Tooltip = Settings["rutaScript"]
+    'rutaScript = Settings["rutaScript"]
+  Endif
+
+End
+
+Public Sub ButtonAplicar2_Click()
+
+  ButtonAplicar_Click()
+  If TextBoxContra.text <> "" Then
+    Settings["contra"] = TextBoxContra.Text
+    Settings.Save()
+  Endif
+
+  'ya ahora mando la orden de apagado del equipo
+  Shell "echo " & Settings["contra", TextBoxContra.text] & "|sudo -S reboot"
+
+End
+
+Public Sub ButtonConfigTerminalLocal_Click()
+
+  If Not Exist("/etc/dhcpcd.conf") Then
+    Message.Info("No existe fichero de configuracion de Terminal Local")
+    'Else
+    ' FormDatosTerminalLocal.ShowModal()
+  Endif
+
+End
+
+Public Sub ButtonConfigurar_Click()
+
+  FormConfiguracion.show
+
+End
+
+Public Sub Label13_MouseDown()
+
+End
+
+Public Sub Label1version_MouseDown()
+
+End

@@ -1,0 +1,17 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,61,38)
+  Icon = Picture["configurar.png"]
+  { TextLabelContenido TextLabel
+    MoveScaled(1,1,59,29)
+    Text = ("TextLabel1")
+    Alignment = Align.Center
+    Border = Border.Plain
+  }
+  { ButtonSalir Button
+    MoveScaled(34,31,25,6)
+    Text = ("Salir")
+    Picture = Picture["icon:/32/quit"]
+  }
+}

@@ -1,0 +1,18 @@
+* Wed Oct 18 2017 julio sanchez berro <jusabejusabe@gmail.com> 0.0.4
+- agrego botones de muetra de contenido
+
+* Tue Oct 10 2017 julio sanchez berro <jusabejusabe@gmail.com> 0.0.3
+- Cambio ruta de la configuracion de la IP local. /etc/network/interfaces
+
+* Mon Oct 09 2017 julio sanchez berro <jusabejusabe@gmail.com> 0.0.2
+- reinciio
+
+* Mon Oct 09 2017 julio sanchez berro <jusabejusabe@gmail.com> 0.0.2
+- añado script inicial mejorado y reinicio equipo
+
+* Tue Oct 03 2017 julio sanchez berro <jusabejusabe@gmail.com> 0.0.1
+- agrego icono de aplicacion
+
+* Tue Oct 03 2017 julio sanchez berro <jusabejusabe@gmail.com> 0.0.1
+- Lanzamiento inicial
+

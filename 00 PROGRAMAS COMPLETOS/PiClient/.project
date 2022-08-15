@@ -1,0 +1,27 @@
+# Gambas Project File 3.0
+Title=piclient
+Startup=FMain
+Icon=logo pi client  MR.png
+Version=0.0.18
+Component=gb.image
+Component=gb.qt5
+Component=gb.form
+Component=gb.settings
+Component=gb.qt5.ext
+Description="Herramienta para configuracion de acceso remoto y terminal local."
+Authors="Julio Sanchez Berro"
+TabSize=2
+Language=es_ES
+CreateShortcut=1
+SourcePath=/home/minino/Descargas/piclient
+Maintainer=julio sanchez berro
+Address=jusabejusabe@gmail.com
+Url=http://jsbsan.blogspot.com.es/
+License=General Public License
+PackageName=piclient-0.0.4
+CreateEachDirectory=1
+Packager=1
+Systems=debian
+Menus=debian:"Applications/Network/Communication"
+Categories=debian:"Network"
+Groups=debian:"admin"

@@ -1,0 +1,38 @@
+' Gambas class file
+
+Public Sub ButtonCancelar_Click()
+
+  Me.Close()
+
+End
+
+Public Sub Form_Open()
+
+  'Try TextAreaScript.text = File.Load("/home/pi/bin/script.sh") no se usa en esta version del programa
+  'ruta de trabajo: "/home/pi/bin/script.sh"
+  ModuleParsear.parsear("/home/pi/bin/script.sh")
+
+  TextBox1.text = ModuleParsear.palabra1
+  TextBox2.text = ModuleParsear.palabra2
+  TextBox3.text = ModuleParsear.palabra3
+
+  'Para que los textbox no sean editables
+  TextBox1.ReadOnly = True
+  TextBox2.ReadOnly = True
+  TextBox3.ReadOnly = True
+
+  Try TextAreaInterface.text = File.Load("/etc/dhcpcd.conf")
+
+End
+
+Public Sub ButtonGuardar_Click()
+
+  'File.Save("/home/pi/bin/script.sh", TextAreaScript.text) ' no grabo cambios
+
+  File.Save("/etc/network/interfaces", TextAreaInterface.text)
+
+End
+
+Public Sub Label2_MouseDown()
+
+End

@@ -1,0 +1,43 @@
+' Gambas class file
+
+Private contenido As String[]
+Private linea As String[]
+
+Private addressLinea As String
+Private netmaskLinea As String
+Private gatewayLinea As String
+
+Public Sub Form_Open()
+  
+  Me.Title = "Datos de Configuración de terminal local"
+  
+  contenido = Split(File.Load("/etc/network/interfaces"), "\n")
+  
+  Try addressLinea = Split(contenido[2], " ")[1]
+  Try netmaskLinea = Split(contenido[3], " ")[1]
+  Try gatewayLinea = Split(contenido[4], " ")[1]
+  
+  TextLabelContenido.text = "<br>"
+  TextLabelContenido.text &= "<br>"
+  If Left(contenido[1], 1) = "#" Then 
+    TextLabelContenido.text &= "<b>DHCP:</b>" & " Activado " & "<br>"
+  Else
+    TextLabelContenido.text &= "<b>DHCP:</b>" & " Desactivado " & "<br>"
+  Endif
+  TextLabelContenido.text &= "<br>"
+  TextLabelContenido.text &= "<b>Ip Terminal: </b>" & addressLinea & "<br>"
+  TextLabelContenido.text &= "<br>"
+  TextLabelContenido.text &= "<b>Mascara de Red: </b>" & netmaskLinea & "<br>"
+  
+  TextLabelContenido.text &= "<br>"
+  TextLabelContenido.text &= "<b>Puerta de Enlace: </b>" & gatewayLinea & "<br>"
+  
+  Me.Center()
+  
+End
+
+Public Sub ButtonSalir_Click()
+  
+  Me.Close()
+  
+End
