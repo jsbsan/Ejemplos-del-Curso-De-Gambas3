@@ -1,0 +1,16 @@
+# Gambas Project File 3.0
+Title=pruebas
+Startup=FMain
+Icon=servidor-icono-7136-128.png
+Version=0.0.17
+Component=gb.image
+Component=gb.gui
+Component=gb.form
+Component=gb.desktop
+Component=gb.net
+Component=gb.net.smtp
+TabSize=2
+ControlPublic=1
+ModulePublic=1
+SourcePath=/home/uno/ProgramasGambasJsbSan
+Packager=1

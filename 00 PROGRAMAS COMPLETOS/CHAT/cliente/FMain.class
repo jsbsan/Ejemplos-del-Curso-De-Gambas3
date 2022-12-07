@@ -1,0 +1,154 @@
+' Gambas class file
+'Basado en el ejemplo de sockets en gambas - Mario A. Campos
+' http://www.taringa.net/posts/linux/7995119/Ejemplo-de-sockets-con-Gambas-y-VB-_Edit_.html
+' Mejorado por Julio Sanchez Berro
+' Blog: http://jsbsan.blogspot.com/
+PUBLIC c AS NEW colorhtml
+PUBLIC mensaje AS String
+PUBLIC hcolor AS String = "Write"
+
+PUBLIC SUB Form_Open()
+    ComboBoxColor.Add("Negro")
+    ComboBoxColor.Add("Rojo")
+    ComboBoxColor.Add("Azul")
+    ComboBoxColor.Add("Verde")
+    ComboBoxColor.Add("Amarillo")
+    ComboBoxColor.Add("Rosa")
+    ComboBoxColor.Add("Naranja")  
+    ComboBoxColor.BackColor = Color.Black
+    rejilla.Titulos_Gridmensajes()
+    hcolor = "black"
+    ME.Caption = "Clientes Gambas-Chat Versión 0.02  AUTOR: JSBSAN "
+END
+
+PUBLIC SUB ComboBoxColor_Change()
+    IF ComboBoxColor.text = "Negro" THEN 
+        ComboBoxColor.BackColor = Color.Black
+        hcolor = "black"
+    ELSE
+        IF ComboBoxColor.text = "Rojo" THEN 
+            ComboBoxColor.BackColor = Color.Red
+            hcolor = "Red"
+        ELSE 
+            IF ComboBoxColor.text = "Azul" THEN 
+                ComboBoxColor.BackColor = Color.blue
+                hcolor = "blue"
+            ELSE 
+                IF ComboBoxColor.text = "Verde" THEN 
+                    ComboBoxColor.BackColor = Color.Green
+                    hcolor = "green"
+                ELSE 
+                    IF ComboBoxColor.text = "Amarillo" THEN 
+                        ComboBoxColor.BackColor = Color.DarkYellow
+                        ' Color.DarkYellow
+                        hcolor = "yellow"
+                    ELSE 
+                        IF ComboBoxColor.text = "Rosa" THEN 
+                            ComboBoxColor.BackColor = Color.Pink
+                            hcolor = "pink"
+                        ELSE 
+                            IF ComboBoxColor.text = "Naranja" THEN 
+                                ComboBoxColor.backColor = Color.orange
+                                hcolor = "orange"
+                            ENDIF 
+                        ENDIF 
+                    ENDIF 
+                ENDIF 
+            ENDIF 
+        ENDIF 
+    ENDIF
+    TextBox3.text = "Cliente-" & ComboBoxColor.text
+END
+
+PUBLIC SUB ToolButton1_Click()
+    FormAYUDA.ShowModal
+END
+
+PUBLIC SUB TextBox4_KeyPress()
+    IF Key.code = Key.enter THEN 
+        ButtonEnviar_Click()
+    ENDIF 
+    IF Key.code = Key.Return THEN 
+        ButtonEnviar_Click()
+    ENDIF 
+END
+
+PUBLIC SUB Button1_Click()
+    s.Host = TextBox1.Text
+    s.Port = Val(TextBox2.text)
+    s.Connect()
+    Label4.text = "Estado: " & s.Status
+    TextBox1.Enabled = FALSE
+    TextBox2.enabled = FALSE
+    TextBox3.enabled = FALSE
+    ComboBoxColor.Enabled = FALSE
+    Button2.enabled = TRUE 'activamos desconectar
+    Button1.enabled = FALSE 'ya no podemos a conectar
+END
+
+PUBLIC SUB Button2_Click()
+    'hay que mandar un mensaje del cierre de esta conexión al servidor... 
+    mensaje = "#@#BYE" & TextBox3.TEXT
+    WRITE #s, mensaje, Len(mensaje) 
+    WAIT 0.5
+    s.Close
+    ME.close
+END
+
+PUBLIC SUB ButtonEnviar_Click()
+    'mensaje = c.abre(hcolor) & TextBox3.text & "-->" & TextBox4.text & c.cierra() & "<br>"
+    mensaje = Str$(ComboBoxColor.BackColor) & "|" & TextBox3.text & " --> " & TextBox4.text & "|" & TextBox3.text 'indico cual es mi nick, para que sepa el modulo rejilla quien escribe.
+    TRY WRITE #s, mensaje, Len(mensaje)
+    IF ERROR THEN 
+        Message.Error("Error: no he podido escribir en el servidor...\n Sugerencia: Intenta Conectarte...")
+    ELSE 
+        ' es mi propio mensaje, lo escribo en la rejilla
+        rejilla.anade(Str$(ComboBoxColor.BackColor) & "|" & TextBox4.text & "|")
+    ENDIF
+    TextBox4.text = ""
+END
+
+PUBLIC SUB s_Read()
+    DIM Recibido AS String
+    IF S.Status = Net.Connected THEN
+        READ #S, Recibido, Lof(S)
+        comando(Recibido)
+    END IF
+END
+
+PUBLIC SUB comando(texto AS String)
+    DIM activado_comando AS Integer
+    DIM respuesta AS String
+    DIM scad AS String[]
+    DIM a AS Integer
+    IF Mid$(texto, 1, Len("#@#NICK")) = "#@#NICK" THEN 
+        'me esta pidiendo el nick 
+        respuesta = "#@#NICK" & TextBox3.text '& "|" 
+        WRITE #s, respuesta, Len(respuesta)
+        '  TextLabel1.Text = TextLabel1.Text & "Le envio al servidor mi nick: " & TextBox3.text & "<br>"
+        rejilla.anade(Str$(ComboBoxColor.BackColor) & "|" & "Le envio al servidor mi nick: " & TextBox3.text & "|" & TextBox3.text)
+        activado_comando = 1
+    ENDIF 
+    IF Mid$(texto, 1, Len("#@#LIST")) = "#@#LIST" THEN 
+        respuesta = Mid$(texto, Len("#@#LIST") + 1, Len(texto))
+        scad = Split(respuesta, "|")
+        supergridviews1.Clear()
+        supergridviews1.Rows.count = scad.Count
+        supergridviews1.columns.count = 1
+        FOR a = 0 TO scad.count - 1
+            supergridviews1[a, 0].text = scad[a]
+        NEXT 
+        activado_comando = 1
+        'rejilla.anade(Str$(ComboBoxColor.BackColor) & "|" & "Estoy Conectado al servidor..." & "|")
+    ENDIF
+    IF activado_comando = 0 THEN 
+        'es un mensaje normal
+        'tengo que comprobar que no es el mio mismo
+        'eso lo hago desde el modulo rejilla...
+        'IF c.abre(hcolor) & TextBox3.text & "-->" <> Mid$(texto, 1, Len(c.abre(hcolor) & TextBox3.text & "-->")) THEN 
+        'el texto no es el mio
+        '  mensaje = texto 
+        ' TextLabel1.Text = TextLabel1.Text & mensaje 
+        rejilla.anade(texto)
+    ENDIF 
+END

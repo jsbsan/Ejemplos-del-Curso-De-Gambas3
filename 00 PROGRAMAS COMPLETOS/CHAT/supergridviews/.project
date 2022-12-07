@@ -1,0 +1,30 @@
+# Gambas Project File 2.0
+# Compiled with Gambas 2.23.1
+Title=supergridviews
+Startup=supergridviews
+Icon=control/supergridviews.png
+Version=0.0.133
+Library=gb.gui
+Library=gb.form
+Library=gb.desktop
+Library=supergridviews
+Description=revision de para ordenar comprobando si son numeros a letras
+TabSize=2
+Translate=1
+Language=es
+KeepDebugInfo=1
+CreateShortcut=1
+MakeComponent=1
+State=2
+ExecPath=/home/uno/supergridviews.gambas
+SourcePath=/home/uno/00 controles/supergridviews
+Maintainer=uno
+Vendor=gambas2
+Address=uno@uno-laptop
+License=General Public Licence
+Prefix=1
+CreateEachDirectory=1
+Systems=debian,ubuntu
+Menus=,
+Categories=,
+Groups=admin,admin

@@ -1,0 +1,38 @@
+' Gambas module file
+PUBLIC lineamensaje AS Integer
+
+PUBLIC SUB anade(msg AS String)
+    'añade una linea al gridviews que muestra los mensajes
+    DIM scad AS String[]
+    IF msg <> "" THEN 
+        'el mensaje debe de ser interpresatdo, por ejemplo el primer campo seria el color y el segundo el mensaje en si.
+        scad = Split(msg, "|")
+        IF scad[2] <> FMain.TextBox3.text THEN 
+            'no es un mensaje mio, lo tengo que reescribir...
+            FMain.Gridmensajes.rows.count = FMain.Gridmensajes.rows.count + 1
+            IF Val(scad[0]) = NULL THEN 
+                scad[0] = "0"
+            ENDIF
+            lineamensaje += 1
+            FMain.Gridmensajes.rows.count = lineamensaje
+            FMain.Gridmensajes[FMain.Gridmensajes.rows.count - 1, 0].ForeColor = Val(scad[0])
+            FMain.Gridmensajes[FMain.Gridmensajes.rows.count - 1, 0].text = scad[1]
+            FMain.Gridmensajes.ScrollY = FMain.Gridmensajes.Rows.count * 80
+            FMain.Gridmensajes.Refresh
+        ENDIF 
+    ENDIF
+END
+
+PUBLIC SUB Titulos_Gridmensajes() 
+    WITH FMain.Gridmensajes 
+        .header = 3 
+        .rows.count = 0 
+        .columns.count = 2
+        .Columns[0].title = "Mensajes" 
+        .Columns[0].width = 2000
+        .font.name = "Sans" 
+        .font.size = 9 
+        .Foreground = 0 
+        .ScrollBar = 3
+    END WITH 
+END

@@ -1,0 +1,26 @@
+' Gambas module file
+
+Public Sub Titulos_ListadoClientes()
+
+  With FMain.ListadoClientes
+    .header = 3
+    .rows.count = 0
+    .columns.count = 4
+    .Columns[0].title = "IP"
+    .Columns[1].title = "Nick"
+    .Columns[2].title = "Observacion"
+    .Columns[3].title = "Otro"
+    .Columns[0].width = 50
+    .Columns[1].width = 118
+    .Columns[2].width = 245
+    .Columns[3].width = 100
+    .font.name = "Sans"
+    .font.size = 8
+    .Background = 16777215
+    .Foreground = 0
+  End With
+
+End
+
+Public lineamensaje As Integer
+Public cadena As String

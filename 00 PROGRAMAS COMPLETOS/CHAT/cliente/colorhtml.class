@@ -1,0 +1,11 @@
+' Gambas class file
+
+PUBLIC FUNCTION abre(codigo AS String) AS String
+    DIM cadena AS String
+    cadena = "<font color=" & Chr$(34) & codigo & Chr$(34) & ">"
+    RETURN cadena
+END
+
+PUBLIC FUNCTION cierra() AS String
+    RETURN "</font>"
+END

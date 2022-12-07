@@ -1,0 +1,10 @@
+[Component]
+Key=supergridviews
+Version=0.0.130
+State=2
+Needs=Form
+Requires=gb.desktop
+
+[Form]
+Control=supergridviews
+

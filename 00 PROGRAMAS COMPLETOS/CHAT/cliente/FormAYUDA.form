@@ -1,0 +1,27 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  Move(0,0,420,294)
+  #(Scaled) = False
+  Text = ("")
+  Icon = Picture["iconos-clientes.png"]
+  Border = Window.Fixed
+  { PictureBox1 PictureBox
+    Move(252,21,105,105)
+    Picture = Picture["iconos-clientes.png"]
+  }
+  { PictureBox2 PictureBox
+    Move(7,7,189,280)
+    Picture = Picture["import/FormAYUDA/gambas logotipo ganador.png"]
+  }
+  { TextLabel1 TextLabel
+    Move(203,133,224,126)
+    Font = Font["Times New Roman,-2"]
+    Text = ("<h2>CHAT GAMBAS</h2><br>\nCLIENTE DE CHAT <br>\nRealizado en Gambas2<br>\nAutor: Julio Sanchez Berro<br>\n2011\n\n")
+    Alignment = Align.Center
+  }
+  { ButtonAceptar Button
+    Move(259,259,119,28)
+    Text = ("Aceptar")
+  }
+}

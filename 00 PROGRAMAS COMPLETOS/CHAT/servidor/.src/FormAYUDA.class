@@ -1,0 +1,14 @@
+' Gambas class file
+
+Public Sub ButtonAceptar_Click()
+
+  Me.close
+
+End
+
+Public Sub Form_Open()
+
+  Me.caption = "Información...Gambas Chat-Servidor"
+  Me.center
+
+End

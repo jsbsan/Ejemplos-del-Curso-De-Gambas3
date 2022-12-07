@@ -1,0 +1,13 @@
+* Mon Nov 22 2010 uno <uno@uno-laptop> 0.0
+
+* Mon Nov 22 2010 uno <uno@uno-laptop> 0.0
+
+* Sat Nov 20 2010 uno <uno@uno-laptop> 0.0
+-Correccion para que se señale la fila .current (donde tenemos el cursor)
+
+* Thu Nov 18 2010 uno <uno@uno-laptop> 0.0
+- Correccion en ordenacion de columnas de numeros. Ahora diferencia en ordenar columnas de numeros y columnas de cadena de textos  correctamente
+
+* Sat Oct 23 2010 uno <uno@uno-laptop> 0.0
+- Lanzamiento inicial
+

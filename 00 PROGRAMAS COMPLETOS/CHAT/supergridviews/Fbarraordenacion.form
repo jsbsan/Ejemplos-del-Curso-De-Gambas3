@@ -1,0 +1,9 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,39,6)
+  Text = ("")
+  { ProgressBar1 ProgressBar
+    MoveScaled(0,1,38,4)
+  }
+}

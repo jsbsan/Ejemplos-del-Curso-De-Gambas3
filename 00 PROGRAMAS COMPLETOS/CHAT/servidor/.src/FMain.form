@@ -1,0 +1,98 @@
+# Gambas Form File 3.0
+{ Form Form 
+  MoveScaled(0,0,96,53)
+  Text = ("Servidor")
+  Icon = Picture["servidor-icono-7136-128.png"]
+  Resizable = False
+  { Enviar Button 
+    MoveScaled(68,49,12,4)
+    Text = ("Enviar")
+  }
+  { TextBox4 TextBox 
+    MoveScaled(13,49,54,4)
+  }
+  { Timer1 #Timer 
+    #MoveScaled(0,0)
+    Enabled = True
+    Delay = 500
+  }
+  { Label4 Label 
+    MoveScaled(74,5,16,4)
+    Text = ("Datos Clientes")
+    Border = Border.Etched
+  }
+  { s #ServerSocket 
+    #MoveScaled(1,1)
+  }
+  { HBox1 HBox 
+    MoveScaled(1,1,94,4)
+    { Label1 Label 
+      MoveScaled(0,1,10,4)
+      Font = Font["Times New Roman,-1"]
+      Text = ("Ip Servidor")
+      Alignment = Align.Right
+    }
+    { ComboBoxIP ComboBox 
+      MoveScaled(10,1,14,4)
+      Font = Font["Times New Roman,-1"]
+      List = []
+    }
+    { Label2 Label 
+      MoveScaled(23,1,6,4)
+      Font = Font["Times New Roman,-1"]
+      Text = ("Puerto")
+      Alignment = Align.Right
+    }
+    { TextBox2 TextBox 
+      MoveScaled(29,1,7,4)
+      Font = Font["Times New Roman,-1"]
+    }
+    { Label6 Label 
+      MoveScaled(37,1,5,4)
+      Font = Font["Times New Roman,-1"]
+      Text = ("Nick")
+      Alignment = Align.Right
+    }
+    { label5 Label 
+      MoveScaled(42,1,13,4)
+      Font = Font["Times New Roman,-1"]
+      Text = ("ChatGambas")
+      Border = Border.Etched
+    }
+    { ToolButton1 ToolButton 
+      MoveScaled(55,1,4,4)
+      Picture = Picture["icon:/24/help"]
+      Toggle = True
+    }
+    { Label3 Label 
+      MoveScaled(58,2,20,3)
+      Font = Font["Times New Roman,-1"]
+      Text = ("Estado")
+    }
+    { ButtonCerrar Button 
+      MoveScaled(80,1,13,3)
+      Text = ("Desconectar")
+    }
+  }
+  { ListadoClientes supergridviews 
+    MoveScaled(73,8,23,40)
+    Background = &HFFFFFF&
+    colorfondoimpar = 16777215
+    colorfondopar = 16777215
+    colorcursorfondo = 16777215
+  }
+  { Label7 Label 
+    MoveScaled(1,49,12,4)
+    Text = ("Escribe algo:")
+    Alignment = Align.Right
+  }
+  { Label8 Label 
+    MoveScaled(1,5,16,4)
+    Text = ("Sala de Chat")
+    Border = Border.Etched
+  }
+  { Gridmensajes GridView 
+    MoveScaled(1,8,71,40)
+    Header = GridView.Both
+  }
+}

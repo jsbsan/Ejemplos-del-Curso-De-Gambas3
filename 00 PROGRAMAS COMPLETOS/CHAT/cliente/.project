@@ -1,0 +1,17 @@
+# Gambas Project File 2.0
+# Compiled with Gambas 2.23.1
+Title=pruebas
+Startup=FMain
+Icon=iconos-clientes.png
+Version=0.0.17
+Library=gb.gui
+Library=gb.form
+Library=gb.desktop
+Library=gb.net
+Library=gb.net.smtp
+Library=supergridviews
+TabSize=2
+ControlPublic=1
+ModulePublic=1
+ExecPath=/home/uno/cliente.gambas
+SourcePath=/home/uno/ProgramasGambasJsbSan

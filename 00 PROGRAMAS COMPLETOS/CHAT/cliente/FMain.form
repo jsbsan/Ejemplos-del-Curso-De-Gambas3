@@ -1,0 +1,89 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,68,56)
+  Text = ("Cliente")
+  Icon = Picture["iconos-clientes.png"]
+  { s #Socket
+    #X = 434
+    #Y = 322
+  }
+  { Button1 Button
+    MoveScaled(53,10,14,3)
+    Text = ("Conectar")
+  }
+  { Button2 Button
+    MoveScaled(35,48,12,3)
+    Enabled = False
+    Text = ("Desconectar")
+  }
+  { ButtonEnviar Button
+    MoveScaled(54,52,12,3)
+    Text = ("Enviar")
+  }
+  { TextBox1 TextBox
+    MoveScaled(1,4,21,3)
+    Text = ("localhost")
+  }
+  { TextBox2 TextBox
+    MoveScaled(25,4,10,3)
+    Text = ("11000")
+  }
+  { Label1 Label
+    MoveScaled(1,1,18,3)
+    Text = ("Indicar Ip Servidor:")
+    Alignment = Align.Right
+  }
+  { Label2 Label
+    MoveScaled(24,1,11,3)
+    Font = Font["-1"]
+    Text = ("En el Puerto")
+    Alignment = Align.Right
+  }
+  { TextBox4 TextBox
+    MoveScaled(9,52,43,3)
+    Text = ("")
+  }
+  { TextBox3 TextBox
+    MoveScaled(36,4,13,3)
+    Text = ("cliente1")
+  }
+  { Label3 Label
+    MoveScaled(37,1,8,3)
+    Text = ("Nick")
+    Alignment = Align.Right
+  }
+  { Label4 Label
+    MoveScaled(49,48,12,2)
+    Text = ("Estado:")
+  }
+  { supergridviews1 supergridviews
+    MoveScaled(52,17,15,29)
+    Font = Font["-2"]
+  }
+  { Label5 Label
+    MoveScaled(54,1,8,3)
+    Text = ("Color")
+  }
+  { ComboBoxColor ComboBox
+    MoveScaled(51,4,14,3)
+    Text = ("Negro")
+  }
+  { Label6 Label
+    MoveScaled(52,14,16,2)
+    Text = ("Usuarios en Chat")
+  }
+  { ToolButton1 ToolButton
+    MoveScaled(29,47,4,4)
+    Text = ("")
+    Picture = Picture["icon:/24/help"]
+  }
+  { Gridmensajes GridView
+    MoveScaled(0,8,51,39)
+    Header = GridView.Both
+  }
+  { Label7 Label
+    MoveScaled(0,52,8,3)
+    Text = ("Escribe:")
+  }
+}

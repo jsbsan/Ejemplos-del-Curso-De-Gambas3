@@ -1,0 +1,36 @@
+' Gambas class file
+
+PUBLIC SUB TextBox1_KeyPress()
+IF Key.code = Key.Esc THEN 
+ToolButton2_Click()
+ENDIF 
+IF Key.code = Key.Enter THEN 
+var.editado = TextBox1.text
+ME.Close
+ENDIF
+
+IF Key.code = Key.Return THEN 
+var.editado = TextBox1.text
+ME.Close
+ENDIF 
+
+IF Key.code = Key.Tab THEN 
+ToolButton1.SetFocus
+ENDIF 
+
+END 
+
+
+PUBLIC SUB Form_Open()
+  TextBox1.text = var.editado
+  ME.Center
+END
+
+PUBLIC SUB ToolButton1_Click()
+var.editado = TextBox1.text
+ME.Close
+END
+
+PUBLIC SUB ToolButton2_Click()
+  ME.Close
+END

@@ -1,0 +1,836 @@
+' Gambas class file
+'heredamos las propiedades de un gridview
+INHERITS gridview
+EXPORT 
+
+'añadimos la propiedad Tag2
+'1º para que se pueda ver en el cuadro de propiedades, la añadimos a las 'propiedades existentes
+PUBLIC CONST _Properties AS String = "*,Tag2,colorfondoimpar,colorfondopar,colorletraimpar,colorletrapar,colorcursorfondo,colorcursorletra"
+
+'2 creamos la propiedad en si
+PROPERTY tag2 AS String
+PRIVATE htag2 AS String
+
+'función de lectura
+PRIVATE FUNCTION tag2_Read() AS String
+  RETURN htag2
+END
+
+'función de escritura
+PRIVATE SUB tag2_Write(Value AS String)
+  htag2 = value
+END
+'------------------------------------------------
+'color del cursor
+' creamos la propiedad en si
+'------------------------------------------------
+PROPERTY colorcursorfondo AS Integer
+PRIVATE hcolorcursorfondo AS Integer
+
+'función de lectura
+PRIVATE FUNCTION colorcursorfondo_Read() AS Integer
+  RETURN hcolorcursorfondo
+END
+
+'función de escritura
+PRIVATE SUB colorcursorfondo_Write(Value AS Integer)
+  hcolorcursorfondo = value
+END
+'2 creamos la propiedad en si
+PROPERTY colorcursorletra AS Integer
+PRIVATE hcolorcursorletra AS Integer
+
+'función de lectura
+PRIVATE FUNCTION colorcursorletra_Read() AS Integer
+  RETURN hcolorcursorletra
+END
+
+'función de escritura
+PRIVATE SUB colorcursorletra_Write(Value AS Integer)
+hcolorcursorletra = value
+END
+
+
+'---------------------------------------------------------------
+'variables de colore de fondo y de letras segun fila impar o par
+'----------------------------------------------------------------
+PROPERTY colorfondoimpar AS Integer
+PRIVATE hcolorfondoimpar AS Integer
+PRIVATE FUNCTION colorfondoimpar_Read() AS Integer
+RETURN hcolorfondoimpar
+END
+PRIVATE SUB colorfondoimpar_Write(Value AS Integer)
+hcolorfondoimpar = value
+END
+
+PROPERTY colorfondopar AS Integer
+PRIVATE hcolorfondopar AS Integer
+PRIVATE FUNCTION colorfondopar_Read() AS Integer
+RETURN hcolorfondopar
+END
+PRIVATE SUB colorfondopar_Write(Value AS Integer)
+hcolorfondopar = value
+END
+
+PROPERTY colorletraimpar AS Integer
+PRIVATE hcolorletraimpar AS Integer
+PRIVATE FUNCTION colorletraimpar_Read() AS Integer
+RETURN hcolorletraimpar
+END
+PRIVATE SUB colorletraimpar_Write(Value AS Integer)
+hcolorletrapar = value
+END
+
+PROPERTY colorletrapar AS Integer
+PRIVATE hcolorletrapar AS Integer
+PRIVATE FUNCTION colorletrapar_Read() AS Integer
+RETURN hcolorletrapar
+END
+PRIVATE SUB colorletrapar_Write(Value AS Integer)
+hcolorletrapar = value
+END
+
+'-----------------------------------------------------------
+'variables para llevar el control de ordenar
+'-----------------------------------------------------------
+PRIVATE ordenadoalgunavez AS Boolean 'comprueba si se ha ordenado algunavez
+PRIVATE titulosiniciales AS String 'almacena los titulos de las columnas incialmente antes de ordenar
+PRIVATE ordenactual AS String 'indica como esta actualmente ordenador el gridviews
+
+
+'------------------------------------
+'nueva funcion/subrutina de colorear
+'------------------------------------
+PUBLIC SUB colorear()
+Ponercolorear(hcolorfondoimpar, hcolorletraimpar, hcolorfondopar, hcolorletrapar)
+END 
+
+'PUBLIC SUB colorearlinea()
+'DIM a AS Integer
+'Ponercolorear(hcolorfondoimpar, hcolorletraimpar, hcolorfondopar, hcolorletrapar)
+'FOR a = 0 TO ME.Columns.count - 1  
+'  ME[ME.row, a].BackgRound = Color.Blue
+'NEXT 
+'END 
+
+'-----------------------------------------------------------------------------
+' colorear tabla....
+'-----------------------------------------------------------------------------
+PRIVATE SUB Ponercolorear(fondoimpar AS Integer, letraimpar AS Integer, fondopar AS Integer, letrapar AS Integer) 
+DIM a AS Integer 
+DIM b AS Integer 
+'si no hay filas no coloreo
+IF ME.rows.count <> 0 THEN
+  FOR a = 0 TO ME.rows.count - 1 
+   IF Par(a) = FALSE THEN  
+      FOR b = 0 TO ME.columns.count - 1 
+      ME[a, b].BackgRound = fondopar 
+      ME[a, b].Foreground = letrapar 
+      NEXT  
+    ELSE  
+      FOR b = 0 TO ME.columns.count - 1 
+      ME[a, b].Background = fondoimpar 
+      ME[a, b].Foreground = letraimpar 
+      NEXT  
+    END IF 
+  NEXT   
+
+'añadido para colorear la fila que este "seleccionada" actual
+'mejora 20 de nov. 2010
+FOR a = 0 TO ME.Columns.count - 1  
+   
+    ME[ME.row, a].BackgRound = ME.colorcursorfondo
+    
+     ME[ME.row, a].Foreground = ME.colorcursorletra
+
+NEXT 
+  ME.Refresh 
+ENDIF 
+END  
+
+PRIVATE FUNCTION Par(a AS Integer) AS Boolean 
+IF a MOD 2 = 0 THEN 
+'el numero es par 
+RETURN 1 
+ELSE 
+RETURN 0 
+ END IF 
+END 
+
+
+
+
+
+
+
+
+'------------------------------------ ordenar por columnas --------------------------------
+'-------------------------------------------
+'guarda los titulos actuales de la gridviews
+'-------------------------------------------
+PRIVATE SUB guardartitulosiniciales()
+DIM a AS Integer
+FOR a = 0 TO ME.columns.count - 1
+titulosiniciales = titulosiniciales & ME.columns[a].title & "|"
+NEXT 
+END 
+
+PUBLIC SUB restaurartitulosiniciales()
+  DIM antiguotitulo AS String[]
+  DIM a AS Integer 
+  IF titulosiniciales <> "" THEN 
+    antiguotitulo = Split(titulosiniciales, "|")
+  FOR a = 0 TO ME.columns.count - 1
+    ME.columns[a].text = antiguotitulo[a]
+  NEXT
+  ELSE 
+  guardartitulosiniciales()
+  ENDIF 
+END
+
+
+
+PUBLIC SUB ordenar(columna AS Integer, OPTIONAL AZ_o_ZA AS String)
+  IF ordenadoalgunavez = FALSE THEN
+  guardartitulosiniciales()
+  ordenadoalgunavez = TRUE
+  ordenactual = "AZ"
+  ENDIF
+   
+  IF AZ_o_Za = "AZ" THEN
+   ord_AZ(columna)
+   ordenactual = "AZ"
+  STOP EVENT 
+  ENDIF 
+  
+   IF AZ_o_Za = "ZA" THEN
+   ord_ZA(columna)
+   ordenactual = "ZA"
+  STOP EVENT 
+  ENDIF 
+  
+      IF AZ_o_Za = "" THEN 
+            IF ordenactual = "AZ" THEN 
+            ord_ZA(columna)
+            ordenactual = "ZA" 
+            ELSE 
+            ord_AZ(columna)
+            ordenactual = "AZ"  
+            ENDIF 
+      ENDIF 
+END
+
+
+
+'------------------------ordenar AZ------------------------------------------------ 
+  'a: indica la columna a la que ordenamos 
+
+PRIVATE SUB ord_AZ(a AS Integer) 
+DIM limite AS Integer 
+DIM cambio1 AS String 
+DIM i AS Integer 
+DIM j AS Integer 
+DIM col AS Integer 
+'version 3.1
+DIM antiguotitulo AS NEW String[]
+INC Application.busy 
+ME.visible = FALSE 
+ 
+limite = ME.Rows.Count
+'añadido version 3.1 
+antiguotitulo = Split(titulosiniciales, "|")
+
+IF (ME.Columns.Count < a + 1) OR a < 0 THEN  
+    Message.Error("Error en la columna introducida para ordenar") 
+    GOTO salidaordenar 
+    END IF  
+
+FOR i = 0 TO ME.Columns.count - 1
+IF Mid$(ME.Columns[i].text, 1, 3) = "↓" OR Mid$(ME.Columns[i].text, 1, 3) = "↑" THEN 
+  ME.Columns[i].Text = antiguotitulo[i]
+  ENDIF 
+  NEXT 
+  
+  ME.Columns[a].Text = "↓" & antiguotitulo[a]
+'fin añadido 3.1
+ 
+SortTableView(ME, a, FALSE)
+ GOTO finordenar2
+ 
+FOR i = 0 TO limite - 1 
+    FOR j = 0 TO limite - 2 
+    'mejora version 1.01, comprobar si estamos comparando numeros o cadenas de letras
+    IF IsNull(Val(ME[j, a].Text)) = TRUE THEN 
+         IF UCase$(ME[j, a].Text) >= UCase$(ME[j + 1, a].Text) THEN 
+            FOR col = 0 TO ME.Columns.Count - 1 
+                cambio1 = ME[j, col].Text 
+                ME[j, col].text = ME[j + 1, col].Text 
+                ME[j + 1, col].text = cambio1 
+            NEXT  
+         ENDIF 
+      ENDIF 
+      'se trata de un numero
+    IF IsNull(Val(ME[j, a].Text)) = FALSE THEN 
+        IF Val(ME[j, a].Text) >= Val(ME[j + 1, a].Text) THEN 
+            FOR col = 0 TO ME.Columns.Count - 1 
+                cambio1 = ME[j, col].Text 
+                ME[j, col].text = ME[j + 1, col].Text 
+             ME[j + 1, col].text = cambio1 
+            NEXT  
+         ENDIF 
+      ENDIF
+  NEXT 
+NEXT  
+
+finordenar2:
+
+ ME.Refresh()
+ salidaordenar:  
+ ME.visible = TRUE 
+ DEC Application.busy 
+END 
+ 
+ 
+'------------------------ordenar ZA------------------------------------------------ 
+  'a: indica la columna a la que ordenamos 
+
+PRIVATE SUB ord_ZA(a AS Integer)   
+DIM limite AS Integer 
+DIM cambio1 AS String 
+DIM i AS Integer 
+DIM j AS Integer 
+DIM col AS Integer 
+DIM nuevotitulo AS String
+'version 3.1
+DIM antiguotitulo AS NEW String[]
+INC Application.busy 
+ME.visible = FALSE 
+limite = ME.Rows.Count 
+antiguotitulo = Split(titulosiniciales, "|") 
+ 
+IF (ME.Columns.Count < a + 1) OR a < 0 THEN  
+    Message.Error("Error en la columna introducida para ordenar") 
+    GOTO salidaordenar 
+    END IF  
+
+ FOR i = 0 TO ME.Columns.count - 1
+  IF Mid$(ME.Columns[i].text, 1, 3) = "↓" OR Mid$(ME.Columns[i].text, 1, 3) = "↑" THEN 
+  ME.Columns[i].Text = antiguotitulo[i]
+  ENDIF 
+  NEXT 
+  ME.Columns[a].Text = "↑" & antiguotitulo[a] 
+'fin añadido 3.1 
+
+ 'ver método de ordenacion....
+SortTableView(ME, a, TRUE)
+ 
+
+ ME.Refresh()
+ salidaordenar:  
+ ME.visible = TRUE 
+DEC Application.busy
+END 
+
+
+'-------------------------------------------------------------------------
+'exportar a .html
+'-------------------------------------------------------------------------
+
+PUBLIC SUB crearhtml(OPTIONAL ruta AS String)
+  DIM archivo AS File
+  DIM i, j AS Integer
+  DIM titulo AS String
+ INC Application.busy 
+  'la ruta es opcional
+  IF ruta = "" THEN ruta = User.Home &/ "reporte.html"
+  
+  OPEN ruta FOR WRITE CREATE AS #archivo
+  PRINT #archivo, "<html>"
+  PRINT #archivo, "<head><title>" & ("Reporte en HTML") & "</title>"
+    PRINT #archivo, "<?xml version=" & Chr$(34) & "1.0" & Chr$(34) & " encoding=" & Chr$(34) & "UTF-8" & Chr$(34) & "?>" & Chr$(13)
+PRINT #archivo, "<!DOCTYPE html PUBLIC " & Chr$(34) & "-//W3C//DTD XHTML 1.1//EN" & Chr$(34) & Chr$(13)
+PRINT #archivo, " " & Chr$(34) & "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" & Chr$(34) & ">" & Chr$(13)
+
+PRINT #archivo, " <HTML xmlns=" & Chr$(34) & "http://www.w3.org/1999/xhtml" & Chr$(34) & " xml:lang =" & Chr$(34) & "es" & Chr$(34) & ">" & Chr$(13)
+
+PRINT #archivo, "<meta http-equiv=" & Chr$(34) & "Content-Type" & Chr$(34) & " content =" & Chr$(34) & "text/html;charset =utf-8" & Chr$(34) & " /" & Chr$(13) & "</head>"
+  PRINT #archivo, "<body topmargin='0' leftmargin='0'"
+  PRINT #archivo, ">"
+  PRINT #archivo, "<table border='1' width='500' cellpadding='4' cellspacing='0'>"
+  PRINT #archivo, "  <tr>"
+  PRINT #archivo, "    <td colspan='6' align='center'>"
+  PRINT #archivo, "      <h3>" & ("Listado") & "</h3>"
+  PRINT #archivo, "    </td>"
+  PRINT #archivo, "  </tr>"
+  PRINT #archivo, "  <tr>"
+  'imprime cabeceras
+ 
+      PRINT #archivo, "    <td align='center'>" & 
+     "<P STYLE=" & Chr$(34) & "background: silver" &
+         Chr$(34)& 
+        ">" &
+   " " & 
+    "</p>" &
+    "</td>"
+
+  FOR i = 0 TO ME.Columns.count - 1
+    titulo = ME.columns[i].title
+    PRINT #archivo, "    <td align='center'>" & 
+     "<P STYLE=" & Chr$(34) & "background: silver" &
+         Chr$(34)& 
+        ">" &
+    titulo & 
+    "</p>" &
+    "</td>"
+  NEXT 
+  'imprime tabla en si
+  PRINT #archivo, "  </tr>"
+  FOR i = 0 TO ME.rows.Count - 1
+       PRINT #archivo, "    <td align='center'>" & 
+     "<P STYLE=" & Chr$(34) & "background: silver" &
+         Chr$(34)& 
+        ">" &
+    Str$(i + 1)& 
+    "</p>" &
+    "</td>"
+       FOR j = 0 TO ME.Columns.Count - 1
+       PRINT #archivo, "    <td> " & 
+       "<P STYLE=" & Chr$(34) & "background: " & Hex$(ME[i, j].Background)&
+         Chr$(34)& 
+        "><FONT COLOR=" & Chr$(34)& 
+        Hex$(ME[i, j].Foreground)& 
+         Chr$(34) & ">" &
+         ME[i, j].Text &
+         "</FONT></P>" & 
+        "</td> "
+      NEXT 
+     PRINT #archivo, "  </tr>"
+    NEXT 
+  PRINT #archivo, "</table>"
+  PRINT #archivo, "</body>"
+  PRINT #archivo, "</html>"
+  CLOSE #archivo
+ 
+ Desktop.Open(ruta) 
+  DEC Application.busy 
+END
+
+'-----------------------------------------------------------------------
+' codigo que genera copiar al portapapeles
+'-----------------------------------------------------------------------
+PUBLIC SUB copiaralportapapeles()
+  DIM texto AS String
+  DIM a AS Integer
+  DIM b AS Integer
+  IF ME.header = 1 OR ME.header = 3 THEN 
+  FOR a = 0 TO ME.Columns.count - 1
+    texto &= ME.Columns[a].Title & "\t"  
+  NEXT 
+  texto &= "\n"
+  ENDIF 
+  FOR a = 0 TO ME.Rows.Count - 1
+    FOR b = 0 TO ME.Columns.count - 1
+         texto &= revisa(ME[a, b].text) & "\t"  'separa los datos con un tabulador
+    NEXT ' b
+  texto &= "\n"  'fin de linea
+  NEXT 'a
+  Clipboard.Copy(texto)
+  Message.Info(("Copiado contenido al portapapeles"))  
+END
+
+PRIVATE FUNCTION revisa(cadena AS String) AS String
+  DIM a AS Integer
+  DIM letra AS String
+  DIM devuelta AS String
+  DIM prueba AS Integer
+'  compruebo si tiene solo numero
+'  FOR a = 1 TO Len(cadena)
+'  letra = Mid$(cadena, a, 1)
+'  prueba = InStr("0123456789", letra)
+'  IF prueba = 0 THEN 
+'  RETURN cadena
+'  'contiene letras
+'  ENDIF 
+' NEXT 
+  FOR a = 1 TO Len(cadena)
+  letra = Mid$(cadena, a, 1)
+  IF letra = "." THEN 
+      letra = ","
+  ENDIF 
+  devuelta &= letra
+  NEXT 
+  RETURN devuelta
+END
+
+'-----------------------------------------------------------------------------
+' codigo para pegar contenido del portapapeles al grid
+'-----------------------------------------------------------------------------
+PUBLIC SUB pegardelportapapeles()
+'titulos: 0: sin titulo, -1 titulo contiene la 1º fila
+DIM lineas AS String[]
+DIM linea_procesada AS String
+DIM columnas AS String[]
+DIM a AS Integer
+DIM c AS Integer
+DIM cadena AS String
+DIM portapapeles AS String
+DIM finlinea AS String
+DIM fincolumna AS String
+DIM titulos AS String
+DIM respu AS String
+DIM annadir AS Integer
+DIM antiguotitulo AS String[]
+finlinea = "\n" ' retorno de carro (separa las filas)
+fincolumna = "\t" 'tabulador (separa las colunas)
+
+
+respu = Message.Question(("¿Contiene titulos las columnas a pegar?"), ("Si"), ("No"))
+
+
+IF respu = "1" THEN 
+titulos = -1
+ELSE 
+IF respu = "2" THEN 
+titulos = 0
+ELSE 
+'operacion cancelada
+GOTO finleer
+ENDIF 
+ENDIF 
+'titulos: 0: sin titulo, -1 titulo contiene la 1º fila
+
+
+respu = Message.Question(("¿Desea sobreescribir los datos existentes?"), ("Si"), ("No"))
+
+TRY portapapeles = Clipboard.paste()
+TRY lineas = Split(portapapeles, finlinea)
+TRY columnas = Split(lineas[0], fincolumna) 
+
+IF ERROR THEN
+ Message.Error(("error al leer datos del portapapeles"))
+GOTO finleer
+ENDIF 
+
+IF respu = 1 THEN 
+annadir = 0
+ELSE 
+annadir = ME.Rows.Count
+ENDIF
+
+IF TITULOS = -1 THEN ME.Rows.count = lineas.Count - 1 + annadir  ' para sobreescribir
+IF TITULOS = 0 THEN ME.Rows.count = lineas.Count + annadir  ' para sobreescribir
+
+
+linea_procesada = lineas[a]
+columnas = Split(linea_procesada, fincolumna) 
+FOR c = 0 TO ME.Columns.count - 1
+IF titulos = -1 THEN 
+ME.Columns[c].title = columnas[c]
+ENDIF
+IF titulos = 0 THEN
+TRY ME[a + annadir, c].text = columnas[c]
+IF ERROR THEN 
+Message.Error(("Producido un error al intentar pegar"))
+GOTO finleer
+ENDIF
+ENDIF 
+NEXT 
+
+FOR a = 1 TO ME.Rows.count - 1
+linea_procesada = lineas[a]
+IF linea_procesada = "" THEN BREAK 
+columnas = Split(linea_procesada, fincolumna) 
+
+FOR c = 0 TO ME.columns.count - 1
+ ME[a + annadir + titulos, c].text = columnas[c]
+finnext:
+NEXT 'c
+NEXT 'a
+ME.Rows.count -= 1
+
+'hemos pegado informacion, ya el gridvies esta desordenado
+FOR a = 0 TO ME.Columns.count - 1
+IF Mid$(ME.Columns[a].text, 1, 3) = "↓" OR Mid$(ME.Columns[a].text, 1, 3) = "↑" THEN 
+  ME.Columns[a].Text = Mid$(ME.columns[a].text, 4, Len(ME.columns[a].text))
+  ENDIF 
+  NEXT
+'refrescamos el contenido de la tabla 
+ME.Refresh
+colorear()
+finleer:
+END
+
+'---------------------------------------------------
+' FUNCION DE SUMA DE COLUMNA
+'---------------------------------------------------
+
+PUBLIC SUB suma(columna AS Integer) AS Float
+  DIM a AS Integer
+  DIM suma AS Float
+  FOR a = 0 TO ME.rows.count - 1
+      TRY suma += Val(revisa(ME[a, columna].text))
+   IF ERROR THEN 
+  ' puede que contenga una letra o que este vacio...
+   suma += 0
+   ENDIF
+  NEXT 
+  RETURN suma
+END
+
+'---------------------------------------------------
+' FUNCION DE Producto DE COLUMNAS
+'---------------------------------------------------
+PUBLIC FUNCTION sumaproducto(columna1 AS Integer, columna2 AS Integer, OPTIONAL columna3 AS Integer, OPTIONAL columna4 AS Integer, OPTIONAL columna5 AS Integer) AS Float
+  DIM a AS Integer
+  DIM producto AS Float
+  DIM suma AS Float
+  DIM crearnuevacolumna AS String
+  DIM columnamultiplica AS Integer
+  suma = 0 
+  producto = 0
+  'creo una nueva columna para almacenar el producto
+  'compruebo que no existe una columna con el título "operacion Producto"
+  crearnuevacolumna = ""
+  FOR a = 0 TO ME.columns.count - 1
+    IF ME.columns[a].title = "Operación Producto" OR ME.columns[a].title = "↓Operación Producto" OR ME.columns[a].title = "↑Operación Producto" THEN 
+      crearnuevacolumna = ("no")
+      columnamultiplica = a
+    ENDIF 
+  NEXT 
+  
+  IF crearnuevacolumna = "" THEN 
+      ME.columns.count += 1
+      columnamultiplica = ME.Columns.count - 1
+      ME.columns[ME.columns.count - 1].title = "Operación Producto"
+      ME.columns[ME.columns.count - 1].width = 150
+      IF titulosiniciales <> "" THEN
+        titulosiniciales = titulosiniciales & ME.columns[ME.columns.count - 1].title & "|"
+        ELSE 
+        guardartitulosiniciales()
+        titulosiniciales = titulosiniciales & ME.columns[ME.columns.count - 1].title & "|"
+      ENDIF 
+  ENDIF 
+  
+  guardartitulosiniciales()
+  '-------------------------
+  'EMPIEZO A MULTIPLICAR
+  '-------------------------
+  FOR a = 0 TO ME.rows.count - 1
+  producto = 0
+      IF Val(revisa(ME[a, columna1].text)) = NULL THEN 
+          ME[a, columnamultiplica].text = "N/A"
+          producto = 0
+          GOTO antesfinnext
+      ENDIF 
+ 
+       IF Val(revisa(ME[a, columna2].text)) = NULL THEN 
+          ME[a, columnamultiplica].text = "N/A"
+            producto = 0
+          GOTO antesfinnext
+          ELSE 
+          producto = Val(revisa(ME[a, columna1].text)) * Val(revisa(ME[a, columna2].text))
+          
+      ENDIF   
+  
+ 
+      IF columna3 > 0 THEN 
+        IF Val(revisa(ME[a, columna3].text)) = NULL THEN 
+          ME[a, columnamultiplica].text = "N/A"
+            producto = 0
+          GOTO antesfinnext
+        ELSE 
+        producto = producto * Val(revisa(ME[a, columna3].text))
+        ENDIF 
+      ENDIF 
+  
+  
+     IF columna4 > 0 THEN 
+       IF Val(revisa(ME[a, columna4].text)) = NULL THEN 
+          ME[a, columnamultiplica].text = "N/A"
+           producto = 0
+         GOTO antesfinnext
+         ELSE
+          producto = producto * Val(revisa(ME[a, columna4].text))
+          ENDIF 
+     ENDIF 
+   
+      IF columna5 > 0 THEN 
+          IF Val(revisa(ME[a, columna5].text)) = NULL THEN 
+          ME[a, columnamultiplica].text = "N/A"
+            producto = 0
+          GOTO antesfinnext
+          ELSE 
+          producto = producto * Val(revisa(ME[a, columna5].text))
+        ENDIF 
+    ENDIF 
+    antesfinnext:
+    suma += producto
+ IF ME[a, columnamultiplica].text <> "N/A" THEN ME[a, columnamultiplica].text = Str$(producto)
+NEXT 
+finnext:
+  colorear()
+  RETURN suma
+END
+
+'------------------------------
+'funcion editar una celda
+'-------------------------------
+
+PUBLIC SUB edita(fila AS Integer, columna AS Integer)
+  DIM f AS NEW Feditor
+  var.editado = ME[fila, columna].text
+ IF ME.columns[columna].title = "Operación Producto" THEN 
+ Message.Error("No es posible editar una columna de operaciones producto")
+ ELSE 
+  f.caption = "Editando...Columna: " & ME.columns[columna].title & ", Fila: " & Str$(fila + 1)
+  f.Showmodal
+  ME[fila, columna].text = var.editado
+  ENDIF
+END
+
+'----------------------------------
+'ordenacion metodo quicksort
+'----------------------------------
+PUBLIC FUNCTION Search(tv AS supergridviews, i AS Integer, col AS Integer, Mode AS Integer) AS Integer
+
+DIM k AS Integer
+DIM pos AS Integer
+
+DIM v1 AS Variant
+DIM v2 AS Variant
+
+pos = i
+
+FOR k = i TO tv.Rows.Count - 1
+IF IsNumber(Val(tv[k, col].Text)) THEN
+'‘Behaves like number
+v1 = Val(tv[k, col].Text)
+v2 = Val(tv[pos, col].Text)
+
+IF v1 = NULL THEN
+v1 = 0
+END IF
+
+IF v2 = NULL THEN
+v2 = 0
+END IF
+
+IF mode = 0 THEN '‘Min
+IF CFloat(v1) < CFloat(v2) THEN
+pos = k
+END IF
+ELSE '‘Max
+IF CFloat(v1) > CFloat(v2) THEN
+pos = k
+END IF
+END IF
+
+ELSE
+'‘Behaves like string
+
+v1 = tv[k, col].Text
+v2 = tv[pos, col].Text
+
+IF v1 = NULL THEN
+v1 = " "
+END IF
+
+IF v2 = NULL THEN
+v2 = " "
+END IF
+
+IF mode = 0 THEN '‘Min
+IF v1 < v2 THEN
+pos = k
+END IF
+ELSE '‘Max
+IF v1 > v2 THEN
+pos = k
+END IF
+END IF
+
+END IF
+
+NEXT
+
+RETURN pos
+
+END
+
+PUBLIC SUB Change(tv AS supergridviews, i AS Integer, pos AS Integer)
+
+DIM k AS Integer
+DIM row AS NEW String[]
+
+'‘Load first data into row
+
+FOR k = 0 TO tv.Columns.Count - 1
+row.Add(tv[i, k].Text)
+NEXT
+
+'‘Put second row into first
+
+FOR k = 0 TO tv.Columns.Count - 1
+tv[i, k].Text = tv[pos, k].Text
+NEXT
+
+'Finally, save temporary data
+
+FOR k = 0 TO tv.Columns.Count - 1
+tv[pos, k].Text = row[k]
+NEXT
+
+END
+
+PUBLIC SUB SortTableView(tv AS supergridviews, col AS Integer, A AS Boolean)
+
+DIM i AS Integer
+DIM MinRes AS Integer
+DIM MaxRes AS Integer
+DIM row AS String[]
+
+tv.VISIBLE = FALSE 'CANCEL
+
+FOR i = 0 TO tv.Rows.Count - 1
+IF A THEN
+
+MinRes = Search(tv, i, col, 0)
+Change(tv, i, MinRes)
+
+ELSE
+MaxRes = Search(tv, i, col, 1)
+Change(tv, i, MaxRes)
+
+END IF
+
+NEXT
+
+tv.VISIBLE = TRUE 'Refresh
+
+END
+
+
+'---------------------------------------------------------
+'añadir fila de datos, separados por el caracter "|"
+'--------------------- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+PUBLIC SUB Add(cadena AS String)
+DIM scad AS String[]  
+DIM a AS Integer
+DIM introduce AS Integer
+'separo datos
+scad = Split(cadena, "|")
+'añado una fila mas
+ME.Rows.Count = ME.Rows.Count + 1
+
+introduce = Min(scad.count, ME.columns.count)
+
+FOR a = 0 TO introduce - 1
+  ME[ME.rows.count - 1, a].text = scad[a]
+NEXT 
+
+ME.colorear()
+
+END
+
+
+

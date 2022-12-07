@@ -1,0 +1,270 @@
+' Gambas class file
+' Basado en el ejemplo de sockets en gambas - Mario A. Campos
+' http://www.taringa.net/posts/linux/7995119/Ejemplo-de-sockets-con-Gambas-y-VB-_Edit_.html
+' Mejorado por Julio Sanchez Berro
+' Blog: http://jsbsan.blogspot.com/
+Public client As Object[] 'objetos que van a contener sockets
+Public socketaceptado As Socket
+Public contador_socket As Integer
+Public mensaje As String
+Public remotehostip_temp As Socket
+
+Public Sub Form_Open()
+
+  Dim comandoinicial As String
+  client = New Object[]
+  var.Titulos_ListadoClientes()
+  buscarip()
+  TextBox2.text = 11000
+  rejilla.Titulos_Gridmensajes()
+  s.Type = Net.internet
+  s.Port = Val(TextBox2.text)
+  s.Listen(100) ' maximo numero de clientes a escuchar
+  Me.Caption = "Servidor ChatGambas Versión 0.02  AUTOR: JSBSAN "
+  If s.status = Net.Active Then
+    'escuchando
+  Endif
+
+End
+
+Public Sub s_Error()
+
+  Message.Error("No es posible enlazar los socket")
+
+End
+
+Public Sub Timer1_Timer()
+
+  If s.Status = 1 Then
+    Label3.Caption = "Estado: Conectado"
+  Else
+    Label3.Caption = "Estado: ???????"
+  Endif
+
+End
+
+Public Sub s_Connection(RemoteHostIP As String)
+
+  Dim obj As Object
+  'remotehostip_temp = remotehostip
+  'socketaceptado = s.Accept()
+  If s.status <= Net.Inactive Then Return
+  contador_socket += 1
+  Print RemoteHostIP
+  obj = s.Accept()
+  client.Add(obj)
+  If obj.status = Net.Connected Then
+    Print obj.remotehost
+    Print obj.remoteport
+    Print obj.localport
+    Write #obj, "#@#NICK", Len("#@#NICK")
+  Endif
+
+End
+
+Public Sub Socket_Read()
+
+  Dim Recibido As String
+  Try Read #Last, Recibido, Lof(Last)
+  If Error Then
+    Message.Error("Se ha producido un error...")
+  Else
+    remotehostip_temp = Last
+    comando(recibido, remotehostip_temp)
+  Endif
+
+End
+
+Public Sub ButtonCerrar_Click()
+
+  s.Close
+  Me.close
+
+End
+'--------------------------------------------------------
+' gestion de socket
+'--------------------------------------------------------
+
+Public Sub comando(texto As String, remotehostip_temp As Socket)
+
+  Dim activado_comando As Integer
+  Dim nick As String
+  Dim a As Integer
+  Dim clientesTXT As String
+
+  If Mid$(texto, 1, Len("#@#NICK")) = "#@#NICK" Then
+    'me esta dando el nick
+    nick = Mid$(texto, Len("#@#NICK") + 1, Len(texto))
+    mensaje = Str$(Color.black) & "|" & "Nuevo usuario conectado: " & nick & "|" & "servidor"
+    rejilla.anade(mensaje)
+    gestor_socket_envio(mensaje)
+    '  TextLabel1.text &= mensaje
+    ListadoClientes.add(remotehostip_temp.Id & "|" & nick)
+    enviar_lista(nick)
+    activado_comando = 1
+  Endif
+  If Mid$(texto, 1, Len("#@#BYE")) = "#@#BYE" Then
+    'se esta desconectando
+    nick = Mid$(texto, Len("#@#BYE") + 1, Len(texto))
+    mensaje = Str$(Color.black) & "|" & "Se ha desconectado: " & nick & "|" & "servidor"
+    gestor_socket_envio(mensaje)
+    '  TextLabel1.text &= mensaje
+    rejilla.anade(mensaje)
+    ' ListadoClientes.add(remotehostip_temp & "|" & nick)
+    ' eliminar la fila que contenga ese nick
+    enviar_lista(nick, 1)
+    activado_comando = 1
+  Endif
+  If activado_comando = 0 Then
+    'es un mensaje normal
+    '    TextLabel1.Text = TextLabel1.Text & texto
+    rejilla.anade(texto)
+    'envio a los demas del chat
+    gestor_socket_envio(texto)
+  Endif
+
+End
+
+Public Sub enviar_lista(nick As String, Optional valor As Integer)
+
+  Dim a As Integer
+  Dim clientesTXT As String
+
+  clientesTXT = "GambasChat"
+  For a = 0 To ListadoClientes.Rows.count - 1
+    If ListadoClientes[a, 1].text = nick And valor = 1 Then
+      ListadoClientes[a, 1].text = "abandono"
+    Else
+      clientesTXT = clientesTXT & "|" & ListadoClientes[a, 1].text
+    Endif
+  Next
+  'mandar a todos los usuarios una nueva lista de usuarios clientes actualizados
+  gestor_socket_envio("#@#LIST" & clientesTXT)
+
+End
+
+Public Sub ToolButton1_Click()
+
+  FormAYUDA.Show
+
+End
+
+Public Sub TextBox4_KeyPress()
+
+  If Key.code = Key.enter Then
+    Enviar_Click()
+  Endif
+  If Key.code = Key.Return Then
+    Enviar_Click()
+  Endif
+
+End
+
+Public Sub enviar_Click()
+
+  mensaje = "GambasChat--> " & TextBox4.text & "<br>"
+  '  TextLabel1.Text = TextLabel1.Text & mensaje
+  mensaje = Str$(Color.black) & "|" & "GambasChat--> " & TextBox4.text & "|" & "servidor" 'indico quien lo esta enviando
+  rejilla.anade(mensaje)
+  gestor_socket_envio(mensaje)
+  TextBox4.text = ""
+
+End
+
+Public Sub s_Read()
+
+  Dim Recibido As String
+  If S.Status = Net.Connected Then
+    Read #S, Recibido, Lof(S)
+    '      TextLabel1.Text = TextLabel1.Text & "<b>" & Recibido & "<b>" & "<br>"
+    '      PRINT s
+    mensaje = Recibido 'recibido desde los socketssss
+    rejilla.anade(mensaje)
+  End If
+
+End
+
+Public Sub gestor_socket_envio(texto As String, Optional numero As Integer)
+
+  Dim icount As Integer
+  For icount = 0 To client.count - 1
+    Try Write #client[icount], texto, Len(texto)
+    ' prueba el envio incluso para clientes que esten desconectados... (dan error, por eso le pongo try)
+  Next
+
+End
+'----------------------------------------------- ip ---------------------------------------
+
+Public Sub buscarip()
+
+  Dim hproc As Process
+  hproc = Exec ["ifconfig"] For Read As "ifconfig"
+  Wait 1
+  asignarip(var.cadena)
+
+End
+
+Public Sub ifconfig_read()
+
+  Dim sline As String
+  Try Read #Last, sline
+  var.cadena &= sline
+
+End
+
+Public Sub asignarip(sline As String)
+
+  Dim ini As Integer
+  Dim ini2 As Integer
+  Dim ini3 As Integer
+  Dim a As Integer
+  Dim ip As String
+  '  DIM sline AS String
+  'primera red
+  ini = InStr(sline, "rec. inet:") '+ Len("rec. inet:")
+  'final = RInStr(sline, "Difus.:")
+  If ini <> 0 Then
+    ip = Mid(sLINE, ini + Len("rec. inet:"), 13)
+    Print ip
+    If validar(ip) Then ComboBoxIP.Add(ip)
+  Endif
+  '------------------
+  'segunda red
+  '-------------------
+  ini2 = InStr(Mid$(sline, ini + Len("rec. inet:") + 14, Len(sline)), "rec. inet:") '+ Len("rec. inet:")
+  'final = RInStr(sline, "Difus.:")
+  If ini2 <> 0 Then
+    ip = Mid(sLINE, ini2 + Len("rec. inet:"), 13)
+    If validar(ip) Then ComboBoxIP.Add(ip)
+  Endif
+
+  '----------------
+  '3º red
+  '-----------------
+  ini3 = InStr(Mid$(sline, ini2 + Len("rec. inet:") + 14, Len(sline)), "rec. inet:") '+ Len("rec. inet:")
+  'final = RInStr(sline, "Difus.:")
+  If ini3 <> 0 Then
+    ip = Mid(sLINE, ini3 + Len("rec. inet:"), 13)
+    Print ip
+    If validar(ip) Then ComboBoxIP.Add(ip)
+
+  Endif
+
+End
+
+Public Function validar(ip As String) As Boolean
+
+  Dim valor As Integer
+  Dim a As Integer
+  Dim letra As String
+
+  For a = 1 To Len(ip)
+    letra = Mid$(ip, a, 1)
+    If InStr(Upper("abcdefghijklmnñopqrstuvwxyz"), Upper$(letra)) <> 0 Then
+      Return False
+    Endif
+  Next
+
+  Return True
+
+End

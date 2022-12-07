@@ -1,0 +1,23 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,60,4)
+  Text = ("")
+  Border = Window.Fixed
+  { TextBox1 TextBox
+    MoveScaled(0,0,48,4)
+    Text = ("")
+  }
+  { ToolButton1 ToolButton
+    MoveScaled(48,0,6,4)
+    Text = ("")
+    Picture = Picture["icon:/16/apply"]
+    Border = True
+  }
+  { ToolButton2 ToolButton
+    MoveScaled(54,0,6,4)
+    Text = ("")
+    Picture = Picture["icon:/16/cancel"]
+    Border = True
+  }
+}
