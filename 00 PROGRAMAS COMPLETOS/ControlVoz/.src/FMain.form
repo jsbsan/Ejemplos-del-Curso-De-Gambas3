@@ -1,0 +1,23 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,82,58)
+  { ToggleButton1 ToggleButton
+    MoveScaled(4,4,10,8)
+    Picture = Picture["sinescuchar32.png"]
+  }
+  { TextArea1 TextArea
+    MoveScaled(8,15,63,21)
+  }
+  { Label1 Label
+    MoveScaled(17,6,57,4)
+    Text = ("Pulse en el botón y diga algo... trataré de escribirlo") & "..."
+  }
+  { Label2 Label
+    MoveScaled(8,39,49,5)
+    Text = ("Creo que has dicho..") & "..."
+  }
+  { LabelResultado Label
+    MoveScaled(30,40,58,3)
+  }
+}

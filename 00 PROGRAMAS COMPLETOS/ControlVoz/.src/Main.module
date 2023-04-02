@@ -1,0 +1,22 @@
+' Gambas module file
+
+'gracias a los amigos de gambas-es.org
+'https://www.gambas-es.org/viewtopic.php?f=1&t=5801&start=0
+
+Public tray As New TrayIcon
+
+Public Sub Main()
+
+  tray = New TrayIcon As "manejador"
+
+  tray.Icon = Picture["escuchando.png"]
+
+  tray.show()
+
+End
+
+Public Sub manejador_click()
+
+  Print "has hecho click"
+
+End

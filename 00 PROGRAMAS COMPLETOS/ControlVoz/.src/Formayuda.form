@@ -1,0 +1,20 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,71,64)
+  { TextArea1 TextArea
+    MoveScaled(1,7,68,49)
+    Background = Color.Background
+    ReadOnly = True
+    Wrap = True
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(14,2,39,3)
+    Text = ("AYUDA CONTROL POR VOZ")
+    Alignment = Align.Center
+  }
+  { ButtonCerrar Button
+    MoveScaled(28,58,17,4)
+    Text = ("Cerrar")
+  }
+}

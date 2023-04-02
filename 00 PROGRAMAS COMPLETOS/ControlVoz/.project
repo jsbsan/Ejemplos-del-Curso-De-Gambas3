@@ -1,0 +1,16 @@
+# Gambas Project File 3.0
+# Compiled with Gambas 3.9.0
+Title=ControlVoz
+Startup=FMain
+Icon=escuchando.png
+Version=0.0.2
+Component=gb.image
+Component=gb.gtk3
+Component=gb.form
+Component=gb.dbus
+Component=gb.gui.trayicon
+Description="Controlav tu sistema con tu voz"
+Authors="Julio Sanchez Berro"
+TabSize=2
+Language=en_US
+Packager=1

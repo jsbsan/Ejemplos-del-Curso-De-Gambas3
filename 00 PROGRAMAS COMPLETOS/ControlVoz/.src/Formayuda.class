@@ -1,0 +1,14 @@
+' Gambas class file
+
+
+Public Sub ButtonCerrar_Click()
+
+  Me.Close()
+
+End
+
+Public Sub Form_Open()
+
+  TextArea1.text = File.Load("TextOrdenes.txt")
+
+End

@@ -1,0 +1,121 @@
+' Gambas class file
+
+Public tray As New TrayIcon
+
+Public Sub Form_Open()
+
+  tray = New TrayIcon As "manejador"
+
+  tray.Icon = Picture["sinescuchar32.png"]
+  tray.tag = False
+  tray.show()
+
+  Me.Center()
+
+  Try Copy "speech.sh" To "/tmp/speech.sh"
+
+  Chmod "/tmp/speech.sh" To "rwxr-----"
+
+End
+
+Public Sub form_Show()
+
+  Me.Hide()
+
+End
+
+Public Sub manejador_click()
+
+  If tray.tag = False Then
+
+    tray.Icon = Picture["escuchando32.png"]
+    Wait 0.01
+    escuchar()
+
+  Endif
+
+  tray.Text = LabelResultado.text
+
+  tray.Icon = Picture["sinescuchar32.png"]
+
+  ejecuta(tray.Text)
+
+End
+
+Public Sub ToggleButton1_Click()
+
+  If ToggleButton1.value = True Then
+    ToggleButton1.Picture = Picture["escuchando32.png"]
+    Wait 0.01
+    escuchar()
+
+  Else
+
+    ToggleButton1.Picture = Picture["sinescuchar32.png"]
+  Endif
+
+End
+
+Public Sub escuchar()
+
+  Dim contenido As String
+
+  Shell "/tmp/speech.sh" To contenido
+
+  TextArea1.text = contenido
+
+  analisisContenido(contenido)
+
+  Wait 0.01
+  ToggleButton1.Picture = Picture["sinescuchar32.png"]
+  ToggleButton1.Value = False
+
+End
+
+Public Sub analisisContenido(t As String)
+
+  If Len(t) = 0 Then
+    LabelResultado.text = "No he reconocido nada... :("
+    Return
+  Endif
+
+  LabelResultado.text = Between(t, "transcript: ", "confidence: ")
+  tray.Text = Between(t, "transcript: ", "confidence: ")
+
+End
+
+Private Function Between(Datos As String, Cadena1 As String, Cadena2 As String) As String
+
+  Dim iinf As Integer
+  Dim isup As Integer
+
+  iinf = InStr(Datos, Cadena1) + Len(Cadena1)
+  isup = InStr(Datos, Cadena2, iinf)
+  Return Mid(Datos, iinf, isup - iinf)
+
+End
+
+Public Sub ejecuta(c As String)
+  ''ordenes....
+
+  If Replace(Upper$(c), "\n", "") = "NAVEGADOR" Then
+    Shell "/usr/bin/google-chrome-stable"
+  Endif
+
+  If Replace(Upper$(c), "\n", "") = "GYM" Then
+    Shell "/usr/bin/gimp"
+  Endif
+
+  If Replace(Upper$(c), "\n", "") = "CAJA" Then
+    Shell "/usr/bin/caja"
+  Endif
+
+  If Replace(Upper$(c), "\n", "") = "TERMINAL" Or Replace(Upper$(c), "\n", "") = "CONSOLA" Then
+    Shell "/usr/bin/terminator"
+  Endif
+
+  If Replace(Upper$(c), "\n", "") = "AYUDA" Then
+    formayuda.show()
+  Endif
+
+End

@@ -1,0 +1,13 @@
+ORDENES BÁSICAS version 0.0.2:
+
+ NAVEGADOR -> ABRE EL CHROME
+  
+ GYM -> ABRE EL GIMP
+
+ CAJA -> ADMINISTRADOR DE FICHERO CAJA
+ 
+ TERMINAL O CONSOLA -> EJECUTA terminator (una conola mejorada)
+  
+  
+  
+  
