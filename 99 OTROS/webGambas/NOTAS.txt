@@ -1,0 +1,5 @@
+Comentarios:
+
+En la carpeta donde esta el archivo Manual_WebForm abres una terminal y ejecuta con estos comandos: GB_HTTPD_PORT=8080 gbr3 --httpd Manual_WebForm.gambas
+
+Abres un navegador web y colocas http://localhost:8080/
